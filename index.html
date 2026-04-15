@@ -17,467 +17,536 @@
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-
-/* TOPBAR */
-.topbar{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--accent)}
-.logo-icon{width:28px;height:28px;background:var(--accent-bg);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--accent)}
-.topbar-right{display:flex;align-items:center;gap:10px}
+.logo-icon{width:28px;height:28px;background:var(--accent-bg);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.topbar-right{display:flex;align-items:center;gap:8px}
 .sync-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);background:var(--surface2);border-radius:20px;padding:3px 10px}
-.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
 .sync-dot.syncing{background:var(--orange);animation:spin 1s linear infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes spin{to{transform:rotate(360deg)}}
-.btn-sync{background:transparent;border:0.5px solid var(--border2);color:var(--text2);border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
-.btn-sync:hover{border-color:var(--accent);color:var(--accent)}
-
-/* FILTERS */
-.filters{padding:16px 24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:0.5px solid var(--border);background:var(--surface)}
-.filter-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-right:4px}
+.btn{background:transparent;border:0.5px solid var(--border2);color:var(--text2);border-radius:7px;padding:6px 13px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:6px 13px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;transition:background .15s}
+.btn-primary:hover{background:#1d4ed8}
+.filters{padding:12px 24px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:0.5px solid var(--border);background:var(--surface)}
 .filter-btn{background:var(--surface2);border:0.5px solid var(--border);color:var(--text2);border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
 .filter-btn:hover{border-color:var(--accent);color:var(--accent)}
 .filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.search-input{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text);outline:none;width:220px;font-family:inherit;transition:border-color .15s;margin-left:auto}
+.search-input{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text);outline:none;width:200px;font-family:inherit;transition:border-color .15s;margin-left:auto}
 .search-input:focus{border-color:var(--accent)}
-
-/* STATS BAR */
-.stats-bar{padding:16px 24px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-.stat{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px}
-.stat-num{font-size:24px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace}
+.stats-bar{padding:14px 24px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.stat{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:13px 15px;cursor:pointer;transition:all .15s}
+.stat:hover{border-color:var(--border2);transform:translateY(-1px)}
+.stat-num{font-size:22px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace}
 .stat-num.blue{color:var(--accent)}.stat-num.red{color:var(--red)}.stat-num.orange{color:var(--orange)}.stat-num.green{color:var(--green)}
-.stat-label{font-size:10px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.07em}
-
-/* TABLE */
+.stat-label{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.07em}
+.error-banner{margin:12px 24px;padding:10px 14px;background:var(--red-bg);border:0.5px solid #fecaca;border-radius:8px;font-size:12px;color:var(--red);display:none}
+.info-banner{margin:0 24px 12px;padding:10px 14px;background:var(--accent-bg);border:0.5px solid #bfdbfe;border-radius:8px;font-size:12px;color:var(--accent-text);display:none}
 .table-wrap{padding:0 24px 24px}
 .table-container{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
 table{width:100%;border-collapse:collapse}
 thead tr{border-bottom:0.5px solid var(--border);background:var(--surface2)}
 th{padding:10px 14px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;text-align:left;white-space:nowrap}
-tbody tr{border-bottom:0.5px solid var(--bg);transition:background .1s;cursor:pointer}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:var(--surface2)}
-tbody tr.flag-red{border-left:3px solid var(--red)}
-tbody tr.flag-orange{border-left:3px solid var(--orange)}
-td{padding:12px 14px;vertical-align:middle}
-
-/* CLIENT NAME COL */
+tbody tr.data-row{border-bottom:0.5px solid var(--bg);transition:background .1s;cursor:pointer}
+tbody tr.data-row:hover{background:var(--surface2)}
+tbody tr.data-row.flag-red{border-left:3px solid var(--red)}
+tbody tr.data-row.flag-orange{border-left:3px solid var(--orange)}
+td{padding:11px 14px;vertical-align:middle}
 .client-name{font-size:13px;font-weight:600;color:var(--text)}
-.client-arr{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:2px}
-
-/* OWNER */
+.client-arr{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:1px}
 .owner-chip{display:inline-flex;align-items:center;gap:5px}
 .owner-av{width:22px;height:22px;border-radius:50%;background:var(--accent-bg);color:var(--accent-text);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.owner-name{font-size:12px;color:var(--text2)}
-
-/* BADGES */
 .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-.badge-in_progress{background:var(--accent-bg);color:var(--accent-text)}
-.badge-blocked{background:var(--red-bg);color:var(--red)}
-.badge-at_risk{background:var(--orange-bg);color:var(--orange)}
-.badge-completed{background:var(--green-bg);color:var(--green)}
-.badge-not_started{background:var(--surface2);color:var(--text3)}
-
-/* LAST CONTACT */
-.contact-ok{color:var(--text2)}
-.contact-warn{color:var(--orange);font-weight:500}
-.contact-overdue{color:var(--red);font-weight:500}
-
-/* TICKETS */
-.tickets-cell{display:flex;flex-direction:column;gap:4px;min-width:200px;max-width:300px}
-.ticket-item{display:flex;align-items:center;gap:6px;padding:4px 7px;background:var(--surface2);border-radius:5px;text-decoration:none}
+.badge-in_progress,.badge-In\ Progress,.badge-inprogress{background:var(--accent-bg);color:var(--accent-text)}
+.badge-blocked,.badge-Blocked{background:var(--red-bg);color:var(--red)}
+.badge-at_risk,.badge-At\ Risk,.badge-atrisk{background:var(--orange-bg);color:var(--orange)}
+.badge-completed,.badge-Completed,.badge-Green{background:var(--green-bg);color:var(--green)}
+.badge-not_started,.badge-Not\ Started{background:var(--surface2);color:var(--text3)}
+.badge-Yellow{background:var(--orange-bg);color:var(--orange)}
+.badge-Red{background:var(--red-bg);color:var(--red)}
+.tcount-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px}
+.tcount-red{background:var(--red-bg);color:var(--red)}.tcount-orange{background:var(--orange-bg);color:var(--orange)}.tcount-green{background:var(--green-bg);color:var(--green)}
+.ticket-item{display:flex;align-items:center;gap:5px;padding:3px 6px;background:var(--surface2);border-radius:4px;text-decoration:none;margin-bottom:3px}
 .ticket-item:hover{background:var(--border)}
-.ticket-key{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600;white-space:nowrap;flex-shrink:0}
-.ticket-sum{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
-.ticket-status{font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;white-space:nowrap;flex-shrink:0}
-.ts-todo{background:var(--surface2);color:var(--text3)}
-.ts-progress{background:var(--accent-bg);color:var(--accent-text)}
-.ts-blocked{background:var(--red-bg);color:var(--red)}
-.ts-waiting{background:var(--orange-bg);color:var(--orange)}
-.no-tickets{font-size:11px;color:var(--text3);font-style:italic}
-.loading-tickets{font-size:11px;color:var(--text3)}
-.ticket-count{display:inline-flex;align-items:center;gap:4px}
-.tcount-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px}
-.tcount-red{background:var(--red-bg);color:var(--red)}
-.tcount-orange{background:var(--orange-bg);color:var(--orange)}
-.tcount-green{background:var(--green-bg);color:var(--green)}
-
-/* EXPAND ROW */
-.expand-row{display:none;background:var(--surface2)}
+.ticket-key{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600;flex-shrink:0}
+.ticket-sum{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;max-width:200px}
+.expand-row{display:none;background:var(--accent-bg)}
 .expand-row.open{display:table-row}
-.expand-cell{padding:12px 14px 16px 42px;border-bottom:0.5px solid var(--border)}
-.expand-tickets{display:flex;flex-direction:column;gap:5px}
-.expand-ticket{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;text-decoration:none;transition:all .15s}
-.expand-ticket:hover{border-color:var(--accent)}
-.expand-ticket.stuck{border-left:2.5px solid var(--red)}
-.et-key{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600;min-width:75px}
+.expand-cell{padding:12px 14px 14px 48px;border-bottom:0.5px solid var(--border)}
+.et{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;text-decoration:none;margin-bottom:5px;transition:all .15s}
+.et:hover{border-color:var(--accent)}
+.et.stuck{border-left:3px solid var(--red)}
+.et-key{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600;min-width:70px}
 .et-proj{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;text-transform:uppercase;flex-shrink:0}
-.et-proj-cib{background:var(--accent-bg);color:var(--accent-text)}
-.et-proj-sawp{background:var(--green-bg);color:var(--green)}
+.et-cib{background:var(--accent-bg);color:var(--accent-text)}
+.et-sawp{background:var(--green-bg);color:var(--green)}
 .et-sum{flex:1;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.et-status{font-size:10px;padding:2px 7px;border-radius:5px;font-weight:500;flex-shrink:0}
-.et-days{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;flex-shrink:0}
-
-/* EMPTY */
+.et-st{font-size:10px;padding:2px 7px;border-radius:5px;font-weight:500;flex-shrink:0}
+.et-st-prog{background:var(--accent-bg);color:var(--accent-text)}
+.et-st-done{background:var(--green-bg);color:var(--green)}
+.et-st-block{background:var(--red-bg);color:var(--red)}
+.et-st-wait{background:var(--orange-bg);color:var(--orange)}
+.et-st-todo{background:var(--surface2);color:var(--text3)}
+.et-age{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;flex-shrink:0;white-space:nowrap}
 .empty{text-align:center;padding:60px;color:var(--text3)}
-.empty-icon{font-size:32px;opacity:.15;margin-bottom:10px}
-
-/* ERROR BANNER */
-.error-banner{margin:16px 24px;padding:12px 16px;background:var(--red-bg);border:0.5px solid #fecaca;border-radius:8px;font-size:12px;color:var(--red)}
-
-/* LOADING */
-.loading{text-align:center;padding:60px;color:var(--text3);font-size:13px}
-.spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px}
+.loading{text-align:center;padding:60px;color:var(--text3)}
+.spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:300}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:26px;width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.modal h3{font-size:15px;font-weight:700;margin-bottom:18px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.field input,.field select,.field textarea{background:var(--surface2);border:0.5px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit;transition:border-color .15s;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.full{grid-column:span 2}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.btn-cancel{background:transparent;border:0.5px solid var(--border2);color:var(--text2);border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn-save{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.sheet-note{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.7}
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
-  <div class="topbar-left">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg width="14" height="14" viewBox="0 0 16 16"><polygon points="8,1 15,4.5 15,11.5 8,15 1,11.5 1,4.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-      </div>
-      Solutions Team Dashboard
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="14" height="14" viewBox="0 0 16 16"><polygon points="8,1 15,4.5 15,11.5 8,15 1,11.5 1,4.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
     </div>
+    Solutions Team Dashboard
   </div>
   <div class="topbar-right">
     <div class="sync-pill">
       <span class="sync-dot" id="sync-dot"></span>
       <span id="sync-label">Loading...</span>
     </div>
-    <button class="btn-sync" onclick="loadAll()">↻ Refresh</button>
+    <button class="btn" onclick="loadAll()">↻ Refresh</button>
+    <button class="btn-primary" onclick="openAdd()">+ Add client</button>
+    <button class="btn" onclick="openImport()">↑ Import CSV</button>
   </div>
 </div>
 
-<!-- FILTERS -->
 <div class="filters">
-  <span class="filter-label">Status</span>
-  <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
-  <button class="filter-btn" data-filter="in_progress" onclick="setFilter('in_progress',this)">In Progress</button>
-  <button class="filter-btn" data-filter="at_risk" onclick="setFilter('at_risk',this)">At Risk</button>
-  <button class="filter-btn" data-filter="blocked" onclick="setFilter('blocked',this)">Blocked</button>
-  <button class="filter-btn" data-filter="overdue" onclick="setFilter('overdue',this)">Overdue</button>
-  <button class="filter-btn" data-filter="has_tickets" onclick="setFilter('has_tickets',this)">Has Open Tickets</button>
-  <input class="search-input" id="search" placeholder="Search clients, owners..." oninput="renderTable()"/>
+  <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+  <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
+  <button class="filter-btn" onclick="setFilter('at_risk',this)">At Risk / Blocked</button>
+  <button class="filter-btn" onclick="setFilter('overdue',this)">Overdue follow-up</button>
+  <button class="filter-btn" onclick="setFilter('has_tickets',this)">Has open tickets</button>
+  <input class="search-input" id="search" placeholder="Search clients or owners..." oninput="render()"/>
 </div>
 
-<!-- STATS -->
-<div class="stats-bar" id="stats-bar"></div>
+<div class="stats-bar" id="stats"></div>
+<div class="error-banner" id="err"></div>
+<div class="info-banner" id="info"></div>
 
-<!-- ERROR -->
-<div class="error-banner" id="error-banner" style="display:none"></div>
-
-<!-- TABLE -->
 <div class="table-wrap">
   <div class="table-container">
-    <div class="loading" id="loading"><div class="spinner"></div>Loading clients and tickets...</div>
-    <table id="main-table" style="display:none">
-      <thead>
-        <tr>
-          <th style="width:24px"></th>
-          <th>Client</th>
-          <th>Owner</th>
-          <th>Status</th>
-          <th>Last Contact</th>
-          <th>Open Tickets</th>
-          <th>Ticket Detail</th>
-        </tr>
-      </thead>
-      <tbody id="table-body"></tbody>
+    <div class="loading" id="loading"><div class="spinner"></div>Loading clients and Jira tickets...</div>
+    <table id="tbl" style="display:none">
+      <thead><tr>
+        <th style="width:20px"></th>
+        <th>Client</th>
+        <th>Owner</th>
+        <th>Status / Pulse</th>
+        <th>Last Contact</th>
+        <th>Open Tickets</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
     </table>
-    <div class="empty" id="empty" style="display:none"><div class="empty-icon">◈</div><p>No clients found</p></div>
+    <div class="empty" id="empty" style="display:none"><p>No clients found</p></div>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="overlay" id="client-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="modal-title">Add client</h3>
+    <div class="modal-grid">
+      <div class="field full"><label>Client name *</label><input id="f-name" placeholder="e.g. Ava Labs"/></div>
+      <div class="field"><label>ARR (USD)</label><input id="f-arr" type="number" placeholder="120000"/></div>
+      <div class="field"><label>SA Owner</label><input id="f-owner" placeholder="e.g. Kashif"/></div>
+      <div class="field full"><label>Owner email (for Jira matching)</label><input id="f-email" placeholder="c.kashif.amin@bitwave.io"/></div>
+      <div class="field"><label>Status</label>
+        <select id="f-status">
+          <option value="in_progress">In Progress</option>
+          <option value="at_risk">At Risk</option>
+          <option value="blocked">Blocked</option>
+          <option value="completed">Completed</option>
+          <option value="not_started">Not Started</option>
+        </select>
+      </div>
+      <div class="field"><label>Follow-up threshold (days)</label>
+        <select id="f-threshold">
+          <option value="7">7 days</option>
+          <option value="14" selected>14 days</option>
+          <option value="30">30 days</option>
+        </select>
+      </div>
+      <div class="field"><label>Last contact date</label><input id="f-contact" type="date"/></div>
+      <div class="field"><label>Slack channel</label><input id="f-slack" placeholder="client-support"/></div>
+    </div>
+    <div id="modal-err" style="color:var(--red);font-size:12px;display:none"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="modal-save-btn" onclick="saveClient()">Add client</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="overlay" id="import-modal" onclick="if(event.target===this)closeImport()">
+  <div class="modal" style="width:540px">
+    <h3>Import clients</h3>
+    <div class="sheet-note">
+      Paste CSV data below. Required: <strong>name</strong><br/>
+      Optional: <code>owner, ownerEmail, arr, status, lastContact, threshold, slackChannel</code><br/>
+      First row can be a header row - it will be skipped automatically.
+    </div>
+    <div class="field"><label>CSV data</label>
+      <textarea id="import-csv" rows="10" placeholder="name,owner,arr,status&#10;Ava Labs,Xeres,200000,in_progress&#10;Cumberland,Kashif,140000,in_progress&#10;Figment,Angel,85000,blocked"></textarea>
+    </div>
+    <div id="import-result" style="font-size:12px;color:var(--green);display:none"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeImport()">Cancel</button>
+      <button class="btn-save" onclick="doImport()">Import</button>
+    </div>
   </div>
 </div>
 
 <script>
-let clients = []
+// ── CONFIG ──
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLiidNVrvJry5SYilGIKm7f76KoroRblKraPNXcD2mP9YwqzsSvug6xLyKsPri-SOLVE-cmgj1WnZ_/pub?gid=25178951&single=true&output=csv'
+
+// ── STATE ──
+let clients = JSON.parse(localStorage.getItem('sth_dash_clients') || '[]')
 let tickets = []
 let activeFilter = 'all'
-let expandedRows = new Set()
+let expanded = new Set()
+let editingId = null
 
-// ── STATUS HELPERS ──
-const STATUS_LABELS = { in_progress:'In Progress', blocked:'Blocked', at_risk:'At Risk', completed:'Completed', not_started:'Not Started' }
-const STATUS_ORDER = { blocked:0, at_risk:1, in_progress:2, not_started:3, completed:4 }
+// ── HELPERS ──
+const STATUS_LABELS = {in_progress:'In Progress',blocked:'Blocked',at_risk:'At Risk',completed:'Completed',not_started:'Not Started',Green:'Active',Yellow:'Needs Attention',Red:'At Risk'}
+const STATUS_ORDER = {blocked:0,at_risk:1,Red:1,Yellow:2,in_progress:2,not_started:3,Green:3,completed:4}
 
-function daysSince(d) {
-  if (!d) return 9999
-  return Math.floor((Date.now() - new Date(d).getTime()) / 86400000)
-}
-
-function contactClass(c) {
-  const d = daysSince(c.lastContact)
-  if (d >= c.threshold * 2) return 'contact-overdue'
-  if (d >= c.threshold) return 'contact-warn'
-  return 'contact-ok'
-}
-
-function flagClass(c) {
-  const d = daysSince(c.lastContact)
-  if (d >= c.threshold * 2) return 'flag-red'
-  if (d >= c.threshold) return 'flag-orange'
-  return ''
-}
-
-function fmtARR(n) {
-  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M'
-  return '$' + (n/1000).toFixed(0) + 'k'
-}
-
-function initials(name) {
-  return name.split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase()
-}
+function dSince(d) { if(!d) return 9999; return Math.floor((Date.now()-new Date(d).getTime())/86400000) }
+function fmtARR(n) { n=Number(n)||0; return n>=1000000?'$'+(n/1000000).toFixed(1)+'M':'$'+(n/1000).toFixed(0)+'k' }
+function initials(name) { return (name||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase() }
+function flagClass(c) { const d=dSince(c.lastContact),t=Number(c.threshold)||14; if(d>=t*2) return 'flag-red'; if(d>=t) return 'flag-orange'; return '' }
+function contactClass(c) { const d=dSince(c.lastContact),t=Number(c.threshold)||14; if(d>=t*2) return 'contact-overdue'; if(d>=t) return 'contact-warn'; return 'contact-ok' }
+function statusBadge(s) { return `<span class="badge badge-${(s||'').replace(/\s+/g,'')}">${STATUS_LABELS[s]||s||'Unknown'}</span>` }
 
 // ── TICKET MATCHING ──
-function getClientTickets(client) {
-  const name = client.name.toLowerCase()
-  const nameNoSpace = name.replace(/\s+/g,'')
-  const words = name.split(' ').filter(w => w.length > 3)
-  const ownerEmail = (client.ownerEmail || '').toLowerCase()
+function clientTickets(c) {
+  const name = (c.name||'').toLowerCase()
+  const ns = name.replace(/\s+/g,'')
+  const words = name.split(' ').filter(w=>w.length>3)
+  const email = (c.ownerEmail||'').toLowerCase()
   return tickets.filter(t => {
-    const text = t.summary.toLowerCase()
-    const nameMatch = text.includes(name) ||
-      text.replace(/\s+/g,'').includes(nameNoSpace) ||
-      (words.length > 1 && words.every(w => text.includes(w)))
-    const assigneeMatch = ownerEmail && t.assignee && t.assignee.toLowerCase() === ownerEmail
-    return nameMatch || assigneeMatch
-  })
+    const text = (t.summary||'').toLowerCase()
+    return text.includes(name) ||
+      text.replace(/\s+/g,'').includes(ns) ||
+      (words.length>1 && words.every(w=>text.includes(w))) ||
+      (email && (t.assignee||'').toLowerCase()===email)
+  }).filter(t => !['Done','Closed','Resolved'].includes(t.status))
 }
 
-function getOpenTickets(client) {
-  return getClientTickets(client).filter(t => !['Done','Closed','Resolved'].includes(t.status))
-}
-
-function ticketStatusClass(status) {
-  if (['Done','Closed','Resolved'].includes(status)) return 'ts-done'
-  if (['In Progress','In Review'].includes(status)) return 'ts-progress'
-  if (status === 'Blocked') return 'ts-blocked'
-  if (status === 'Waiting on Solutions') return 'ts-waiting'
-  return 'ts-todo'
-}
-
-function etStatusClass(status) {
-  if (['Done','Closed','Resolved'].includes(status)) return 'badge-completed'
-  if (['In Progress','In Review'].includes(status)) return 'badge-in_progress'
-  if (status === 'Blocked') return 'badge-blocked'
-  if (status === 'Waiting on Solutions') return 'badge-at_risk'
-  return 'badge-not_started'
+function etClass(s) {
+  if(['In Progress','In Review'].includes(s)) return 'et-st-prog'
+  if(s==='Blocked') return 'et-st-block'
+  if(s==='Waiting on Solutions') return 'et-st-wait'
+  if(['Done','Closed','Resolved'].includes(s)) return 'et-st-done'
+  return 'et-st-todo'
 }
 
 // ── FILTER ──
-function setFilter(f, btn) {
-  activeFilter = f
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+function setFilter(f,btn) {
+  activeFilter=f
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
-  renderTable()
+  render()
 }
 
-function getFilteredClients() {
+function filtered() {
   const q = document.getElementById('search').value.toLowerCase().trim()
   let list = [...clients]
-  
-  if (q) list = list.filter(c => 
-    c.name.toLowerCase().includes(q) || 
-    (c.owner||'').toLowerCase().includes(q)
-  )
-  
-  if (activeFilter === 'in_progress') list = list.filter(c => c.status === 'in_progress')
-  else if (activeFilter === 'at_risk') list = list.filter(c => c.status === 'at_risk')
-  else if (activeFilter === 'blocked') list = list.filter(c => c.status === 'blocked')
-  else if (activeFilter === 'overdue') list = list.filter(c => daysSince(c.lastContact) >= c.threshold)
-  else if (activeFilter === 'has_tickets') list = list.filter(c => getOpenTickets(c).length > 0)
-  
-  // Sort: blocked first, then at_risk, then by open tickets desc
-  list.sort((a, b) => {
-    const so = (STATUS_ORDER[a.status]||5) - (STATUS_ORDER[b.status]||5)
-    if (so !== 0) return so
-    return getOpenTickets(b).length - getOpenTickets(a).length
+  if(q) list = list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.owner||'').toLowerCase().includes(q))
+  if(activeFilter==='active') list=list.filter(c=>!['completed','Lost Client'].includes(c.status))
+  else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
+  else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
+  else if(activeFilter==='has_tickets') list=list.filter(c=>clientTickets(c).length>0)
+  list.sort((a,b)=>{
+    const so=(STATUS_ORDER[a.status]||5)-(STATUS_ORDER[b.status]||5)
+    if(so!==0) return so
+    return clientTickets(b).length-clientTickets(a).length
   })
-  
   return list
 }
 
-// ── STATS ──
+// ── RENDER ──
 function renderStats() {
-  const total = clients.length
-  const totalARR = clients.reduce((s,c) => s + (c.arr||0), 0)
-  const overdue = clients.filter(c => daysSince(c.lastContact) >= c.threshold).length
-  const blocked = clients.filter(c => c.status === 'blocked' || c.status === 'at_risk').length
-  const totalOpenTickets = clients.reduce((s,c) => s + getOpenTickets(c).length, 0)
-  
-  document.getElementById('stats-bar').innerHTML = `
+  const total=clients.length
+  const arr=clients.reduce((s,c)=>s+Number(c.arr||0),0)
+  const overdue=clients.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length
+  const risk=clients.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length
+  const openT=clients.reduce((s,c)=>s+clientTickets(c).length,0)
+  document.getElementById('stats').innerHTML=`
     <div class="stat"><div class="stat-num blue">${total}</div><div class="stat-label">Total clients</div></div>
-    <div class="stat"><div class="stat-num">${fmtARR(totalARR)}</div><div class="stat-label">Total ARR</div></div>
-    <div class="stat"><div class="stat-num red">${overdue}</div><div class="stat-label">Overdue follow-ups</div></div>
-    <div class="stat"><div class="stat-num orange">${blocked}</div><div class="stat-label">At risk / blocked</div></div>
-    <div class="stat"><div class="stat-num red">${totalOpenTickets}</div><div class="stat-label">Open tickets</div></div>
-  `
+    <div class="stat"><div class="stat-num">${fmtARR(arr)}</div><div class="stat-label">Total ARR</div></div>
+    <div class="stat"><div class="stat-num red">${overdue}</div><div class="stat-label">Overdue</div></div>
+    <div class="stat"><div class="stat-num orange">${risk}</div><div class="stat-label">At risk / blocked</div></div>
+    <div class="stat"><div class="stat-num red">${openT}</div><div class="stat-label">Open tickets</div></div>`
 }
 
-// ── TABLE ──
-function renderTable() {
-  const filtered = getFilteredClients()
-  const tbody = document.getElementById('table-body')
-  
-  document.getElementById('main-table').style.display = filtered.length ? '' : 'none'
-  document.getElementById('empty').style.display = filtered.length ? 'none' : ''
-  
-  if (!filtered.length) return
-  
-  tbody.innerHTML = filtered.map(c => {
-    const open = getOpenTickets(c)
-    const days = daysSince(c.lastContact)
-    const flag = flagClass(c)
-    const cClass = contactClass(c)
-    const isExpanded = expandedRows.has(c.id)
-    
-    // Ticket count badge
-    let tcBadge = ''
-    if (open.length === 0) {
-      tcBadge = `<span class="tcount-badge tcount-green">✓ None</span>`
-    } else if (open.length <= 2) {
-      tcBadge = `<span class="tcount-badge tcount-orange">${open.length} open</span>`
-    } else {
-      tcBadge = `<span class="tcount-badge tcount-red">${open.length} open</span>`
-    }
-
-    // Ticket preview (first 2)
-    const ticketPreview = open.slice(0,2).map(t => {
-      const daysOld = Math.floor((Date.now() - new Date(t.created).getTime()) / 86400000)
-      const daysSinceUpdate = Math.floor((Date.now() - new Date(t.updated).getTime()) / 86400000)
-      const isStuck = daysSinceUpdate > 5
-      return `<a class="ticket-item${isStuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank" onclick="event.stopPropagation()">
+function render() {
+  const list = filtered()
+  document.getElementById('tbl').style.display = list.length?'':'none'
+  document.getElementById('empty').style.display = list.length?'none':''
+  if(!list.length) { renderStats(); return }
+  document.getElementById('tbody').innerHTML = list.map(c => {
+    const open = clientTickets(c)
+    const days = dSince(c.lastContact)
+    const t = Number(c.threshold)||14
+    const isExp = expanded.has(c.id)
+    let tcBadge = open.length===0
+      ? `<span class="tcount-badge tcount-green">✓ None</span>`
+      : open.length<=2
+        ? `<span class="tcount-badge tcount-orange">${open.length} open</span>`
+        : `<span class="tcount-badge tcount-red">${open.length} open</span>`
+    const preview = open.slice(0,2).map(t=>`
+      <a class="ticket-item" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank" onclick="event.stopPropagation()">
         <span class="ticket-key">${t.key}</span>
         <span class="ticket-sum">${t.summary}</span>
-        <span class="ticket-status ts-${ticketStatusClass(t.status).replace('ts-','')}">${t.status}</span>
+      </a>`).join('')
+    const more = open.length>2 ? `<div style="font-size:11px;color:var(--text3);padding:2px 0">+${open.length-2} more — click to expand</div>` : ''
+    const expTickets = open.map(tk=>{
+      const dOld=Math.floor((Date.now()-new Date(tk.created).getTime())/86400000)
+      const dUpd=Math.floor((Date.now()-new Date(tk.updated).getTime())/86400000)
+      const stuck=dUpd>5&&!['Done','Closed','Resolved'].includes(tk.status)
+      return `<a class="et${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${tk.key}" target="_blank">
+        <span class="et-key">${tk.key}</span>
+        <span class="et-proj et-${tk.project.toLowerCase()}">${tk.project}</span>
+        <span class="et-sum">${tk.summary}</span>
+        <span class="et-st ${etClass(tk.status)}">${tk.status}</span>
+        <span class="et-age">${dOld}d${stuck?' ⚠':''}</span>
       </a>`
     }).join('')
-    
-    const moreCount = open.length > 2 ? `<div style="font-size:11px;color:var(--text3);padding:2px 7px">+${open.length-2} more — click row to expand</div>` : ''
-
-    // Expanded tickets
-    const expandedTickets = open.map(t => {
-      const daysSinceUpdate = Math.floor((Date.now() - new Date(t.updated).getTime()) / 86400000)
-      const daysOld = Math.floor((Date.now() - new Date(t.created).getTime()) / 86400000)
-      const isStuck = daysSinceUpdate > 5
-      return `<a class="expand-ticket${isStuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">
-        <span class="et-key">${t.key}</span>
-        <span class="et-proj et-proj-${t.project.toLowerCase()}">${t.project}</span>
-        <span class="et-sum">${t.summary}</span>
-        <span class="et-status ${etStatusClass(t.status)}">${t.status}</span>
-        <span class="et-days">${daysOld}d old${isStuck?' · ⚠ stuck':''}</span>
-      </a>`
-    }).join('')
-
     return `
-      <tr class="${flag}" onclick="toggleExpand('${c.id}')">
-        <td style="width:24px;color:var(--text3);font-size:10px">${isExpanded ? '▼' : '▶'}</td>
-        <td>
-          <div class="client-name">${c.name}</div>
-          <div class="client-arr">${fmtARR(c.arr||0)} ARR</div>
-        </td>
-        <td>
-          <div class="owner-chip">
-            <div class="owner-av">${initials(c.owner||'?')}</div>
-            <span class="owner-name">${c.owner||'Unassigned'}</span>
-          </div>
-        </td>
-        <td><span class="badge badge-${c.status}">${STATUS_LABELS[c.status]||c.status}</span></td>
-        <td>
-          <span class="${cClass}" style="font-size:12px;font-family:'JetBrains Mono',monospace">
-            ${c.lastContact ? days+'d ago' : 'Never'}
-          </span>
-          ${days >= c.threshold ? `<div style="font-size:10px;color:${days >= c.threshold*2 ? 'var(--red)' : 'var(--orange)'}">⚠ Follow up needed</div>` : ''}
-        </td>
-        <td>${tcBadge}</td>
-        <td>
-          <div class="tickets-cell">
-            ${open.length === 0 ? '<span class="no-tickets">No open tickets</span>' : ticketPreview + moreCount}
-          </div>
+      <tr class="data-row ${flagClass(c)}" onclick="toggleExp('${c.id}')">
+        <td style="color:var(--text3);font-size:10px">${isExp?'▼':'▶'}</td>
+        <td><div class="client-name">${c.name}</div><div class="client-arr">${fmtARR(c.arr)}</div></td>
+        <td><div class="owner-chip"><div class="owner-av">${initials(c.owner)}</div><span style="font-size:12px;color:var(--text2)">${c.owner||'—'}</span></div></td>
+        <td>${statusBadge(c.status)}</td>
+        <td><span class="${contactClass(c)}" style="font-size:12px;font-family:'JetBrains Mono',monospace">${c.lastContact?days+'d ago':'Never'}</span>${days>=t?`<div style="font-size:10px;color:${days>=t*2?'var(--red)':'var(--orange)'}">⚠ Follow up needed</div>`:''}</td>
+        <td>${tcBadge}<div style="margin-top:4px">${preview}${more}</div></td>
+        <td onclick="event.stopPropagation()" style="white-space:nowrap">
+          <button class="btn" style="padding:4px 9px;font-size:11px" onclick="openEdit('${c.id}')">Edit</button>
+          <button class="btn" style="padding:4px 9px;font-size:11px;color:var(--red)" onclick="deleteClient('${c.id}')">Delete</button>
         </td>
       </tr>
-      <tr class="expand-row ${isExpanded ? 'open' : ''}" id="expand-${c.id}">
+      <tr class="expand-row ${isExp?'open':''}" id="exp-${c.id}">
         <td class="expand-cell" colspan="7">
-          ${open.length === 0 
-            ? '<span style="font-size:12px;color:var(--text3)">✓ No open tickets for this client</span>'
-            : `<div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">All open tickets (${open.length})</div><div class="expand-tickets">${expandedTickets}</div>`
-          }
+          <div style="font-size:10px;font-weight:600;color:var(--accent-text);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">All open Jira tickets for ${c.name} (${open.length})</div>
+          ${open.length?expTickets:'<span style="font-size:12px;color:var(--text3)">✓ No open tickets</span>'}
         </td>
-      </tr>
-    `
+      </tr>`
   }).join('')
-  
   renderStats()
 }
 
-function toggleExpand(id) {
-  if (expandedRows.has(id)) expandedRows.delete(id)
-  else expandedRows.add(id)
-  renderTable()
+function toggleExp(id) { expanded.has(id)?expanded.delete(id):expanded.add(id); render() }
+
+// ── CRUD ──
+function saveToStorage() { localStorage.setItem('sth_dash_clients', JSON.stringify(clients)) }
+
+function openAdd() {
+  editingId = null
+  document.getElementById('modal-title').textContent = 'Add client'
+  document.getElementById('modal-save-btn').textContent = 'Add client'
+  document.getElementById('modal-err').style.display = 'none'
+  ;['f-name','f-arr','f-owner','f-email','f-contact','f-slack'].forEach(id=>document.getElementById(id).value='')
+  document.getElementById('f-status').value = 'in_progress'
+  document.getElementById('f-threshold').value = '14'
+  document.getElementById('client-modal').classList.add('open')
+}
+
+function openEdit(id) {
+  editingId = id
+  const c = clients.find(x=>x.id===id)
+  if(!c) return
+  document.getElementById('modal-title').textContent = 'Edit client'
+  document.getElementById('modal-save-btn').textContent = 'Save changes'
+  document.getElementById('modal-err').style.display = 'none'
+  document.getElementById('f-name').value = c.name||''
+  document.getElementById('f-arr').value = c.arr||''
+  document.getElementById('f-owner').value = c.owner||''
+  document.getElementById('f-email').value = c.ownerEmail||''
+  document.getElementById('f-status').value = c.status||'in_progress'
+  document.getElementById('f-threshold').value = String(c.threshold||14)
+  document.getElementById('f-contact').value = c.lastContact||''
+  document.getElementById('f-slack').value = c.slackChannel||''
+  document.getElementById('client-modal').classList.add('open')
+}
+
+function saveClient() {
+  const name = document.getElementById('f-name').value.trim()
+  if(!name) { document.getElementById('modal-err').textContent='Client name is required'; document.getElementById('modal-err').style.display='block'; return }
+  const id = editingId || Date.now().toString()
+  const client = {
+    id, name,
+    arr: Number(document.getElementById('f-arr').value)||0,
+    owner: document.getElementById('f-owner').value,
+    ownerEmail: document.getElementById('f-email').value,
+    status: document.getElementById('f-status').value,
+    threshold: Number(document.getElementById('f-threshold').value)||14,
+    lastContact: document.getElementById('f-contact').value,
+    slackChannel: document.getElementById('f-slack').value
+  }
+  const idx = clients.findIndex(c=>c.id===id)
+  if(idx>=0) clients[idx]=client
+  else clients.push(client)
+  saveToStorage()
+  closeModal()
+  render()
+}
+
+function deleteClient(id) {
+  if(!confirm('Delete this client?')) return
+  clients = clients.filter(c=>c.id!==id)
+  saveToStorage()
+  render()
+}
+
+function closeModal() { document.getElementById('client-modal').classList.remove('open') }
+
+// ── IMPORT ──
+function openImport() { document.getElementById('import-modal').classList.add('open'); document.getElementById('import-result').style.display='none' }
+function closeImport() { document.getElementById('import-modal').classList.remove('open') }
+
+function doImport() {
+  const raw = document.getElementById('import-csv').value.trim()
+  if(!raw) return
+  const lines = raw.split('\n').filter(l=>l.trim())
+  const isHeader = lines[0].toLowerCase().includes('name') || lines[0].toLowerCase().includes('owner')
+  const start = isHeader ? 1 : 0
+  let n = 0
+  lines.slice(start).forEach(line => {
+    const p = line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
+    const name = p[0]
+    if(!name || name==='(No value)') return
+    // Check for duplicate
+    if(clients.find(c=>c.name.toLowerCase()===name.toLowerCase())) return
+    clients.push({
+      id: Date.now().toString()+Math.random(),
+      name,
+      owner: p[1]||'',
+      ownerEmail: p[2]||'',
+      arr: Number(p[3])||0,
+      status: p[4]||'in_progress',
+      lastContact: p[5]||'',
+      threshold: Number(p[6])||14,
+      slackChannel: p[7]||''
+    })
+    n++
+  })
+  saveToStorage()
+  const res = document.getElementById('import-result')
+  res.textContent = `✓ Imported ${n} client${n!==1?'s':''}${n===0?' (all already exist)':''}`
+  res.style.display = 'block'
+  render()
+  setTimeout(closeImport, 1500)
 }
 
 // ── LOAD DATA ──
 async function loadAll() {
   setSyncing(true)
+  // Load from Google Sheet
   try {
-    // Load clients and tickets in parallel
-    const [clientRes, ticketRes] = await Promise.all([
-      fetch('/api/clients'),
-      fetch('/api/jira')
-    ])
-    
-    if (clientRes.ok) {
-      clients = await clientRes.json()
-    }
-    
-    if (ticketRes.ok) {
-      const data = await ticketRes.json()
-      if (data.issues) {
-        tickets = data.issues.map(issue => ({
-          id: issue.id,
-          key: issue.key,
-          summary: issue.fields.summary,
-          status: issue.fields.status.name,
-          priority: issue.fields.priority?.name || 'Medium',
-          project: issue.fields.project?.key || 'CIB',
-          assignee: issue.fields.assignee?.emailAddress || '',
-          created: issue.fields.created,
-          updated: issue.fields.updated,
-          url: `https://bitwave-dev.atlassian.net/browse/${issue.key}`
-        }))
-        document.getElementById('error-banner').style.display = 'none'
-      } else if (data.error) {
-        showError('Jira: ' + data.error)
+    const r = await fetch(SHEET_URL)
+    if(r.ok) {
+      const csv = await r.text()
+      const rows = csv.split('\n').filter(l=>l.trim())
+      const isHeader = rows[0].toLowerCase().includes('name')||rows[0].toLowerCase().includes('owner')||rows[0].toLowerCase().includes('ticket')
+      const start = isHeader ? 1 : 0
+      const sheetClients = []
+      rows.slice(start).forEach(line => {
+        const p = line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
+        if(!p[0]||p[0]==='(No value)'||p[0].length<2) return
+        // Try to detect format by column count and content
+        const name = p[0]
+        const owner = p[1]||''
+        if(name && !['Lost Client','Green','Yellow','Red','Archive Mode'].includes(owner)) {
+          // Looks like our format: name,owner,ownerEmail,arr,status...
+          sheetClients.push({
+            id: 'sheet_'+p[0].replace(/\s+/g,'_').toLowerCase(),
+            name: p[0],
+            owner: p[1]||'',
+            ownerEmail: p[2]||'',
+            arr: Number(p[3])||0,
+            status: p[4]||'in_progress',
+            lastContact: p[5]||'',
+            threshold: Number(p[6])||14,
+            slackChannel: p[7]||''
+          })
+        }
+      })
+      if(sheetClients.length > 0) {
+        // Merge sheet clients with locally added clients
+        const localIds = new Set(clients.filter(c=>!c.id.startsWith('sheet_')).map(c=>c.id))
+        const localClients = clients.filter(c=>!c.id.startsWith('sheet_'))
+        clients = [...sheetClients, ...localClients]
+        saveToStorage()
+        showInfo(`Loaded ${sheetClients.length} clients from Google Sheet + ${localClients.length} locally added`)
       }
-    } else {
-      showError('Could not load Jira tickets - check credentials in Vercel env vars')
     }
-    
-    document.getElementById('loading').style.display = 'none'
-    renderTable()
-    setSyncing(false, 'Synced ' + new Date().toLocaleTimeString('en-CA', {hour:'2-digit',minute:'2-digit'}))
   } catch(e) {
-    showError('Load failed: ' + e.message)
-    setSyncing(false, 'Error')
+    console.warn('Sheet load failed:', e.message)
   }
-}
 
-function setSyncing(active, label) {
-  const dot = document.getElementById('sync-dot')
-  const lbl = document.getElementById('sync-label')
-  dot.className = 'sync-dot' + (active ? ' syncing' : '')
-  lbl.textContent = label || (active ? 'Syncing...' : 'Live')
-}
+  // Load Jira tickets
+  try {
+    const r = await fetch('/api/jira')
+    if(r.ok) {
+      const data = await r.json()
+      if(data.issues) {
+        tickets = data.issues.map(i => ({
+          id: i.id, key: i.key,
+          summary: i.fields.summary,
+          status: i.fields.status.name,
+          priority: i.fields.priority?.name||'Medium',
+          project: i.fields.project?.key||'CIB',
+          assignee: i.fields.assignee?.emailAddress||'',
+          created: i.fields.created,
+          updated: i.fields.updated
+        }))
+        hideError()
+      } else if(data.error) {
+        showError('Jira: '+data.error)
+      }
+    }
+  } catch(e) {
+    showError('Jira load failed: '+e.message)
+  }
 
-function showError(msg) {
-  const b = document.getElementById('error-banner')
-  b.textContent = msg
-  b.style.display = 'block'
   document.getElementById('loading').style.display = 'none'
-  setSyncing(false, 'Error')
+  document.getElementById('tbl').style.display = ''
+  render()
+  setSyncing(false, 'Synced '+new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'}))
 }
 
-// Auto refresh every 60 seconds
+function setSyncing(on, label) {
+  document.getElementById('sync-dot').className = 'sync-dot'+(on?' syncing':'')
+  document.getElementById('sync-label').textContent = label||(on?'Syncing...':'Live')
+}
+function showError(msg) { const e=document.getElementById('err'); e.textContent=msg; e.style.display='block' }
+function hideError() { document.getElementById('err').style.display='none' }
+function showInfo(msg) { const e=document.getElementById('info'); e.textContent=msg; e.style.display='block'; setTimeout(()=>e.style.display='none',4000) }
+
 loadAll()
 setInterval(loadAll, 60000)
 </script>
