@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Solutions Team Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f9fb;--surface:#fff;--surface2:#f2f4f7;--border:#e4e7ed;--border2:#d0d5df;
+  --text:#111827;--text2:#4b5563;--text3:#9ca3af;
+  --accent:#2563eb;--accent-bg:#eff6ff;--accent-text:#1d4ed8;
+  --green:#16a34a;--green-bg:#f0fdf4;--red:#dc2626;--red-bg:#fef2f2;
+  --orange:#d97706;--orange-bg:#fffbeb;--purple:#7c3aed;--purple-bg:#f5f3ff;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--accent)}
+.logo-icon{width:28px;height:28px;background:var(--accent-bg);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.sync-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);background:var(--surface2);border-radius:20px;padding:3px 10px}
+.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.sync-dot.syncing{background:var(--orange);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-sync{background:transparent;border:0.5px solid var(--border2);color:var(--text2);border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn-sync:hover{border-color:var(--accent);color:var(--accent)}
+
+/* FILTERS */
+.filters{padding:16px 24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:0.5px solid var(--border);background:var(--surface)}
+.filter-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-right:4px}
+.filter-btn{background:var(--surface2);border:0.5px solid var(--border);color:var(--text2);border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.search-input{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text);outline:none;width:220px;font-family:inherit;transition:border-color .15s;margin-left:auto}
+.search-input:focus{border-color:var(--accent)}
+
+/* STATS BAR */
+.stats-bar{padding:16px 24px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.stat{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px}
+.stat-num{font-size:24px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace}
+.stat-num.blue{color:var(--accent)}.stat-num.red{color:var(--red)}.stat-num.orange{color:var(--orange)}.stat-num.green{color:var(--green)}
+.stat-label{font-size:10px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.07em}
+
+/* TABLE */
+.table-wrap{padding:0 24px 24px}
+.table-container{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:0.5px solid var(--border);background:var(--surface2)}
+th{padding:10px 14px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;text-align:left;white-space:nowrap}
+tbody tr{border-bottom:0.5px solid var(--bg);transition:background .1s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--surface2)}
+tbody tr.flag-red{border-left:3px solid var(--red)}
+tbody tr.flag-orange{border-left:3px solid var(--orange)}
+td{padding:12px 14px;vertical-align:middle}
+
+/* CLIENT NAME COL */
+.client-name{font-size:13px;font-weight:600;color:var(--text)}
+.client-arr{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:2px}
+
+/* OWNER */
+.owner-chip{display:inline-flex;align-items:center;gap:5px}
+.owner-av{width:22px;height:22px;border-radius:50%;background:var(--accent-bg);color:var(--accent-text);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.owner-name{font-size:12px;color:var(--text2)}
+
+/* BADGES */
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.badge-in_progress{background:var(--accent-bg);color:var(--accent-text)}
+.badge-blocked{background:var(--red-bg);color:var(--red)}
+.badge-at_risk{background:var(--orange-bg);color:var(--orange)}
+.badge-completed{background:var(--green-bg);color:var(--green)}
+.badge-not_started{background:var(--surface2);color:var(--text3)}
+
+/* LAST CONTACT */
+.contact-ok{color:var(--text2)}
+.contact-warn{color:var(--orange);font-weight:500}
+.contact-overdue{color:var(--red);font-weight:500}
+
+/* TICKETS */
+.tickets-cell{display:flex;flex-direction:column;gap:4px;min-width:200px;max-width:300px}
+.ticket-item{display:flex;align-items:center;gap:6px;padding:4px 7px;background:var(--surface2);border-radius:5px;text-decoration:none}
+.ticket-item:hover{background:var(--border)}
+.ticket-key{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600;white-space:nowrap;flex-shrink:0}
+.ticket-sum{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.ticket-status{font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.ts-todo{background:var(--surface2);color:var(--text3)}
+.ts-progress{background:var(--accent-bg);color:var(--accent-text)}
+.ts-blocked{background:var(--red-bg);color:var(--red)}
+.ts-waiting{background:var(--orange-bg);color:var(--orange)}
+.no-tickets{font-size:11px;color:var(--text3);font-style:italic}
+.loading-tickets{font-size:11px;color:var(--text3)}
+.ticket-count{display:inline-flex;align-items:center;gap:4px}
+.tcount-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px}
+.tcount-red{background:var(--red-bg);color:var(--red)}
+.tcount-orange{background:var(--orange-bg);color:var(--orange)}
+.tcount-green{background:var(--green-bg);color:var(--green)}
+
+/* EXPAND ROW */
+.expand-row{display:none;background:var(--surface2)}
+.expand-row.open{display:table-row}
+.expand-cell{padding:12px 14px 16px 42px;border-bottom:0.5px solid var(--border)}
+.expand-tickets{display:flex;flex-direction:column;gap:5px}
+.expand-ticket{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;text-decoration:none;transition:all .15s}
+.expand-ticket:hover{border-color:var(--accent)}
+.expand-ticket.stuck{border-left:2.5px solid var(--red)}
+.et-key{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600;min-width:75px}
+.et-proj{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;text-transform:uppercase;flex-shrink:0}
+.et-proj-cib{background:var(--accent-bg);color:var(--accent-text)}
+.et-proj-sawp{background:var(--green-bg);color:var(--green)}
+.et-sum{flex:1;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.et-status{font-size:10px;padding:2px 7px;border-radius:5px;font-weight:500;flex-shrink:0}
+.et-days{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;flex-shrink:0}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px;color:var(--text3)}
+.empty-icon{font-size:32px;opacity:.15;margin-bottom:10px}
+
+/* ERROR BANNER */
+.error-banner{margin:16px 24px;padding:12px 16px;background:var(--red-bg);border:0.5px solid #fecaca;border-radius:8px;font-size:12px;color:var(--red)}
+
+/* LOADING */
+.loading{text-align:center;padding:60px;color:var(--text3);font-size:13px}
+.spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="14" height="14" viewBox="0 0 16 16"><polygon points="8,1 15,4.5 15,11.5 8,15 1,11.5 1,4.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      </div>
+      Solutions Team Dashboard
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sync-pill">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-label">Loading...</span>
+    </div>
+    <button class="btn-sync" onclick="loadAll()">↻ Refresh</button>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <span class="filter-label">Status</span>
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+  <button class="filter-btn" data-filter="in_progress" onclick="setFilter('in_progress',this)">In Progress</button>
+  <button class="filter-btn" data-filter="at_risk" onclick="setFilter('at_risk',this)">At Risk</button>
+  <button class="filter-btn" data-filter="blocked" onclick="setFilter('blocked',this)">Blocked</button>
+  <button class="filter-btn" data-filter="overdue" onclick="setFilter('overdue',this)">Overdue</button>
+  <button class="filter-btn" data-filter="has_tickets" onclick="setFilter('has_tickets',this)">Has Open Tickets</button>
+  <input class="search-input" id="search" placeholder="Search clients, owners..." oninput="renderTable()"/>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar" id="stats-bar"></div>
+
+<!-- ERROR -->
+<div class="error-banner" id="error-banner" style="display:none"></div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <div class="table-container">
+    <div class="loading" id="loading"><div class="spinner"></div>Loading clients and tickets...</div>
+    <table id="main-table" style="display:none">
+      <thead>
+        <tr>
+          <th style="width:24px"></th>
+          <th>Client</th>
+          <th>Owner</th>
+          <th>Status</th>
+          <th>Last Contact</th>
+          <th>Open Tickets</th>
+          <th>Ticket Detail</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none"><div class="empty-icon">◈</div><p>No clients found</p></div>
+  </div>
+</div>
+
+<script>
+let clients = []
+let tickets = []
+let activeFilter = 'all'
+let expandedRows = new Set()
+
+// ── STATUS HELPERS ──
+const STATUS_LABELS = { in_progress:'In Progress', blocked:'Blocked', at_risk:'At Risk', completed:'Completed', not_started:'Not Started' }
+const STATUS_ORDER = { blocked:0, at_risk:1, in_progress:2, not_started:3, completed:4 }
+
+function daysSince(d) {
+  if (!d) return 9999
+  return Math.floor((Date.now() - new Date(d).getTime()) / 86400000)
+}
+
+function contactClass(c) {
+  const d = daysSince(c.lastContact)
+  if (d >= c.threshold * 2) return 'contact-overdue'
+  if (d >= c.threshold) return 'contact-warn'
+  return 'contact-ok'
+}
+
+function flagClass(c) {
+  const d = daysSince(c.lastContact)
+  if (d >= c.threshold * 2) return 'flag-red'
+  if (d >= c.threshold) return 'flag-orange'
+  return ''
+}
+
+function fmtARR(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M'
+  return '$' + (n/1000).toFixed(0) + 'k'
+}
+
+function initials(name) {
+  return name.split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase()
+}
+
+// ── TICKET MATCHING ──
+function getClientTickets(client) {
+  const name = client.name.toLowerCase()
+  const nameNoSpace = name.replace(/\s+/g,'')
+  const words = name.split(' ').filter(w => w.length > 3)
+  const ownerEmail = (client.ownerEmail || '').toLowerCase()
+  return tickets.filter(t => {
+    const text = t.summary.toLowerCase()
+    const nameMatch = text.includes(name) ||
+      text.replace(/\s+/g,'').includes(nameNoSpace) ||
+      (words.length > 1 && words.every(w => text.includes(w)))
+    const assigneeMatch = ownerEmail && t.assignee && t.assignee.toLowerCase() === ownerEmail
+    return nameMatch || assigneeMatch
+  })
+}
+
+function getOpenTickets(client) {
+  return getClientTickets(client).filter(t => !['Done','Closed','Resolved'].includes(t.status))
+}
+
+function ticketStatusClass(status) {
+  if (['Done','Closed','Resolved'].includes(status)) return 'ts-done'
+  if (['In Progress','In Review'].includes(status)) return 'ts-progress'
+  if (status === 'Blocked') return 'ts-blocked'
+  if (status === 'Waiting on Solutions') return 'ts-waiting'
+  return 'ts-todo'
+}
+
+function etStatusClass(status) {
+  if (['Done','Closed','Resolved'].includes(status)) return 'badge-completed'
+  if (['In Progress','In Review'].includes(status)) return 'badge-in_progress'
+  if (status === 'Blocked') return 'badge-blocked'
+  if (status === 'Waiting on Solutions') return 'badge-at_risk'
+  return 'badge-not_started'
+}
+
+// ── FILTER ──
+function setFilter(f, btn) {
+  activeFilter = f
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  renderTable()
+}
+
+function getFilteredClients() {
+  const q = document.getElementById('search').value.toLowerCase().trim()
+  let list = [...clients]
+  
+  if (q) list = list.filter(c => 
+    c.name.toLowerCase().includes(q) || 
+    (c.owner||'').toLowerCase().includes(q)
+  )
+  
+  if (activeFilter === 'in_progress') list = list.filter(c => c.status === 'in_progress')
+  else if (activeFilter === 'at_risk') list = list.filter(c => c.status === 'at_risk')
+  else if (activeFilter === 'blocked') list = list.filter(c => c.status === 'blocked')
+  else if (activeFilter === 'overdue') list = list.filter(c => daysSince(c.lastContact) >= c.threshold)
+  else if (activeFilter === 'has_tickets') list = list.filter(c => getOpenTickets(c).length > 0)
+  
+  // Sort: blocked first, then at_risk, then by open tickets desc
+  list.sort((a, b) => {
+    const so = (STATUS_ORDER[a.status]||5) - (STATUS_ORDER[b.status]||5)
+    if (so !== 0) return so
+    return getOpenTickets(b).length - getOpenTickets(a).length
+  })
+  
+  return list
+}
+
+// ── STATS ──
+function renderStats() {
+  const total = clients.length
+  const totalARR = clients.reduce((s,c) => s + (c.arr||0), 0)
+  const overdue = clients.filter(c => daysSince(c.lastContact) >= c.threshold).length
+  const blocked = clients.filter(c => c.status === 'blocked' || c.status === 'at_risk').length
+  const totalOpenTickets = clients.reduce((s,c) => s + getOpenTickets(c).length, 0)
+  
+  document.getElementById('stats-bar').innerHTML = `
+    <div class="stat"><div class="stat-num blue">${total}</div><div class="stat-label">Total clients</div></div>
+    <div class="stat"><div class="stat-num">${fmtARR(totalARR)}</div><div class="stat-label">Total ARR</div></div>
+    <div class="stat"><div class="stat-num red">${overdue}</div><div class="stat-label">Overdue follow-ups</div></div>
+    <div class="stat"><div class="stat-num orange">${blocked}</div><div class="stat-label">At risk / blocked</div></div>
+    <div class="stat"><div class="stat-num red">${totalOpenTickets}</div><div class="stat-label">Open tickets</div></div>
+  `
+}
+
+// ── TABLE ──
+function renderTable() {
+  const filtered = getFilteredClients()
+  const tbody = document.getElementById('table-body')
+  
+  document.getElementById('main-table').style.display = filtered.length ? '' : 'none'
+  document.getElementById('empty').style.display = filtered.length ? 'none' : ''
+  
+  if (!filtered.length) return
+  
+  tbody.innerHTML = filtered.map(c => {
+    const open = getOpenTickets(c)
+    const days = daysSince(c.lastContact)
+    const flag = flagClass(c)
+    const cClass = contactClass(c)
+    const isExpanded = expandedRows.has(c.id)
+    
+    // Ticket count badge
+    let tcBadge = ''
+    if (open.length === 0) {
+      tcBadge = `<span class="tcount-badge tcount-green">✓ None</span>`
+    } else if (open.length <= 2) {
+      tcBadge = `<span class="tcount-badge tcount-orange">${open.length} open</span>`
+    } else {
+      tcBadge = `<span class="tcount-badge tcount-red">${open.length} open</span>`
+    }
+
+    // Ticket preview (first 2)
+    const ticketPreview = open.slice(0,2).map(t => {
+      const daysOld = Math.floor((Date.now() - new Date(t.created).getTime()) / 86400000)
+      const daysSinceUpdate = Math.floor((Date.now() - new Date(t.updated).getTime()) / 86400000)
+      const isStuck = daysSinceUpdate > 5
+      return `<a class="ticket-item${isStuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank" onclick="event.stopPropagation()">
+        <span class="ticket-key">${t.key}</span>
+        <span class="ticket-sum">${t.summary}</span>
+        <span class="ticket-status ts-${ticketStatusClass(t.status).replace('ts-','')}">${t.status}</span>
+      </a>`
+    }).join('')
+    
+    const moreCount = open.length > 2 ? `<div style="font-size:11px;color:var(--text3);padding:2px 7px">+${open.length-2} more — click row to expand</div>` : ''
+
+    // Expanded tickets
+    const expandedTickets = open.map(t => {
+      const daysSinceUpdate = Math.floor((Date.now() - new Date(t.updated).getTime()) / 86400000)
+      const daysOld = Math.floor((Date.now() - new Date(t.created).getTime()) / 86400000)
+      const isStuck = daysSinceUpdate > 5
+      return `<a class="expand-ticket${isStuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">
+        <span class="et-key">${t.key}</span>
+        <span class="et-proj et-proj-${t.project.toLowerCase()}">${t.project}</span>
+        <span class="et-sum">${t.summary}</span>
+        <span class="et-status ${etStatusClass(t.status)}">${t.status}</span>
+        <span class="et-days">${daysOld}d old${isStuck?' · ⚠ stuck':''}</span>
+      </a>`
+    }).join('')
+
+    return `
+      <tr class="${flag}" onclick="toggleExpand('${c.id}')">
+        <td style="width:24px;color:var(--text3);font-size:10px">${isExpanded ? '▼' : '▶'}</td>
+        <td>
+          <div class="client-name">${c.name}</div>
+          <div class="client-arr">${fmtARR(c.arr||0)} ARR</div>
+        </td>
+        <td>
+          <div class="owner-chip">
+            <div class="owner-av">${initials(c.owner||'?')}</div>
+            <span class="owner-name">${c.owner||'Unassigned'}</span>
+          </div>
+        </td>
+        <td><span class="badge badge-${c.status}">${STATUS_LABELS[c.status]||c.status}</span></td>
+        <td>
+          <span class="${cClass}" style="font-size:12px;font-family:'JetBrains Mono',monospace">
+            ${c.lastContact ? days+'d ago' : 'Never'}
+          </span>
+          ${days >= c.threshold ? `<div style="font-size:10px;color:${days >= c.threshold*2 ? 'var(--red)' : 'var(--orange)'}">⚠ Follow up needed</div>` : ''}
+        </td>
+        <td>${tcBadge}</td>
+        <td>
+          <div class="tickets-cell">
+            ${open.length === 0 ? '<span class="no-tickets">No open tickets</span>' : ticketPreview + moreCount}
+          </div>
+        </td>
+      </tr>
+      <tr class="expand-row ${isExpanded ? 'open' : ''}" id="expand-${c.id}">
+        <td class="expand-cell" colspan="7">
+          ${open.length === 0 
+            ? '<span style="font-size:12px;color:var(--text3)">✓ No open tickets for this client</span>'
+            : `<div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">All open tickets (${open.length})</div><div class="expand-tickets">${expandedTickets}</div>`
+          }
+        </td>
+      </tr>
+    `
+  }).join('')
+  
+  renderStats()
+}
+
+function toggleExpand(id) {
+  if (expandedRows.has(id)) expandedRows.delete(id)
+  else expandedRows.add(id)
+  renderTable()
+}
+
+// ── LOAD DATA ──
+async function loadAll() {
+  setSyncing(true)
+  try {
+    // Load clients and tickets in parallel
+    const [clientRes, ticketRes] = await Promise.all([
+      fetch('/api/clients'),
+      fetch('/api/jira')
+    ])
+    
+    if (clientRes.ok) {
+      clients = await clientRes.json()
+    }
+    
+    if (ticketRes.ok) {
+      const data = await ticketRes.json()
+      if (data.issues) {
+        tickets = data.issues.map(issue => ({
+          id: issue.id,
+          key: issue.key,
+          summary: issue.fields.summary,
+          status: issue.fields.status.name,
+          priority: issue.fields.priority?.name || 'Medium',
+          project: issue.fields.project?.key || 'CIB',
+          assignee: issue.fields.assignee?.emailAddress || '',
+          created: issue.fields.created,
+          updated: issue.fields.updated,
+          url: `https://bitwave-dev.atlassian.net/browse/${issue.key}`
+        }))
+        document.getElementById('error-banner').style.display = 'none'
+      } else if (data.error) {
+        showError('Jira: ' + data.error)
+      }
+    } else {
+      showError('Could not load Jira tickets - check credentials in Vercel env vars')
+    }
+    
+    document.getElementById('loading').style.display = 'none'
+    renderTable()
+    setSyncing(false, 'Synced ' + new Date().toLocaleTimeString('en-CA', {hour:'2-digit',minute:'2-digit'}))
+  } catch(e) {
+    showError('Load failed: ' + e.message)
+    setSyncing(false, 'Error')
+  }
+}
+
+function setSyncing(active, label) {
+  const dot = document.getElementById('sync-dot')
+  const lbl = document.getElementById('sync-label')
+  dot.className = 'sync-dot' + (active ? ' syncing' : '')
+  lbl.textContent = label || (active ? 'Syncing...' : 'Live')
+}
+
+function showError(msg) {
+  const b = document.getElementById('error-banner')
+  b.textContent = msg
+  b.style.display = 'block'
+  document.getElementById('loading').style.display = 'none'
+  setSyncing(false, 'Error')
+}
+
+// Auto refresh every 60 seconds
+loadAll()
+setInterval(loadAll, 60000)
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+[
+  { "id": "1", "name": "Cumberland", "owner": "Kashif", "ownerEmail": "c.kashif.amin@bitwave.io", "arr": 140000, "status": "in_progress", "lastContact": "2026-03-11", "threshold": 14, "slackChannel": "cumberland-support" },
+  { "id": "2", "name": "Anchorage", "owner": "Payal", "ownerEmail": "payal@bitwave.io", "arr": 120000, "status": "in_progress", "lastContact": "2026-03-15", "threshold": 14, "slackChannel": "anchorage-support" },
+  { "id": "3", "name": "Figment", "owner": "Angel", "ownerEmail": "angel.guevara.flores@bitwave.io", "arr": 85000, "status": "blocked", "lastContact": "2026-02-20", "threshold": 14, "slackChannel": "figment-support" },
+  { "id": "4", "name": "Ava Labs", "owner": "Xeres", "ownerEmail": "c.xeres.coulter@bitwave.io", "arr": 200000, "status": "in_progress", "lastContact": "2026-03-18", "threshold": 14, "slackChannel": "avalabs-support" },
+  { "id": "5", "name": "IntellectEU", "owner": "Kashif", "ownerEmail": "c.kashif.amin@bitwave.io", "arr": 95000, "status": "at_risk", "lastContact": "2026-03-10", "threshold": 7, "slackChannel": "intellecteu-support" },
+  { "id": "6", "name": "Ledn", "owner": "Lovish", "ownerEmail": "lovish@bitwave.io", "arr": 60000, "status": "completed", "lastContact": "2026-03-17", "threshold": 30, "slackChannel": "ledn-support" },
+  { "id": "7", "name": "Digital Asset", "owner": "Xeres", "ownerEmail": "c.xeres.coulter@bitwave.io", "arr": 110000, "status": "in_progress", "lastContact": "2026-03-12", "threshold": 14, "slackChannel": "digitalasset-support" },
+  { "id": "8", "name": "SEI Labs", "owner": "Thea", "ownerEmail": "thea@bitwave.io", "arr": 75000, "status": "in_progress", "lastContact": "2026-03-14", "threshold": 14, "slackChannel": "seilabs-support" },
+  { "id": "9", "name": "Whitebit", "owner": "Angel", "ownerEmail": "angel.guevara.flores@bitwave.io", "arr": 88000, "status": "in_progress", "lastContact": "2026-03-16", "threshold": 14, "slackChannel": "whitebit-support" },
+  { "id": "10", "name": "Nima Capital", "owner": "Ahtisham", "ownerEmail": "c.ahtisham.hussain@bitwave.io", "arr": 55000, "status": "in_progress", "lastContact": "2026-03-20", "threshold": 14, "slackChannel": "nimacapital-support" }
+]
