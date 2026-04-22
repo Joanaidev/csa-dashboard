@@ -137,6 +137,8 @@ td{padding:11px 14px;vertical-align:middle}
   <button class="filter-btn" onclick="setFilter('at_risk',this)">At Risk / Blocked</button>
   <button class="filter-btn" onclick="setFilter('overdue',this)">Overdue</button>
   <button class="filter-btn" onclick="setFilter('has_tickets',this)">Has open tickets</button>
+  <button class="filter-btn" onclick="setFilter('in_support',this)">🎧 In support</button>
+  <button class="filter-btn" onclick="setFilter('not_support',this)">Not in support</button>
   <select id="owner-filter" onchange="render()" style="background:var(--surface2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text2);outline:none;font-family:inherit;cursor:pointer">
     <option value="">All owners</option>
   </select>
@@ -201,6 +203,12 @@ td{padding:11px 14px;vertical-align:middle}
       </div>
       <div class="field"><label>Last contact date</label><input id="f-contact" type="date"/></div>
       <div class="field"><label>Slack channel</label><input id="f-slack" placeholder="client-support"/></div>
+      <div class="field full"><label>In Support?</label>
+        <select id="f-support">
+          <option value="no">No - not in support</option>
+          <option value="yes">Yes - currently in support 🎧</option>
+        </select>
+      </div>
     </div>
     <div id="modal-err" style="color:var(--red);font-size:12px;display:none"></div>
     <div class="modal-actions">
@@ -301,6 +309,8 @@ function filtered() {
   else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
   else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
   else if(activeFilter==='has_tickets') list=list.filter(c=>clientTickets(c).length>0)
+  else if(activeFilter==='in_support') list=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
+  else if(activeFilter==='not_support') list=list.filter(c=>(c.inSupport||'').toLowerCase()!=='yes')
   // Sort
   if(sortBy==='arr_desc') list.sort((a,b)=>Number(b.arr||0)-Number(a.arr||0))
   else if(sortBy==='arr_asc') list.sort((a,b)=>Number(a.arr||0)-Number(b.arr||0))
@@ -362,7 +372,7 @@ function render() {
     return `
       <tr class="data-row ${flagClass(c)}" onclick="toggleExp('${c.id}')">
         <td style="color:var(--text3);font-size:10px">${isExp?'▼':'▶'}</td>
-        <td><div class="client-name">${c.name}</div><div class="client-arr">${fmtARR(c.arr)}</div></td>
+        <td><div class="client-name">${c.name} ${c.inSupport==='yes'?'<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:8px;background:#f0fdf4;color:#16a34a;margin-left:4px">🎧 Support</span>':''}</div><div class="client-arr">${fmtARR(c.arr)}</div></td>
         <td><div class="owner-chip"><div class="owner-av">${initials(c.owner)}</div><span style="font-size:12px;color:var(--text2)">${c.owner||'—'}</span></div></td>
         <td>${statusBadge(c.status)}</td>
         <td><span class="${contactClass(c)}" style="font-size:12px;font-family:'JetBrains Mono',monospace">${c.lastContact?days+'d ago':'Never'}</span>${days>=t?`<div style="font-size:10px;color:${days>=t*2?'var(--red)':'var(--orange)'}">⚠ Follow up needed</div>`:''}</td>
@@ -395,6 +405,7 @@ function openAdd() {
   ;['f-name','f-arr','f-owner','f-email','f-contact','f-slack'].forEach(id=>document.getElementById(id).value='')
   document.getElementById('f-status').value = 'in_progress'
   document.getElementById('f-threshold').value = '14'
+  document.getElementById('f-support').value = 'no'
   document.getElementById('client-modal').classList.add('open')
 }
 
@@ -413,6 +424,7 @@ function openEdit(id) {
   document.getElementById('f-threshold').value = String(c.threshold||14)
   document.getElementById('f-contact').value = c.lastContact||''
   document.getElementById('f-slack').value = c.slackChannel||''
+  document.getElementById('f-support').value = c.inSupport||'no'
   document.getElementById('client-modal').classList.add('open')
 }
 
@@ -428,7 +440,8 @@ function saveClient() {
     status: document.getElementById('f-status').value,
     threshold: Number(document.getElementById('f-threshold').value)||14,
     lastContact: document.getElementById('f-contact').value,
-    slackChannel: document.getElementById('f-slack').value
+    slackChannel: document.getElementById('f-slack').value,
+    inSupport: document.getElementById('f-support').value
   }
   const idx = clients.findIndex(c=>c.id===id)
   if(idx>=0) clients[idx]=client
@@ -514,7 +527,8 @@ async function loadAll() {
             status: p[4]||'in_progress',
             lastContact: p[5]||'',
             threshold: Number(p[6])||14,
-            slackChannel: p[7]||''
+            slackChannel: p[7]||'',
+            inSupport: (p[8]||'').toLowerCase()==='yes'?'yes':'no'
           })
         }
       })
