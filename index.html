@@ -833,7 +833,23 @@ function openPanel(id) {
 function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open')}
 
 // ── CRUD ──
-function save2Storage(){localStorage.setItem('bw_clients',JSON.stringify(clients))}
+function save2Storage(){
+  localStorage.setItem('bw_clients',JSON.stringify(clients))
+  // Save overrides separately so sheet reloads don't wipe UI edits
+  const overrides = JSON.parse(localStorage.getItem('bw_overrides')||'{}')
+  clients.filter(c=>c.id.startsWith('s_')).forEach(c=>{
+    overrides[c.id] = {
+      lastContact: c.lastContact,
+      status: c.status,
+      inSupport: c.inSupport,
+      threshold: c.threshold,
+      owner: c.owner,
+      ownerEmail: c.ownerEmail,
+      slackChannel: c.slackChannel
+    }
+  })
+  localStorage.setItem('bw_overrides', JSON.stringify(overrides))
+}
 
 function openAdd(){
   editId=null
@@ -871,7 +887,11 @@ function saveClient(){
   const client={id,name,owner:document.getElementById('f-owner').value,ownerEmail:document.getElementById('f-email').value,arr:Number(document.getElementById('f-arr').value)||0,status:document.getElementById('f-status').value,threshold:Number(document.getElementById('f-threshold').value)||14,lastContact:document.getElementById('f-contact').value,slackChannel:document.getElementById('f-slack').value,inSupport:document.getElementById('f-support').value}
   const idx=clients.findIndex(c=>c.id===id)
   if(idx>=0) clients[idx]=client; else clients.push(client)
-  save2Storage(); closeModal(); render()
+  save2Storage()
+  closeModal()
+  render()
+  renderStuckAlerts()
+  showToast(`✓ ${client.name} saved`)
 }
 
 function delClient(id){if(!confirm('Delete this client?')) return; clients=clients.filter(c=>c.id!==id); save2Storage(); render()}
@@ -879,12 +899,12 @@ function logContact(id) {
   const idx = clients.findIndex(c=>c.id===id)
   if(idx<0) return
   const today = new Date().toISOString().slice(0,10)
+  const name = clients[idx].name
   clients[idx].lastContact = today
   save2Storage()
-  // Flash green confirmation
   render()
-  // Show brief toast
-  showToast(`✓ Logged contact for ${clients[idx].name}`)
+  renderStuckAlerts()
+  showToast(`✓ Contacted ${name} logged for today`)
 }
 
 function showToast(msg) {
@@ -942,8 +962,16 @@ async function loadAll(){
         sheet.push({id:'s_'+p[0].toLowerCase().replace(/\s+/g,'_'),name:p[0],owner:p[1]||'',ownerEmail:p[2]||'',arr:Number(p[3])||0,status:p[4]||'in_progress',lastContact:p[5]||'',threshold:Number(p[6])||14,slackChannel:p[7]||'',inSupport:(p[8]||'').toLowerCase()==='yes'?'yes':'no'})
       })
       if(sheet.length>0){
-        const local=clients.filter(c=>!c.id.startsWith('s_'))
-        clients=[...sheet,...local]
+        // Load overrides (UI edits like last contact) from localStorage
+        const overrides = JSON.parse(localStorage.getItem('bw_overrides')||'{}')
+        // Merge: sheet is base, but UI edits (overrides) always win
+        const merged = sheet.map(c => {
+          const ov = overrides[c.id] || {}
+          return {...c, ...ov}
+        })
+        // Keep locally-added clients (not from sheet)
+        const local = clients.filter(c=>!c.id.startsWith('s_'))
+        clients = [...merged, ...local]
         save2Storage()
       }
     }
