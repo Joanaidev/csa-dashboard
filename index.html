@@ -261,7 +261,7 @@ tbody tr.dr:hover .act-btns{opacity:1}
 <div id="stuck-banner" style="display:none;margin:0 28px 0;padding:12px 16px;background:#fff5f5;border:1px solid #fecaca;border-radius:10px;display:flex;align-items:flex-start;gap:12px">
   <span style="font-size:16px;flex-shrink:0">🚨</span>
   <div style="flex:1">
-    <div style="font-size:12px;font-weight:700;color:#e02424;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Stuck tickets — no update in 7+ days</div>
+    <div style="font-size:12px;font-weight:700;color:#e02424;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em" id="stuck-title">Stuck tickets — no update in 7+ days</div>
     <div id="stuck-list" style="display:flex;flex-direction:column;gap:4px"></div>
   </div>
 </div>
@@ -481,7 +481,7 @@ function cTickets(c) {
   return tickets.filter(t=>{
     const txt=(t.summary||'').toLowerCase()
     return txt.includes(name)||txt.replace(/\s+/g,'').includes(ns)||(words.length>1&&words.every(w=>txt.includes(w)))||(email&&(t.assignee||'').toLowerCase()===email)
-  }).filter(t=>!['Done','Closed','Resolved'].includes(t.status))
+  }).filter(t=>!['Done','Closed','Resolved','SA: Task Completed','Completed'].some(s=>t.status.toLowerCase().includes(s.toLowerCase())))
 }
 
 function matchClient(t) {
@@ -686,7 +686,8 @@ function stClass(s) {
 function renderJira() {
   const f=document.getElementById('jira-filter')?.value||'all'
   const q=(document.getElementById('jira-search')?.value||'').toLowerCase()
-  let list=[...tickets].filter(t=>!['Done','Closed','Resolved'].includes(t.status))
+  const DONE_ST=['Done','Closed','Resolved','SA: Task Completed','Completed']
+  let list=[...tickets].filter(t=>!DONE_ST.some(s=>t.status.toLowerCase().includes(s.toLowerCase())))
   if(f==='CIB') list=list.filter(t=>t.project==='CIB')
   else if(f==='SAWP') list=list.filter(t=>t.project==='SAWP')
   else if(f==='stuck') list=list.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>5)
@@ -891,8 +892,9 @@ setInterval(loadAll,60000)
 
 // ── STUCK ALERTS ──
 function renderStuckAlerts() {
+  const DONE_STATUSES = ['Done','Closed','Resolved','SA: Task Completed','Completed','Won\'t Do','Duplicate','Cannot Reproduce','Invalid']
   const stuckTickets = tickets.filter(t => {
-    if(['Done','Closed','Resolved'].includes(t.status)) return false
+    if(DONE_STATUSES.some(s=>t.status.toLowerCase().includes(s.toLowerCase()))) return false
     const dUpd = Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
     return dUpd >= 7
   })
@@ -900,9 +902,12 @@ function renderStuckAlerts() {
   const banner = document.getElementById('stuck-banner')
   if(!stuckTickets.length) { banner.style.display='none'; return }
   banner.style.display='flex'
+  document.getElementById('stuck-title').textContent = `Stuck tickets (${stuckTickets.length}) — no update in 7+ days`
 
   const list = document.getElementById('stuck-list')
-  list.innerHTML = stuckTickets.slice(0,5).map(t => {
+  list.style.maxHeight = '180px'
+  list.style.overflowY = 'auto'
+  list.innerHTML = stuckTickets.map(t => {
     const dUpd = Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
     const client = matchClient(t)
     return `<div style="display:flex;align-items:center;gap:8px;font-size:12px">
@@ -913,9 +918,7 @@ function renderStuckAlerts() {
     </div>`
   }).join('')
 
-  if(stuckTickets.length > 5) {
-    list.innerHTML += `<div style="font-size:11px;color:var(--red);font-weight:500;margin-top:2px">+${stuckTickets.length-5} more stuck tickets — check Jira tab</div>`
-  }
+
 }
 
 // ── EXPORT CSV ──
