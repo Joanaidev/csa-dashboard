@@ -3,226 +3,353 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Solutions Team Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<title>Bitwave · Solutions Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f8f9fb;--surface:#fff;--surface2:#f2f4f7;--border:#e4e7ed;--border2:#d0d5df;
-  --text:#111827;--text2:#4b5563;--text3:#9ca3af;
-  --accent:#2563eb;--accent-bg:#eff6ff;--accent-text:#1d4ed8;
-  --green:#16a34a;--green-bg:#f0fdf4;--red:#dc2626;--red-bg:#fef2f2;
-  --orange:#d97706;--orange-bg:#fffbeb;--purple:#7c3aed;--purple-bg:#f5f3ff;
+  --ink:#0d0f12;--ink2:#3d4149;--ink3:#8b909a;--ink4:#b8bcc4;
+  --bg:#f5f6f8;--surface:#ffffff;--surface2:#f0f1f4;--surface3:#e8eaed;
+  --blue:#1a56db;--blue-soft:#eef2ff;--blue-mid:#c7d7fd;
+  --green:#0e9f6e;--green-soft:#f0fdf9;--green-mid:#a7f3d0;
+  --red:#e02424;--red-soft:#fef2f2;--red-mid:#fecaca;
+  --amber:#d97706;--amber-soft:#fffbeb;--amber-mid:#fde68a;
+  --border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
+  --r:10px;--r-sm:7px;--r-lg:14px;
 }
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.topbar{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--accent)}
-.logo-icon{width:28px;height:28px;background:var(--accent-bg);border-radius:7px;display:flex;align-items:center;justify-content:center}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:10px}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  height:56px;padding:0 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,#1a56db,#6875f5);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(26,86,219,.3);
+}
+.brand-name{font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+.brand-name span{color:var(--blue);font-weight:700}
 .topbar-right{display:flex;align-items:center;gap:8px}
-.sync-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);background:var(--surface2);border-radius:20px;padding:3px 10px}
-.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-.sync-dot.syncing{background:var(--orange);animation:spin 1s linear infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-@keyframes spin{to{transform:rotate(360deg)}}
-.btn{background:transparent;border:0.5px solid var(--border2);color:var(--text2);border-radius:7px;padding:6px 13px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
-.btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:6px 13px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;transition:background .15s}
-.btn-primary:hover{background:#1d4ed8}
-.filters{padding:12px 24px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:0.5px solid var(--border);background:var(--surface)}
-.filter-btn{background:var(--surface2);border:0.5px solid var(--border);color:var(--text2);border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
-.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
-.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.search-input{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text);outline:none;width:200px;font-family:inherit;transition:border-color .15s;margin-left:auto}
-.search-input:focus{border-color:var(--accent)}
-.stats-bar{padding:14px 24px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-.stat{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:13px 15px;cursor:pointer;transition:all .15s}
-.stat:hover{border-color:var(--border2);transform:translateY(-1px)}
-.stat-num{font-size:22px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace}
-.stat-num.blue{color:var(--accent)}.stat-num.red{color:var(--red)}.stat-num.orange{color:var(--orange)}.stat-num.green{color:var(--green)}
-.stat-label{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.07em}
-.error-banner{margin:12px 24px;padding:10px 14px;background:var(--red-bg);border:0.5px solid #fecaca;border-radius:8px;font-size:12px;color:var(--red);display:none}
-.info-banner{margin:0 24px 12px;padding:10px 14px;background:var(--accent-bg);border:0.5px solid #bfdbfe;border-radius:8px;font-size:12px;color:var(--accent-text);display:none}
-.table-wrap{padding:0 24px 24px}
-.table-container{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--ink3);background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 10px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px var(--green-soft);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 2px rgba(14,159,110,.2)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(14,159,110,.1)}}
+.live-dot.syncing{background:var(--amber);box-shadow:0 0 0 2px var(--amber-soft)}
+.btn-ghost{background:none;border:1px solid var(--border2);color:var(--ink2);border-radius:var(--r-sm);padding:6px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px}
+.btn-ghost:hover{background:var(--surface2);border-color:var(--border2)}
+.btn-primary{background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px;box-shadow:0 1px 3px rgba(26,86,219,.3)}
+.btn-primary:hover{background:#1446c0;box-shadow:0 3px 10px rgba(26,86,219,.35);transform:translateY(-1px)}
+
+/* ── VIEWS ── */
+.view-tabs{display:flex;align-items:center;gap:2px;background:var(--surface2);border-radius:var(--r-sm);padding:3px}
+.view-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;color:var(--ink3);cursor:pointer;transition:all .15s;border:none;background:none;font-family:inherit}
+.view-tab.active{background:#fff;color:var(--ink);box-shadow:var(--shadow);font-weight:600}
+
+/* ── HERO STATS ── */
+.hero{padding:24px 28px 0}
+.hero-grid{display:grid;grid-template-columns:repeat(5,1fr) 1.8fr;gap:10px}
+.hcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;transition:all .2s;cursor:default}
+.hcard:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.hcard.clickable{cursor:pointer}
+.hcard-num{font-size:26px;font-weight:700;letter-spacing:-.03em;font-family:'DM Mono',monospace;margin-bottom:2px}
+.hcard-label{font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+.hcard-sub{font-size:11px;color:var(--ink4);margin-top:3px}
+.hcard-num.blue{color:var(--blue)}.hcard-num.green{color:var(--green)}.hcard-num.red{color:var(--red)}.hcard-num.amber{color:var(--amber)}
+.support-split{display:flex;gap:0;height:100%}
+.ss-half{flex:1;display:flex;flex-direction:column;justify-content:center;padding:18px 20px}
+.ss-half:first-child{border-right:1px solid var(--border)}
+.ss-num{font-size:20px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-.02em}
+.ss-label{font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+
+/* ── OWNER STRIP ── */
+.owner-strip{padding:12px 28px;display:flex;gap:8px;align-items:center;overflow-x:auto}
+.owner-strip::-webkit-scrollbar{height:0}
+.owner-pill{display:flex;align-items:center;gap:7px;padding:6px 14px 6px 6px;background:var(--surface);border:1px solid var(--border);border-radius:30px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.owner-pill:hover{border-color:var(--blue-mid);background:var(--blue-soft)}
+.owner-pill.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.owner-pill.active .op-name{color:#fff}
+.owner-pill.active .op-arr,.owner-pill.active .op-count{color:rgba(255,255,255,.7)}
+.op-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.op-name{font-size:12px;font-weight:600;color:var(--ink)}
+.op-arr{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace}
+.op-count{font-size:10px;color:var(--ink4);margin-left:2px}
+
+/* ── FILTERS ── */
+.filters{padding:0 28px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter-chip{background:var(--surface);border:1px solid var(--border);color:var(--ink2);border-radius:20px;padding:5px 13px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.filter-chip:hover{border-color:var(--blue-mid);color:var(--blue)}
+.filter-chip.active{background:var(--blue-soft);border-color:var(--blue-mid);color:var(--blue);font-weight:600}
+.filter-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.search-box{position:relative}
+.search-box input{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 14px 7px 34px;font-size:13px;color:var(--ink);outline:none;width:220px;font-family:inherit;transition:all .15s}
+.search-box input:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(26,86,219,.08)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink4);font-size:14px;pointer-events:none}
+.sort-sel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 12px;font-size:12px;font-weight:500;color:var(--ink2);outline:none;font-family:inherit;cursor:pointer}
+
+/* ── TABLE ── */
+.table-wrap{padding:0 28px 28px}
+.table-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow)}
 table{width:100%;border-collapse:collapse}
-thead tr{border-bottom:0.5px solid var(--border);background:var(--surface2)}
-th{padding:10px 14px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;text-align:left;white-space:nowrap}
-tbody tr.data-row{border-bottom:0.5px solid var(--bg);transition:background .1s;cursor:pointer}
-tbody tr.data-row:hover{background:var(--surface2)}
-tbody tr.data-row.flag-red{border-left:3px solid var(--red)}
-tbody tr.data-row.flag-orange{border-left:3px solid var(--orange)}
-td{padding:11px 14px;vertical-align:middle}
-.client-name{font-size:13px;font-weight:600;color:var(--text)}
-.client-arr{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:1px}
-.owner-chip{display:inline-flex;align-items:center;gap:5px}
-.owner-av{width:22px;height:22px;border-radius:50%;background:var(--accent-bg);color:var(--accent-text);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-.badge-in_progress,.badge-In\ Progress,.badge-inprogress{background:var(--accent-bg);color:var(--accent-text)}
-.badge-blocked,.badge-Blocked{background:var(--red-bg);color:var(--red)}
-.badge-at_risk,.badge-At\ Risk,.badge-atrisk{background:var(--orange-bg);color:var(--orange)}
-.badge-completed,.badge-Completed,.badge-Green{background:var(--green-bg);color:var(--green)}
-.badge-not_started,.badge-Not\ Started{background:var(--surface2);color:var(--text3)}
-.badge-Yellow{background:var(--orange-bg);color:var(--orange)}
-.badge-Red{background:var(--red-bg);color:var(--red)}
-.tcount-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px}
-.tcount-red{background:var(--red-bg);color:var(--red)}.tcount-orange{background:var(--orange-bg);color:var(--orange)}.tcount-green{background:var(--green-bg);color:var(--green)}
-.ticket-item{display:flex;align-items:center;gap:5px;padding:3px 6px;background:var(--surface2);border-radius:4px;text-decoration:none;margin-bottom:3px}
-.ticket-item:hover{background:var(--border)}
-.ticket-key{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600;flex-shrink:0}
-.ticket-sum{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;max-width:200px}
-.expand-row{display:none;background:var(--accent-bg)}
-.expand-row.open{display:table-row}
-.expand-cell{padding:12px 14px 14px 48px;border-bottom:0.5px solid var(--border)}
-/* SIDE PANEL */
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200;display:none}
-.panel-overlay.open{display:block}
-.side-panel{position:fixed;top:0;right:-520px;width:500px;height:100vh;background:var(--surface);border-left:0.5px solid var(--border);z-index:201;transition:right .25s ease;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,.08)}
-.side-panel.open{right:0}
-.panel-header{padding:20px 20px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
-.panel-title{font-size:16px;font-weight:700}
-.panel-sub{font-size:12px;color:var(--text3);margin-top:3px}
-.panel-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);padding:4px;line-height:1}
-.panel-close:hover{color:var(--text)}
-.panel-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 20px;border-bottom:0.5px solid var(--border);flex-shrink:0}
-.ps{background:var(--surface2);border-radius:8px;padding:10px 12px;text-align:center}
-.ps-num{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace}
-.ps-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
-.panel-body{flex:1;overflow-y:auto;padding:16px 20px}
-.panel-ticket{display:flex;flex-direction:column;gap:6px;padding:12px 14px;background:var(--surface2);border:0.5px solid var(--border);border-radius:10px;margin-bottom:8px;text-decoration:none;transition:all .15s;cursor:pointer}
-.panel-ticket:hover{border-color:var(--accent);background:var(--accent-bg)}
-.panel-ticket.stuck{border-left:3px solid var(--red)}
-.pt-top{display:flex;align-items:center;gap:8px}
-.pt-key{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700}
+thead tr{background:var(--surface2);border-bottom:1px solid var(--border)}
+th{padding:10px 16px;font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;text-align:left;white-space:nowrap}
+tbody tr.dr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+tbody tr.dr:last-child{border-bottom:none}
+tbody tr.dr:hover{background:#fafbff}
+tbody tr.dr.flag-red{box-shadow:inset 3px 0 0 var(--red)}
+tbody tr.dr.flag-amber{box-shadow:inset 3px 0 0 var(--amber)}
+td{padding:14px 16px;vertical-align:middle}
+.cn{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.ca{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;margin-top:1px}
+.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.chip{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.03em;white-space:nowrap;display:inline-block}
+.chip-blue{background:var(--blue-soft);color:var(--blue)}
+.chip-red{background:var(--red-soft);color:var(--red)}
+.chip-amber{background:var(--amber-soft);color:var(--amber)}
+.chip-green{background:var(--green-soft);color:var(--green)}
+.chip-gray{background:var(--surface2);color:var(--ink3)}
+.tc-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.tc-none{background:var(--green-soft);color:var(--green)}
+.tc-few{background:var(--amber-soft);color:var(--amber)}
+.tc-many{background:var(--red-soft);color:var(--red)}
+.tc-btn:hover{filter:brightness(.95);transform:scale(1.02)}
+.contact-ok{color:var(--ink2);font-family:'DM Mono',monospace;font-size:12px}
+.contact-warn{color:var(--amber);font-weight:600;font-family:'DM Mono',monospace;font-size:12px}
+.contact-over{color:var(--red);font-weight:600;font-family:'DM Mono',monospace;font-size:12px}
+.sup-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;background:var(--green-soft);color:var(--green);margin-left:6px;vertical-align:middle}
+.act-btns{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+tbody tr.dr:hover .act-btns{opacity:1}
+.act-btn{background:var(--surface2);border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:500;color:var(--ink2);cursor:pointer;font-family:inherit;transition:all .15s}
+.act-btn:hover{background:var(--surface3);color:var(--ink)}
+.act-btn.del:hover{background:var(--red-soft);color:var(--red)}
+.empty-state{padding:60px;text-align:center;color:var(--ink3)}
+.es-icon{font-size:40px;margin-bottom:12px;opacity:.2}
+.es-text{font-size:14px;font-weight:500}
+.loading-state{padding:60px;text-align:center;color:var(--ink3)}
+.spinner{width:28px;height:28px;border:2.5px solid var(--surface3);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── JIRA VIEW ── */
+.jira-view{padding:0 28px 28px;display:none}
+.jira-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.jira-title{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.jira-filters{display:flex;gap:8px}
+.jt-list{display:flex;flex-direction:column;gap:6px}
+.jt{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-decoration:none;transition:all .15s;cursor:pointer}
+.jt:hover{border-color:var(--blue-mid);box-shadow:var(--shadow-md);transform:translateX(2px)}
+.jt.stuck{border-left:3px solid var(--red)}
+.jt-key{font-size:11px;font-family:'DM Mono',monospace;color:var(--blue);font-weight:600;min-width:75px;margin-top:1px}
+.jt-body{flex:1;min-width:0}
+.jt-sum{font-size:13px;font-weight:500;color:var(--ink);line-height:1.4}
+.jt-meta{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
+.jt-client{font-size:11px;font-weight:600;color:var(--blue);background:var(--blue-soft);padding:2px 8px;border-radius:6px}
+.jt-arr{font-size:11px;color:var(--green);font-weight:600;font-family:'DM Mono',monospace;background:var(--green-soft);padding:2px 7px;border-radius:6px}
+.jt-age{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+.jt-assignee{font-size:11px;color:var(--ink3)}
+.jt-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.jt-arr-total{background:var(--amber-soft);border:1px solid var(--amber-mid);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.jt-arr-total-num{font-size:22px;font-weight:700;color:var(--amber);font-family:'DM Mono',monospace;letter-spacing:-.02em}
+.jt-arr-total-label{font-size:12px;color:var(--amber);font-weight:500}
+
+/* ── SIDE PANEL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:200;display:none;backdrop-filter:blur(2px)}
+.overlay.open{display:block}
+.panel{position:fixed;top:0;right:-540px;width:520px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:201;transition:right .3s cubic-bezier(.25,.46,.45,.94);display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
+.panel.open{right:0}
+.ph{padding:22px 24px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.ph-title{font-size:17px;font-weight:700;letter-spacing:-.02em}
+.ph-sub{font-size:12px;color:var(--ink3);margin-top:3px}
+.ph-close{background:var(--surface2);border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--ink3);transition:all .15s;flex-shrink:0}
+.ph-close:hover{background:var(--surface3);color:var(--ink)}
+.p-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);flex-shrink:0}
+.ps{background:var(--surface);padding:14px 18px;text-align:center}
+.ps-n{font-size:20px;font-weight:700;font-family:'DM Mono',monospace}
+.ps-l{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.p-body{flex:1;overflow-y:auto;padding:18px 24px}
+.pt{display:flex;flex-direction:column;gap:6px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;text-decoration:none;transition:all .15s;cursor:pointer}
+.pt:hover{border-color:var(--blue-mid);background:var(--blue-soft)}
+.pt.stuck{border-left:3px solid var(--red)}
+.pt-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pt-key{font-size:11px;font-family:'DM Mono',monospace;color:var(--blue);font-weight:700;min-width:70px}
 .pt-proj{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;text-transform:uppercase}
-.pt-cib{background:var(--accent-bg);color:var(--accent-text)}
-.pt-sawp{background:var(--green-bg);color:var(--green)}
-.pt-pri{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:500}
-.pt-pri-highest,.pt-pri-high{background:var(--red-bg);color:var(--red)}
-.pt-pri-medium{background:var(--orange-bg);color:var(--orange)}
-.pt-pri-low{background:var(--green-bg);color:var(--green)}
-.pt-stuck{font-size:10px;color:var(--red);font-weight:600}
-.pt-sum{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.cib{background:var(--blue-soft);color:var(--blue)}
+.sawp{background:var(--green-soft);color:var(--green)}
+.pt-pri-high,.pt-pri-highest{background:var(--red-soft);color:var(--red);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600}
+.pt-pri-medium{background:var(--amber-soft);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600}
+.pt-pri-low{background:var(--green-soft);color:var(--green);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600}
+.pt-stuck-tag{font-size:10px;color:var(--red);font-weight:600}
+.pt-sum{font-size:13px;font-weight:500;color:var(--ink);line-height:1.4}
 .pt-bot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pt-status{font-size:10px;padding:2px 8px;border-radius:5px;font-weight:600}
-.pt-st-prog{background:var(--accent-bg);color:var(--accent-text)}
-.pt-st-todo{background:var(--surface2);color:var(--text3);border:0.5px solid var(--border)}
-.pt-st-wait{background:var(--orange-bg);color:var(--orange)}
-.pt-st-block{background:var(--red-bg);color:var(--red)}
-.pt-age{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace}
-.pt-assignee{font-size:11px;color:var(--text3)}
-.et{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;text-decoration:none;margin-bottom:5px;transition:all .15s}
-.et:hover{border-color:var(--accent)}
-.et.stuck{border-left:3px solid var(--red)}
-.et-key{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600;min-width:70px}
-.et-proj{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;text-transform:uppercase;flex-shrink:0}
-.et-cib{background:var(--accent-bg);color:var(--accent-text)}
-.et-sawp{background:var(--green-bg);color:var(--green)}
-.et-sum{flex:1;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.et-st{font-size:10px;padding:2px 7px;border-radius:5px;font-weight:500;flex-shrink:0}
-.et-st-prog{background:var(--accent-bg);color:var(--accent-text)}
-.et-st-done{background:var(--green-bg);color:var(--green)}
-.et-st-block{background:var(--red-bg);color:var(--red)}
-.et-st-wait{background:var(--orange-bg);color:var(--orange)}
-.et-st-todo{background:var(--surface2);color:var(--text3)}
-.et-age{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;flex-shrink:0;white-space:nowrap}
-.empty{text-align:center;padding:60px;color:var(--text3)}
-.loading{text-align:center;padding:60px;color:var(--text3)}
-.spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:300}
-.overlay.open{display:flex}
-.modal{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:26px;width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.12)}
-.modal h3{font-size:15px;font-weight:700;margin-bottom:18px}
-.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
-.field label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
-.field input,.field select,.field textarea{background:var(--surface2);border:0.5px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit;transition:border-color .15s;width:100%}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
-.field textarea{resize:vertical}
-.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pt-st{font-size:10px;padding:2px 8px;border-radius:5px;font-weight:600}
+.st-prog{background:var(--blue-soft);color:var(--blue)}
+.st-todo{background:var(--surface3);color:var(--ink3)}
+.st-wait{background:var(--amber-soft);color:var(--amber)}
+.st-block{background:var(--red-soft);color:var(--red)}
+.pt-age{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .2s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.modal h3{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:20px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.fg label{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em}
+.fg input,.fg select,.fg textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:9px 13px;color:var(--ink);font-size:13px;outline:none;font-family:inherit;transition:all .15s;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.08);background:#fff}
+.fg textarea{resize:vertical}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .full{grid-column:span 2}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
-.btn-cancel{background:transparent;border:0.5px solid var(--border2);color:var(--text2);border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer;font-family:inherit}
-.btn-save{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
-.sheet-note{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.7}
+.ma{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.btn-cancel{background:none;border:1px solid var(--border2);color:var(--ink2);border-radius:var(--r-sm);padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-cancel:hover{background:var(--surface2)}
+.btn-save{background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 1px 3px rgba(26,86,219,.3)}
+.btn-save:hover{background:#1446c0;box-shadow:0 3px 10px rgba(26,86,219,.3)}
+.import-note{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--ink2);margin-bottom:16px;line-height:1.7}
+.import-note code{background:var(--surface3);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px}
+.err-msg{color:var(--red);font-size:12px;margin-top:8px;display:none}
+.ok-msg{color:var(--green);font-size:12px;margin-top:8px;display:none}
 </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
-  <div class="logo">
-    <div class="logo-icon">
-      <svg width="14" height="14" viewBox="0 0 16 16"><polygon points="8,1 15,4.5 15,11.5 8,15 1,11.5 1,4.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+  <div class="brand">
+    <div class="brand-mark">
+      <svg width="14" height="14" viewBox="0 0 16 16"><polygon points="8,1 15,4.5 15,11.5 8,15 1,11.5 1,4.5" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
     </div>
-    Solutions Team Dashboard
+    <div class="brand-name"><span>Bitwave</span> · Solutions Hub</div>
   </div>
   <div class="topbar-right">
-    <div class="sync-pill">
-      <span class="sync-dot" id="sync-dot"></span>
-      <span id="sync-label">Loading...</span>
+    <div class="view-tabs">
+      <button class="view-tab active" onclick="switchView('clients',this)">Clients</button>
+      <button class="view-tab" onclick="switchView('jira',this)">Jira Tickets</button>
     </div>
-    <button class="btn" onclick="loadAll()">↻ Refresh</button>
+    <div class="live-badge">
+      <span class="live-dot" id="live-dot"></span>
+      <span id="live-label">Loading</span>
+    </div>
+    <button class="btn-ghost" onclick="loadAll()">↻ Refresh</button>
     <button class="btn-primary" onclick="openAdd()">+ Add client</button>
-    <button class="btn" onclick="openImport()">↑ Import CSV</button>
+    <button class="btn-ghost" onclick="openImport()">↑ CSV</button>
   </div>
 </div>
 
-<div class="filters">
-  <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
-  <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
-  <button class="filter-btn" onclick="setFilter('at_risk',this)">At Risk / Blocked</button>
-  <button class="filter-btn" onclick="setFilter('overdue',this)">Overdue</button>
-  <button class="filter-btn" onclick="setFilter('has_tickets',this)">Has open tickets</button>
-  <button class="filter-btn" onclick="setFilter('in_support',this)">🎧 In support</button>
-  <button class="filter-btn" onclick="setFilter('not_support',this)">Not in support</button>
-  <select id="owner-filter" onchange="render()" style="background:var(--surface2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text2);outline:none;font-family:inherit;cursor:pointer">
-    <option value="">All owners</option>
-  </select>
-  <select id="sort-by" onchange="render()" style="background:var(--surface2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text2);outline:none;font-family:inherit;cursor:pointer">
-    <option value="risk">Sort: Risk first</option>
-    <option value="arr_desc">Sort: ARR high → low</option>
-    <option value="arr_asc">Sort: ARR low → high</option>
-    <option value="name">Sort: Name A–Z</option>
-    <option value="contact">Sort: Last contact</option>
-    <option value="tickets">Sort: Most tickets</option>
-  </select>
-  <input class="search-input" id="search" placeholder="Search clients or owners..." oninput="render()"/>
+<!-- HERO STATS -->
+<div class="hero" id="hero-wrap">
+  <div class="hero-grid" id="hero"></div>
 </div>
 
-<div class="stats-bar" id="stats"></div>
-<div class="error-banner" id="err"></div>
-<div class="info-banner" id="info"></div>
+<!-- OWNER STRIP -->
+<div class="owner-strip" id="owner-strip"></div>
 
-<div class="table-wrap">
-  <div class="table-container">
-    <div class="loading" id="loading"><div class="spinner"></div>Loading clients and Jira tickets...</div>
+<!-- FILTERS -->
+<div class="filters">
+  <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+  <button class="filter-chip" onclick="setFilter('active',this)">Active</button>
+  <button class="filter-chip" onclick="setFilter('at_risk',this)">At risk</button>
+  <button class="filter-chip" onclick="setFilter('overdue',this)">Overdue</button>
+  <button class="filter-chip" onclick="setFilter('tickets',this)">Has tickets</button>
+  <button class="filter-chip" onclick="setFilter('support',this)">🎧 In support</button>
+  <div class="filter-right">
+    <select class="sort-sel" id="sort-sel" onchange="render()">
+      <option value="risk">Risk first</option>
+      <option value="arr_desc">ARR ↓</option>
+      <option value="arr_asc">ARR ↑</option>
+      <option value="name">Name A–Z</option>
+      <option value="tickets">Most tickets</option>
+      <option value="contact">Last contact</option>
+    </select>
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input id="search" placeholder="Search clients or owners..." oninput="render()"/>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTS TABLE -->
+<div class="table-wrap" id="clients-view">
+  <div class="table-box">
+    <div class="loading-state" id="loading"><div class="spinner"></div>Loading clients and Jira tickets...</div>
     <table id="tbl" style="display:none">
       <thead><tr>
-        <th style="width:20px"></th>
         <th>Client</th>
         <th>Owner</th>
-        <th>Status / Pulse</th>
-        <th>Last Contact</th>
-        <th>Open Tickets</th>
-        <th>Actions</th>
+        <th>Status</th>
+        <th>Last contact</th>
+        <th>Open tickets</th>
+        <th style="width:1%"></th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
-    <div class="empty" id="empty" style="display:none"><p>No clients found</p></div>
+    <div class="empty-state" id="empty" style="display:none">
+      <div class="es-icon">◈</div>
+      <div class="es-text">No clients match this filter</div>
+    </div>
   </div>
 </div>
 
-<!-- ADD/EDIT MODAL -->
-<div class="overlay" id="client-modal" onclick="if(event.target===this)closeModal()">
+<!-- JIRA VIEW -->
+<div class="jira-view" id="jira-view">
+  <div class="jira-header">
+    <div class="jira-title">All open Jira tickets</div>
+    <div class="jira-filters">
+      <select class="sort-sel" id="jira-filter" onchange="renderJira()">
+        <option value="all">All projects</option>
+        <option value="CIB">CIB only</option>
+        <option value="SAWP">SAWP only</option>
+        <option value="stuck">Stuck 5d+</option>
+        <option value="high">High priority</option>
+      </select>
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input id="jira-search" placeholder="Search tickets..." oninput="renderJira()"/>
+      </div>
+    </div>
+  </div>
+  <div id="jira-arr-banner"></div>
+  <div class="jt-list" id="jt-list"></div>
+</div>
+
+<!-- SIDE PANEL -->
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="ph">
+    <div>
+      <div class="ph-title" id="ph-title">Tickets</div>
+      <div class="ph-sub" id="ph-sub"></div>
+    </div>
+    <button class="ph-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="p-stats" id="p-stats"></div>
+  <div class="p-body" id="p-body"></div>
+</div>
+
+<!-- CLIENT MODAL -->
+<div class="modal-overlay" id="cmodal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <h3 id="modal-title">Add client</h3>
-    <div class="modal-grid">
-      <div class="field full"><label>Client name *</label><input id="f-name" placeholder="e.g. Ava Labs"/></div>
-      <div class="field"><label>ARR (USD)</label><input id="f-arr" type="number" placeholder="120000"/></div>
-      <div class="field"><label>SA Owner</label><input id="f-owner" placeholder="e.g. Kashif"/></div>
-      <div class="field full"><label>Owner email (for Jira matching)</label><input id="f-email" placeholder="c.kashif.amin@bitwave.io"/></div>
-      <div class="field"><label>Status</label>
+    <h3 id="modal-ttl">Add client</h3>
+    <div class="mg">
+      <div class="fg full"><label>Client name *</label><input id="f-name" placeholder="e.g. Ava Labs"/></div>
+      <div class="fg"><label>SA Owner</label><input id="f-owner" placeholder="e.g. Kashif"/></div>
+      <div class="fg"><label>ARR (USD)</label><input id="f-arr" type="number" placeholder="120000"/></div>
+      <div class="fg full"><label>Owner email (Jira matching)</label><input id="f-email" placeholder="c.kashif.amin@bitwave.io"/></div>
+      <div class="fg"><label>Status</label>
         <select id="f-status">
           <option value="in_progress">In Progress</option>
           <option value="at_risk">At Risk</option>
@@ -231,519 +358,466 @@ td{padding:11px 14px;vertical-align:middle}
           <option value="not_started">Not Started</option>
         </select>
       </div>
-      <div class="field"><label>Follow-up threshold (days)</label>
-        <select id="f-threshold">
-          <option value="7">7 days</option>
-          <option value="14" selected>14 days</option>
-          <option value="30">30 days</option>
-        </select>
+      <div class="fg"><label>Follow-up (days)</label>
+        <select id="f-threshold"><option value="7">7 days</option><option value="14" selected>14 days</option><option value="30">30 days</option></select>
       </div>
-      <div class="field"><label>Last contact date</label><input id="f-contact" type="date"/></div>
-      <div class="field"><label>Slack channel</label><input id="f-slack" placeholder="client-support"/></div>
-      <div class="field full"><label>In Support?</label>
-        <select id="f-support">
-          <option value="no">No - not in support</option>
-          <option value="yes">Yes - currently in support 🎧</option>
-        </select>
+      <div class="fg"><label>Last contact</label><input id="f-contact" type="date"/></div>
+      <div class="fg"><label>Slack channel</label><input id="f-slack" placeholder="client-support"/></div>
+      <div class="fg full"><label>Support status</label>
+        <select id="f-support"><option value="no">Not in support</option><option value="yes">🎧 In support</option></select>
       </div>
     </div>
-    <div id="modal-err" style="color:var(--red);font-size:12px;display:none"></div>
-    <div class="modal-actions">
+    <div class="err-msg" id="merr"></div>
+    <div class="ma">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" id="modal-save-btn" onclick="saveClient()">Add client</button>
+      <button class="btn-save" onclick="saveClient()" id="msave">Add client</button>
     </div>
   </div>
 </div>
 
 <!-- IMPORT MODAL -->
-<div class="overlay" id="import-modal" onclick="if(event.target===this)closeImport()">
+<div class="modal-overlay" id="imodal" onclick="if(event.target===this)closeImport()">
   <div class="modal" style="width:540px">
-    <h3>Import clients</h3>
-    <div class="sheet-note">
-      Paste CSV data below. Required: <strong>name</strong><br/>
-      Optional: <code>owner, ownerEmail, arr, status, lastContact, threshold, slackChannel</code><br/>
-      First row can be a header row - it will be skipped automatically.
+    <h3>Import clients from CSV</h3>
+    <div class="import-note">
+      Columns in order: <code>name</code>, <code>owner</code>, <code>ownerEmail</code>, <code>arr</code>, <code>status</code>, <code>lastContact</code>, <code>threshold</code>, <code>slackChannel</code>, <code>inSupport</code><br/>
+      First row can be a header — it will be skipped. Duplicates are skipped automatically.
     </div>
-    <div class="field"><label>CSV data</label>
-      <textarea id="import-csv" rows="10" placeholder="name,owner,arr,status&#10;Ava Labs,Xeres,200000,in_progress&#10;Cumberland,Kashif,140000,in_progress&#10;Figment,Angel,85000,blocked"></textarea>
+    <div class="fg"><label>Paste CSV</label>
+      <textarea id="icsv" rows="10" placeholder="name,owner,arr,status&#10;Ava Labs,Xeres,200000,in_progress&#10;Cumberland,Kashif,140000,in_progress"></textarea>
     </div>
-    <div id="import-result" style="font-size:12px;color:var(--green);display:none"></div>
-    <div class="modal-actions">
+    <div class="ok-msg" id="iok"></div>
+    <div class="ma">
       <button class="btn-cancel" onclick="closeImport()">Cancel</button>
       <button class="btn-save" onclick="doImport()">Import</button>
     </div>
   </div>
 </div>
 
-<!-- SIDE PANEL -->
-<div class="panel-overlay" id="panel-overlay" onclick="closePanel()"></div>
-<div class="side-panel" id="side-panel">
-  <div class="panel-header">
-    <div>
-      <div class="panel-title" id="panel-title">Client Tickets</div>
-      <div class="panel-sub" id="panel-sub"></div>
-    </div>
-    <button class="panel-close" onclick="closePanel()">✕</button>
-  </div>
-  <div class="panel-stats" id="panel-stats"></div>
-  <div class="panel-body" id="panel-body"></div>
-</div>
-
 <script>
 // ── CONFIG ──
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLiidNVrvJry5SYilGIKm7f76KoroRblKraPNXcD2mP9YwqzsSvug6xLyKsPri-SOLVE-cmgj1WnZ_/pub?gid=1701754036&single=true&output=csv'
+const SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLiidNVrvJry5SYilGIKm7f76KoroRblKraPNXcD2mP9YwqzsSvug6xLyKsPri-SOLVE-cmgj1WnZ_/pub?gid=1701754036&single=true&output=csv'
 
 // ── STATE ──
-let clients = JSON.parse(localStorage.getItem('sth_dash_clients') || '[]')
+let clients = JSON.parse(localStorage.getItem('bw_clients') || '[]')
 let tickets = []
 let activeFilter = 'all'
-let expanded = new Set()
-let editingId = null
+let activeOwner = ''
+let activeView = 'clients'
+let editId = null
+
+// ── COLORS ──
+const OWNER_COLORS = ['#1a56db','#0e9f6e','#d97706','#7c3aed','#e02424','#0891b2','#be185d','#059669']
+const ownerColor = name => OWNER_COLORS[Math.abs([...name].reduce((h,c)=>Math.imul(31,h)+c.charCodeAt(0)|0,0))%OWNER_COLORS.length]
 
 // ── HELPERS ──
-const STATUS_LABELS = {in_progress:'In Progress',blocked:'Blocked',at_risk:'At Risk',completed:'Completed',not_started:'Not Started',Green:'Active',Yellow:'Needs Attention',Red:'At Risk'}
-const STATUS_ORDER = {blocked:0,at_risk:1,Red:1,Yellow:2,in_progress:2,not_started:3,Green:3,completed:4}
+const dSince = d => !d ? 9999 : Math.floor((Date.now()-new Date(d).getTime())/86400000)
+const fARR = n => { n=Number(n)||0; return n>=1000000?'$'+(n/1e6).toFixed(1)+'M':'$'+(n/1000).toFixed(0)+'k' }
+const ini = n => (n||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()
+const escHtml = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
 
-function dSince(d) { if(!d) return 9999; return Math.floor((Date.now()-new Date(d).getTime())/86400000) }
-function fmtARR(n) { n=Number(n)||0; return n>=1000000?'$'+(n/1000000).toFixed(1)+'M':'$'+(n/1000).toFixed(0)+'k' }
-function initials(name) { return (name||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase() }
-function flagClass(c) { const d=dSince(c.lastContact),t=Number(c.threshold)||14; if(d>=t*2) return 'flag-red'; if(d>=t) return 'flag-orange'; return '' }
-function contactClass(c) { const d=dSince(c.lastContact),t=Number(c.threshold)||14; if(d>=t*2) return 'contact-overdue'; if(d>=t) return 'contact-warn'; return 'contact-ok' }
-function statusBadge(s) { return `<span class="badge badge-${(s||'').replace(/\s+/g,'')}">${STATUS_LABELS[s]||s||'Unknown'}</span>` }
-
-// ── TICKET MATCHING ──
-function clientTickets(c) {
-  const name = (c.name||'').toLowerCase()
-  const ns = name.replace(/\s+/g,'')
-  const words = name.split(' ').filter(w=>w.length>3)
-  const email = (c.ownerEmail||'').toLowerCase()
-  return tickets.filter(t => {
-    const text = (t.summary||'').toLowerCase()
-    return text.includes(name) ||
-      text.replace(/\s+/g,'').includes(ns) ||
-      (words.length>1 && words.every(w=>text.includes(w))) ||
-      (email && (t.assignee||'').toLowerCase()===email)
-  }).filter(t => !['Done','Closed','Resolved'].includes(t.status))
+function statusChip(s) {
+  const map = {in_progress:['chip-blue','In Progress'],at_risk:['chip-amber','At Risk'],blocked:['chip-red','Blocked'],completed:['chip-green','Completed'],not_started:['chip-gray','Not Started'],Green:['chip-green','Active'],Yellow:['chip-amber','Needs Attention'],Red:['chip-red','At Risk']}
+  const [cls,lbl] = map[s] || ['chip-gray', s||'Unknown']
+  return `<span class="chip ${cls}">${lbl}</span>`
 }
 
-function etClass(s) {
-  if(['In Progress','In Review'].includes(s)) return 'et-st-prog'
-  if(s==='Blocked') return 'et-st-block'
-  if(s==='Waiting on Solutions') return 'et-st-wait'
-  if(['Done','Closed','Resolved'].includes(s)) return 'et-st-done'
-  return 'et-st-todo'
+function statusOrder(s) {
+  return {blocked:0,Red:0,at_risk:1,Yellow:1,in_progress:2,Green:2,not_started:3,completed:4}[s]||5
+}
+
+function contactClass(c) {
+  const d=dSince(c.lastContact),t=Number(c.threshold)||14
+  return d>=t*2?'contact-over':d>=t?'contact-warn':'contact-ok'
+}
+
+function flagClass(c) {
+  const d=dSince(c.lastContact),t=Number(c.threshold)||14
+  return d>=t*2?'flag-red':d>=t?'flag-amber':''
+}
+
+// ── TICKET MATCH ──
+function cTickets(c) {
+  const name=(c.name||'').toLowerCase()
+  const ns=name.replace(/\s+/g,'')
+  const words=name.split(' ').filter(w=>w.length>3)
+  const email=(c.ownerEmail||'').toLowerCase()
+  return tickets.filter(t=>{
+    const txt=(t.summary||'').toLowerCase()
+    return txt.includes(name)||txt.replace(/\s+/g,'').includes(ns)||(words.length>1&&words.every(w=>txt.includes(w)))||(email&&(t.assignee||'').toLowerCase()===email)
+  }).filter(t=>!['Done','Closed','Resolved'].includes(t.status))
+}
+
+function matchClient(t) {
+  return clients.find(c=>{
+    const name=(c.name||'').toLowerCase()
+    const ns=name.replace(/\s+/g,'')
+    const words=name.split(' ').filter(w=>w.length>3)
+    const txt=(t.summary||'').toLowerCase()
+    const email=(c.ownerEmail||'').toLowerCase()
+    return txt.includes(name)||txt.replace(/\s+/g,'').includes(ns)||(words.length>1&&words.every(w=>txt.includes(w)))||(email&&(t.assignee||'').toLowerCase()===email)
+  })
+}
+
+// ── VIEWS ──
+function switchView(v, btn) {
+  activeView = v
+  document.querySelectorAll('.view-tab').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
+  document.getElementById('clients-view').style.display = v==='clients'?'':'none'
+  document.getElementById('jira-view').style.display = v==='jira'?'':'none'
+  document.getElementById('hero-wrap').style.display = v==='clients'?'':'none'
+  document.getElementById('owner-strip').style.display = v==='clients'?'':'none'
+  document.querySelector('.filters').style.display = v==='clients'?'':'none'
+  if(v==='jira') renderJira()
 }
 
 // ── FILTER ──
 function setFilter(f,btn) {
   activeFilter=f
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'))
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
   render()
 }
 
-function updateOwnerDropdown() {
-  const sel = document.getElementById('owner-filter')
-  const current = sel.value
-  const owners = [...new Set(clients.map(c=>c.owner).filter(Boolean))].sort()
-  sel.innerHTML = '<option value="">All owners</option>' + owners.map(o=>`<option value="${o}" ${o===current?'selected':''}>${o}</option>`).join('')
+function setOwner(o) {
+  activeOwner = activeOwner===o?'':o
+  document.querySelectorAll('.owner-pill').forEach(p=>p.classList.toggle('active',p.dataset.owner===activeOwner))
+  render()
 }
 
-function filtered() {
-  const q = document.getElementById('search').value.toLowerCase().trim()
-  const ownerF = document.getElementById('owner-filter')?.value || ''
-  const sortBy = document.getElementById('sort-by')?.value || 'risk'
-  let list = [...clients]
-  if(q) list = list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.owner||'').toLowerCase().includes(q))
-  if(ownerF) list = list.filter(c=>(c.owner||'').toLowerCase()===ownerF.toLowerCase())
-  if(activeFilter==='active') list=list.filter(c=>!['completed','Lost Client'].includes(c.status))
+function getList() {
+  const q=document.getElementById('search').value.toLowerCase().trim()
+  const sort=document.getElementById('sort-sel').value
+  let list=[...clients]
+  if(q) list=list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.owner||'').toLowerCase().includes(q))
+  if(activeOwner) list=list.filter(c=>(c.owner||'').toLowerCase()===activeOwner.toLowerCase())
+  if(activeFilter==='active') list=list.filter(c=>!['completed'].includes(c.status))
   else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
   else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
-  else if(activeFilter==='has_tickets') list=list.filter(c=>clientTickets(c).length>0)
-  else if(activeFilter==='in_support') list=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
-  else if(activeFilter==='not_support') list=list.filter(c=>(c.inSupport||'').toLowerCase()!=='yes')
-  // Sort
-  if(sortBy==='arr_desc') list.sort((a,b)=>Number(b.arr||0)-Number(a.arr||0))
-  else if(sortBy==='arr_asc') list.sort((a,b)=>Number(a.arr||0)-Number(b.arr||0))
-  else if(sortBy==='name') list.sort((a,b)=>(a.name||'').localeCompare(b.name||''))
-  else if(sortBy==='contact') list.sort((a,b)=>(a.lastContact||'').localeCompare(b.lastContact||''))
-  else if(sortBy==='tickets') list.sort((a,b)=>clientTickets(b).length-clientTickets(a).length)
-  else list.sort((a,b)=>{const so=(STATUS_ORDER[a.status]||5)-(STATUS_ORDER[b.status]||5);if(so!==0)return so;return clientTickets(b).length-clientTickets(a).length})
+  else if(activeFilter==='tickets') list=list.filter(c=>cTickets(c).length>0)
+  else if(activeFilter==='support') list=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
+  if(sort==='arr_desc') list.sort((a,b)=>Number(b.arr||0)-Number(a.arr||0))
+  else if(sort==='arr_asc') list.sort((a,b)=>Number(a.arr||0)-Number(b.arr||0))
+  else if(sort==='name') list.sort((a,b)=>(a.name||'').localeCompare(b.name||''))
+  else if(sort==='tickets') list.sort((a,b)=>cTickets(b).length-cTickets(a).length)
+  else if(sort==='contact') list.sort((a,b)=>(a.lastContact||'').localeCompare(b.lastContact||''))
+  else list.sort((a,b)=>statusOrder(a.status)-statusOrder(b.status)||cTickets(b).length-cTickets(a).length)
   return list
 }
 
-// ── RENDER ──
-function renderStats() {
-  const ownerF = document.getElementById('owner-filter')?.value || ''
-  const list = filtered()
-  const total = list.length
-  const arr = list.reduce((s,c)=>s+Number(c.arr||0),0)
-  const overdue = list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length
-  const risk = list.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length
-  const openT = list.reduce((s,c)=>s+clientTickets(c).length,0)
-  const inSup = list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
-  const arrInSup = inSup.reduce((s,c)=>s+Number(c.arr||0),0)
-  const arrNotSup = arr - arrInSup
+// ── HERO STATS ──
+function renderHero() {
+  const list = activeOwner ? clients.filter(c=>(c.owner||'').toLowerCase()===activeOwner.toLowerCase()) : clients
+  const total=list.length
+  const arr=list.reduce((s,c)=>s+Number(c.arr||0),0)
+  const overdue=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length
+  const risk=list.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length
+  const openT=list.reduce((s,c)=>s+cTickets(c).length,0)
+  const inSup=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
+  const arrIn=inSup.reduce((s,c)=>s+Number(c.arr||0),0)
+  const arrOut=arr-arrIn
 
-  let html = ''
-  if(ownerF) {
-    // Owner view - show their personal stats
-    html = `
-      <div class="stat"><div class="stat-num blue">${total}</div><div class="stat-label">${ownerF}&rsquo;s clients</div></div>
-      <div class="stat"><div class="stat-num green">${fmtARR(arr)}</div><div class="stat-label">${ownerF}&rsquo;s ARR</div></div>
-      <div class="stat"><div class="stat-num red">${openT}</div><div class="stat-label">Open tickets</div></div>
-      <div class="stat"><div class="stat-num orange">${overdue}</div><div class="stat-label">Overdue</div></div>
-      <div class="stat"><div class="stat-num orange">${risk}</div><div class="stat-label">At risk</div></div>`
-  } else if(activeFilter==='in_support' || activeFilter==='not_support') {
-    html = `
-      <div class="stat"><div class="stat-num blue">${total}</div><div class="stat-label">${activeFilter==='in_support'?'In support':'Not in support'}</div></div>
-      <div class="stat"><div class="stat-num">${fmtARR(arr)}</div><div class="stat-label">ARR</div></div>
-      <div class="stat"><div class="stat-num red">${openT}</div><div class="stat-label">Open tickets</div></div>
-      <div class="stat"><div class="stat-num orange">${overdue}</div><div class="stat-label">Overdue</div></div>
-      <div class="stat"><div class="stat-num red">${risk}</div><div class="stat-label">At risk</div></div>`
-  } else {
-    // Default all-clients view
-    const owners = [...new Set(clients.map(c=>c.owner).filter(Boolean))].sort()
-    const ownerCards = owners.map(owner => {
-      const oc = clients.filter(c=>c.owner===owner)
-      const oArr = oc.reduce((s,c)=>s+Number(c.arr||0),0)
-      const oT = oc.reduce((s,c)=>s+clientTickets(c).length,0)
-      return `<div style="text-align:center;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .1s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="document.getElementById('owner-filter').value='${owner}';render()">
-        <div style="font-size:13px;font-weight:700;color:var(--accent)">${fmtARR(oArr)}</div>
-        <div style="font-size:10px;color:var(--text2);font-weight:600">${owner}</div>
-        <div style="font-size:10px;color:var(--text3)">${oc.length} clients · ${oT} tickets</div>
-      </div>`
-    }).join('<div style="width:0.5px;background:var(--border);align-self:stretch"></div>')
+  const label = activeOwner ? `${activeOwner}'s clients` : 'Total clients'
 
-    const totalARR = clients.reduce((s,c)=>s+Number(c.arr||0),0)
-    const allInSup = clients.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
-    const allArrInSup = allInSup.reduce((s,c)=>s+Number(c.arr||0),0)
+  document.getElementById('hero').innerHTML = `
+    <div class="hcard"><div class="hcard-num blue">${total}</div><div class="hcard-label">${label}</div>${activeOwner?`<div class="hcard-sub">${fARR(arr)} ARR</div>`:''}</div>
+    ${!activeOwner?`<div class="hcard"><div class="hcard-num">${fARR(arr)}</div><div class="hcard-label">Total ARR</div></div>`:''}
+    <div class="hcard"><div class="hcard-num red">${openT}</div><div class="hcard-label">Open tickets</div></div>
+    <div class="hcard"><div class="hcard-num amber">${overdue}</div><div class="hcard-label">Overdue follow-ups</div></div>
+    <div class="hcard"><div class="hcard-num red">${risk}</div><div class="hcard-label">At risk / blocked</div></div>
+    <div class="hcard" style="padding:0;overflow:hidden">
+      <div class="support-split">
+        <div class="ss-half"><div class="ss-num" style="color:var(--green)">${fARR(arrIn)}</div><div class="ss-label">🎧 In support</div></div>
+        <div class="ss-half"><div class="ss-num" style="color:var(--ink2)">${fARR(arrOut)}</div><div class="ss-label">Not in support</div></div>
+      </div>
+    </div>`
+  if(!activeOwner) document.getElementById('hero').style.gridTemplateColumns='repeat(5,1fr) 1.8fr'
+  else document.getElementById('hero').style.gridTemplateColumns='repeat(4,1fr) 1.8fr'
+}
 
-    html = `
-      <div class="stat"><div class="stat-num blue">${clients.length}</div><div class="stat-label">Total clients</div></div>
-      <div class="stat"><div class="stat-num">${fmtARR(totalARR)}</div><div class="stat-label">Total ARR</div></div>
-      <div class="stat"><div class="stat-num red">${clients.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length}</div><div class="stat-label">Overdue</div></div>
-      <div class="stat"><div class="stat-num orange">${clients.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length}</div><div class="stat-label">At risk</div></div>
-      <div class="stat"><div class="stat-num red">${clients.reduce((s,c)=>s+clientTickets(c).length,0)}</div><div class="stat-label">Open tickets</div></div>
-      <div class="stat" style="grid-column:span 2">
-        <div style="display:flex;gap:16px">
-          <div><div class="stat-num green" style="font-size:16px">${fmtARR(allArrInSup)}</div><div class="stat-label">🎧 ARR in support</div></div>
-          <div style="width:0.5px;background:var(--border)"></div>
-          <div><div class="stat-num" style="font-size:16px">${fmtARR(totalARR-allArrInSup)}</div><div class="stat-label">ARR not in support</div></div>
+// ── OWNER STRIP ──
+function renderOwners() {
+  const owners=[...new Set(clients.map(c=>c.owner).filter(Boolean))].sort()
+  document.getElementById('owner-strip').innerHTML = owners.map(o=>{
+    const oc=clients.filter(c=>c.owner===o)
+    const oArr=oc.reduce((s,c)=>s+Number(c.arr||0),0)
+    const oT=oc.reduce((s,c)=>s+cTickets(c).length,0)
+    const col=ownerColor(o)
+    return `<div class="owner-pill${activeOwner===o?' active':''}" data-owner="${o}" onclick="setOwner('${o}')">
+      <div class="av op-av" style="background:${col}20;color:${col}">${ini(o)}</div>
+      <div>
+        <div class="op-name">${o}</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="op-arr">${fARR(oArr)}</span>
+          <span class="op-count">${oc.length} clients · ${oT} tickets</span>
         </div>
       </div>
-      <div class="stat" style="grid-column:span 3">
-        <div class="stat-label" style="margin-bottom:8px">Click an owner to filter</div>
-        <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap">${ownerCards}</div>
-      </div>`
-  }
-  document.getElementById('stats').innerHTML = html
-  document.getElementById('stats').style.gridTemplateColumns = ownerF || ['in_support','not_support'].includes(activeFilter)
-    ? 'repeat(5,minmax(0,1fr))'
-    : 'repeat(5,minmax(0,1fr))'
-}
-
-function render() {
-  const list = filtered()
-  document.getElementById('tbl').style.display = list.length?'':'none'
-  document.getElementById('empty').style.display = list.length?'none':''
-  if(!list.length) { renderStats(); return }
-  document.getElementById('tbody').innerHTML = list.map(c => {
-    const open = clientTickets(c)
-    const days = dSince(c.lastContact)
-    const t = Number(c.threshold)||14
-    const isExp = expanded.has(c.id)
-    let tcBadge = open.length===0
-      ? `<span class="tcount-badge tcount-green">✓ None</span>`
-      : open.length<=2
-        ? `<span class="tcount-badge tcount-orange" onclick="event.stopPropagation();openPanel('${c.id}')" style="cursor:pointer">${open.length} open →</span>`
-        : `<span class="tcount-badge tcount-red" onclick="event.stopPropagation();openPanel('${c.id}')" style="cursor:pointer">${open.length} open →</span>`
-    const preview = open.slice(0,2).map(t=>`
-      <a class="ticket-item" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank" onclick="event.stopPropagation()">
-        <span class="ticket-key">${t.key}</span>
-        <span class="ticket-sum">${t.summary}</span>
-      </a>`).join('')
-    const more = open.length>2 ? `<div style="font-size:11px;color:var(--text3);padding:2px 0">+${open.length-2} more — click to expand</div>` : ''
-    const expTickets = open.map(tk=>{
-      const dOld=Math.floor((Date.now()-new Date(tk.created).getTime())/86400000)
-      const dUpd=Math.floor((Date.now()-new Date(tk.updated).getTime())/86400000)
-      const stuck=dUpd>5&&!['Done','Closed','Resolved'].includes(tk.status)
-      return `<a class="et${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${tk.key}" target="_blank">
-        <span class="et-key">${tk.key}</span>
-        <span class="et-proj et-${tk.project.toLowerCase()}">${tk.project}</span>
-        <span class="et-sum">${tk.summary}</span>
-        <span class="et-st ${etClass(tk.status)}">${tk.status}</span>
-        <span class="et-age">${dOld}d${stuck?' ⚠':''}</span>
-      </a>`
-    }).join('')
-    return `
-      <tr class="data-row ${flagClass(c)}" onclick="toggleExp('${c.id}')">
-        <td style="color:var(--text3);font-size:10px">${isExp?'▼':'▶'}</td>
-        <td><div class="client-name">${c.name} ${c.inSupport==='yes'?'<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:8px;background:#f0fdf4;color:#16a34a;margin-left:4px">🎧 Support</span>':''}</div><div class="client-arr">${fmtARR(c.arr)}</div></td>
-        <td><div class="owner-chip"><div class="owner-av">${initials(c.owner)}</div><span style="font-size:12px;color:var(--text2)">${c.owner||'—'}</span></div></td>
-        <td>${statusBadge(c.status)}</td>
-        <td><span class="${contactClass(c)}" style="font-size:12px;font-family:'JetBrains Mono',monospace">${c.lastContact?days+'d ago':'Never'}</span>${days>=t?`<div style="font-size:10px;color:${days>=t*2?'var(--red)':'var(--orange)'}">⚠ Follow up needed</div>`:''}</td>
-        <td>${tcBadge}<div style="margin-top:4px">${preview}${more}</div></td>
-        <td onclick="event.stopPropagation()" style="white-space:nowrap">
-          <button class="btn" style="padding:4px 9px;font-size:11px" onclick="openEdit('${c.id}')">Edit</button>
-          <button class="btn" style="padding:4px 9px;font-size:11px;color:var(--red)" onclick="deleteClient('${c.id}')">Delete</button>
-        </td>
-      </tr>
-      <tr class="expand-row ${isExp?'open':''}" id="exp-${c.id}">
-        <td class="expand-cell" colspan="7">
-          <div style="font-size:10px;font-weight:600;color:var(--accent-text);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">All open Jira tickets for ${c.name} (${open.length})</div>
-          ${open.length?expTickets:'<span style="font-size:12px;color:var(--text3)">✓ No open tickets</span>'}
-        </td>
-      </tr>`
+    </div>`
   }).join('')
-  renderStats()
 }
 
-function toggleExp(id) { expanded.has(id)?expanded.delete(id):expanded.add(id); render() }
+// ── TABLE ──
+function render() {
+  renderHero()
+  renderOwners()
+  const list=getList()
+  document.getElementById('tbl').style.display=list.length?'':'none'
+  document.getElementById('empty').style.display=list.length?'none':''
+  if(!list.length) return
+  document.getElementById('tbody').innerHTML=list.map(c=>{
+    const open=cTickets(c)
+    const days=dSince(c.lastContact)
+    const t=Number(c.threshold)||14
+    const col=ownerColor(c.owner||'?')
+    const isSupport=(c.inSupport||'').toLowerCase()==='yes'
 
+    let tcBtn=''
+    if(open.length===0) tcBtn=`<span class="tc-btn tc-none">✓ None</span>`
+    else if(open.length<=2) tcBtn=`<button class="tc-btn tc-few" onclick="event.stopPropagation();openPanel('${c.id}')">${open.length} open →</button>`
+    else tcBtn=`<button class="tc-btn tc-many" onclick="event.stopPropagation();openPanel('${c.id}')">${open.length} open →</button>`
+
+    return `<tr class="dr ${flagClass(c)}" onclick="openPanel('${c.id}')">
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="cn">${escHtml(c.name)}${isSupport?`<span class="sup-badge">🎧 Support</span>`:''}</div>
+        </div>
+        <div class="ca">${fARR(c.arr)}</div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="av" style="background:${col}18;color:${col}">${ini(c.owner)}</div>
+          <span style="font-size:13px;font-weight:500;color:var(--ink2)">${escHtml(c.owner||'—')}</span>
+        </div>
+      </td>
+      <td>${statusChip(c.status)}</td>
+      <td>
+        <div class="${contactClass(c)}">${c.lastContact?days+'d ago':'Never'}</div>
+        ${days>=t?`<div style="font-size:10px;color:${days>=t*2?'var(--red)':'var(--amber)'};font-weight:500;margin-top:1px">⚠ Follow up needed</div>`:''}
+      </td>
+      <td>${tcBtn}</td>
+      <td onclick="event.stopPropagation()">
+        <div class="act-btns">
+          <button class="act-btn" onclick="openEdit('${c.id}')">Edit</button>
+          <button class="act-btn del" onclick="delClient('${c.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`
+  }).join('')
+}
+
+// ── JIRA VIEW ──
+function stClass(s) {
+  if(['In Progress','In Review'].includes(s)) return 'st-prog'
+  if(s==='Blocked') return 'st-block'
+  if(s==='Waiting on Solutions') return 'st-wait'
+  return 'st-todo'
+}
+
+function renderJira() {
+  const f=document.getElementById('jira-filter')?.value||'all'
+  const q=(document.getElementById('jira-search')?.value||'').toLowerCase()
+  let list=[...tickets].filter(t=>!['Done','Closed','Resolved'].includes(t.status))
+  if(f==='CIB') list=list.filter(t=>t.project==='CIB')
+  else if(f==='SAWP') list=list.filter(t=>t.project==='SAWP')
+  else if(f==='stuck') list=list.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>5)
+  else if(f==='high') list=list.filter(t=>['High','Highest'].includes(t.priority))
+  if(q) list=list.filter(t=>(t.summary||'').toLowerCase().includes(q))
+
+  // Calculate total ARR at risk
+  const clientsWithTickets=new Set(list.map(t=>matchClient(t)?.id).filter(Boolean))
+  const arrAtRisk=clients.filter(c=>clientsWithTickets.has(c.id)).reduce((s,c)=>s+Number(c.arr||0),0)
+
+  document.getElementById('jira-arr-banner').innerHTML=`
+    <div class="jt-arr-total">
+      <div>
+        <div class="jt-arr-total-num">${fARR(arrAtRisk)}</div>
+        <div class="jt-arr-total-label">ARR across ${clientsWithTickets.size} clients with open tickets (${list.length} tickets total)</div>
+      </div>
+      <div style="font-size:12px;color:var(--amber);font-weight:500">${list.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>5).length} stuck 5d+</div>
+    </div>`
+
+  document.getElementById('jt-list').innerHTML=list.map(t=>{
+    const client=matchClient(t)
+    const dOld=Math.floor((Date.now()-new Date(t.created).getTime())/86400000)
+    const dUpd=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
+    const stuck=dUpd>5
+    const priCls='pt-pri-'+(t.priority||'medium').toLowerCase().replace(' ','')
+    return `<a class="jt${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">
+      <div class="jt-key">${t.key}</div>
+      <div class="jt-body">
+        <div class="jt-sum">${escHtml(t.summary)}</div>
+        <div class="jt-meta">
+          ${client?`<span class="jt-client">${escHtml(client.name)}</span><span class="jt-arr">${fARR(client.arr)}</span>`:'<span style="font-size:11px;color:var(--ink4)">Client not matched</span>'}
+          <span class="chip ${t.project==='CIB'?'chip-blue':'chip-green'}" style="font-size:9px;padding:1px 6px">${t.project}</span>
+          <span class="jt-age">${dOld}d old · updated ${dUpd}d ago${stuck?' ⚠':''}</span>
+          ${t.assignee?`<span class="jt-assignee">👤 ${t.assignee.split('@')[0]}</span>`:''}
+        </div>
+      </div>
+      <div class="jt-right">
+        <span class="pt-st ${stClass(t.status)}" style="font-size:10px;padding:3px 8px;border-radius:5px;font-weight:600">${t.status}</span>
+        <span class="${priCls}" style="font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">${t.priority}</span>
+      </div>
+    </a>`
+  }).join('')||'<div class="empty-state"><div class="es-icon">✓</div><div class="es-text">No open tickets match this filter</div></div>'
+}
+
+// ── PANEL ──
 function openPanel(id) {
-  const c = clients.find(x=>x.id===id)
-  if(!c) return
-  const open = clientTickets(c)
-  const stuck = open.filter(t=>{ const d=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000); return d>5 })
-  const high = open.filter(t=>['Highest','High'].includes(t.priority))
+  const c=clients.find(x=>x.id===id); if(!c) return
+  const open=cTickets(c)
+  const stuck=open.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>5)
+  const high=open.filter(t=>['High','Highest'].includes(t.priority))
+  const col=ownerColor(c.owner||'?')
 
-  document.getElementById('panel-title').textContent = c.name + ' — Open Tickets'
-  document.getElementById('panel-sub').textContent = (c.owner||'') + (c.inSupport==='yes'?' · 🎧 In Support':'')
-  document.getElementById('panel-stats').innerHTML = `
-    <div class="ps"><div class="ps-num" style="color:var(--red)">${open.length}</div><div class="ps-label">Open</div></div>
-    <div class="ps"><div class="ps-num" style="color:var(--orange)">${stuck.length}</div><div class="ps-label">Stuck 5d+</div></div>
-    <div class="ps"><div class="ps-num" style="color:var(--red)">${high.length}</div><div class="ps-label">High priority</div></div>`
+  document.getElementById('ph-title').textContent=c.name
+  document.getElementById('ph-sub').innerHTML=`<span style="display:inline-flex;align-items:center;gap:6px"><span class="av" style="width:18px;height:18px;font-size:8px;background:${col}18;color:${col}">${ini(c.owner)}</span>${escHtml(c.owner||'Unassigned')} · ${fARR(c.arr)}${c.inSupport==='yes'?' · 🎧 In support':''}</span>`
+  document.getElementById('p-stats').innerHTML=`
+    <div class="ps"><div class="ps-n" style="color:var(--red)">${open.length}</div><div class="ps-l">Open</div></div>
+    <div class="ps"><div class="ps-n" style="color:var(--amber)">${stuck.length}</div><div class="ps-l">Stuck 5d+</div></div>
+    <div class="ps"><div class="ps-n" style="color:var(--red)">${high.length}</div><div class="ps-l">High priority</div></div>`
 
-  if(open.length === 0) {
-    document.getElementById('panel-body').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">✓ No open tickets for this client</div>'
-  } else {
-    document.getElementById('panel-body').innerHTML = open.map(t => {
-      const dOld = Math.floor((Date.now()-new Date(t.created).getTime())/86400000)
-      const dUpd = Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
-      const stuck = dUpd > 5
-      const priClass = 'pt-pri-'+(t.priority||'medium').toLowerCase().replace(' ','')
-      let stClass = 'pt-st-todo'
-      if(['In Progress','In Review'].includes(t.status)) stClass='pt-st-prog'
-      else if(t.status==='Blocked') stClass='pt-st-block'
-      else if(t.status==='Waiting on Solutions') stClass='pt-st-wait'
-      return `<a class="panel-ticket${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">
+  document.getElementById('p-body').innerHTML=open.length===0
+    ?'<div class="empty-state"><div class="es-icon">✓</div><div class="es-text">No open tickets for this client</div></div>'
+    :open.map(t=>{
+      const dOld=Math.floor((Date.now()-new Date(t.created).getTime())/86400000)
+      const dUpd=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
+      const stuck=dUpd>5
+      const priCls='pt-pri-'+(t.priority||'medium').toLowerCase().replace(' ','')
+      return `<a class="pt${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">
         <div class="pt-top">
           <span class="pt-key">${t.key}</span>
-          <span class="pt-proj pt-${t.project.toLowerCase()}">${t.project}</span>
-          <span class="pt-pri ${priClass}">${t.priority}</span>
-          ${stuck?'<span class="pt-stuck">⚠ Stuck '+dUpd+'d</span>':''}
+          <span class="pt-proj ${t.project.toLowerCase()}">${t.project}</span>
+          <span class="${priCls}">${t.priority}</span>
+          ${stuck?`<span class="pt-stuck-tag">⚠ Stuck ${dUpd}d</span>`:''}
         </div>
-        <div class="pt-sum">${t.summary}</div>
+        <div class="pt-sum">${escHtml(t.summary)}</div>
         <div class="pt-bot">
-          <span class="pt-status ${stClass}">${t.status}</span>
-          <span class="pt-age">Created ${dOld}d ago · Updated ${dUpd}d ago</span>
-          ${t.assignee?`<span class="pt-assignee">👤 ${t.assignee.split('@')[0]}</span>`:''}
+          <span class="pt-st ${stClass(t.status)}">${t.status}</span>
+          <span class="pt-age">Created ${dOld}d · Updated ${dUpd}d ago</span>
+          ${t.assignee?`<span style="font-size:11px;color:var(--ink3)">👤 ${t.assignee.split('@')[0]}</span>`:''}
         </div>
       </a>`
     }).join('')
-  }
 
-  document.getElementById('panel-overlay').classList.add('open')
-  document.getElementById('side-panel').classList.add('open')
+  document.getElementById('overlay').classList.add('open')
+  document.getElementById('panel').classList.add('open')
 }
-
-function closePanel() {
-  document.getElementById('panel-overlay').classList.remove('open')
-  document.getElementById('side-panel').classList.remove('open')
-}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open')}
 
 // ── CRUD ──
-function saveToStorage() { localStorage.setItem('sth_dash_clients', JSON.stringify(clients)) }
+function save2Storage(){localStorage.setItem('bw_clients',JSON.stringify(clients))}
 
-function openAdd() {
-  editingId = null
-  document.getElementById('modal-title').textContent = 'Add client'
-  document.getElementById('modal-save-btn').textContent = 'Add client'
-  document.getElementById('modal-err').style.display = 'none'
+function openAdd(){
+  editId=null
+  document.getElementById('modal-ttl').textContent='Add client'
+  document.getElementById('msave').textContent='Add client'
+  document.getElementById('merr').style.display='none'
   ;['f-name','f-arr','f-owner','f-email','f-contact','f-slack'].forEach(id=>document.getElementById(id).value='')
-  document.getElementById('f-status').value = 'in_progress'
-  document.getElementById('f-threshold').value = '14'
-  document.getElementById('f-support').value = 'no'
-  document.getElementById('client-modal').classList.add('open')
+  document.getElementById('f-status').value='in_progress'
+  document.getElementById('f-threshold').value='14'
+  document.getElementById('f-support').value='no'
+  document.getElementById('cmodal').classList.add('open')
 }
 
-function openEdit(id) {
-  editingId = id
-  const c = clients.find(x=>x.id===id)
-  if(!c) return
-  document.getElementById('modal-title').textContent = 'Edit client'
-  document.getElementById('modal-save-btn').textContent = 'Save changes'
-  document.getElementById('modal-err').style.display = 'none'
-  document.getElementById('f-name').value = c.name||''
-  document.getElementById('f-arr').value = c.arr||''
-  document.getElementById('f-owner').value = c.owner||''
-  document.getElementById('f-email').value = c.ownerEmail||''
-  document.getElementById('f-status').value = c.status||'in_progress'
-  document.getElementById('f-threshold').value = String(c.threshold||14)
-  document.getElementById('f-contact').value = c.lastContact||''
-  document.getElementById('f-slack').value = c.slackChannel||''
-  document.getElementById('f-support').value = c.inSupport||'no'
-  document.getElementById('client-modal').classList.add('open')
+function openEdit(id){
+  editId=id; const c=clients.find(x=>x.id===id); if(!c) return
+  document.getElementById('modal-ttl').textContent='Edit client'
+  document.getElementById('msave').textContent='Save changes'
+  document.getElementById('merr').style.display='none'
+  document.getElementById('f-name').value=c.name||''
+  document.getElementById('f-arr').value=c.arr||''
+  document.getElementById('f-owner').value=c.owner||''
+  document.getElementById('f-email').value=c.ownerEmail||''
+  document.getElementById('f-status').value=c.status||'in_progress'
+  document.getElementById('f-threshold').value=String(c.threshold||14)
+  document.getElementById('f-contact').value=c.lastContact||''
+  document.getElementById('f-slack').value=c.slackChannel||''
+  document.getElementById('f-support').value=c.inSupport||'no'
+  document.getElementById('cmodal').classList.add('open')
 }
 
-function saveClient() {
-  const name = document.getElementById('f-name').value.trim()
-  if(!name) { document.getElementById('modal-err').textContent='Client name is required'; document.getElementById('modal-err').style.display='block'; return }
-  const id = editingId || Date.now().toString()
-  const client = {
-    id, name,
-    arr: Number(document.getElementById('f-arr').value)||0,
-    owner: document.getElementById('f-owner').value,
-    ownerEmail: document.getElementById('f-email').value,
-    status: document.getElementById('f-status').value,
-    threshold: Number(document.getElementById('f-threshold').value)||14,
-    lastContact: document.getElementById('f-contact').value,
-    slackChannel: document.getElementById('f-slack').value,
-    inSupport: document.getElementById('f-support').value
-  }
-  const idx = clients.findIndex(c=>c.id===id)
-  if(idx>=0) clients[idx]=client
-  else clients.push(client)
-  saveToStorage()
-  closeModal()
-  render()
+function saveClient(){
+  const name=document.getElementById('f-name').value.trim()
+  if(!name){document.getElementById('merr').textContent='Client name is required';document.getElementById('merr').style.display='block';return}
+  const id=editId||Date.now().toString()
+  const client={id,name,owner:document.getElementById('f-owner').value,ownerEmail:document.getElementById('f-email').value,arr:Number(document.getElementById('f-arr').value)||0,status:document.getElementById('f-status').value,threshold:Number(document.getElementById('f-threshold').value)||14,lastContact:document.getElementById('f-contact').value,slackChannel:document.getElementById('f-slack').value,inSupport:document.getElementById('f-support').value}
+  const idx=clients.findIndex(c=>c.id===id)
+  if(idx>=0) clients[idx]=client; else clients.push(client)
+  save2Storage(); closeModal(); render()
 }
 
-function deleteClient(id) {
-  if(!confirm('Delete this client?')) return
-  clients = clients.filter(c=>c.id!==id)
-  saveToStorage()
-  render()
-}
-
-function closeModal() { document.getElementById('client-modal').classList.remove('open') }
+function delClient(id){if(!confirm('Delete this client?')) return; clients=clients.filter(c=>c.id!==id); save2Storage(); render()}
+function closeModal(){document.getElementById('cmodal').classList.remove('open')}
 
 // ── IMPORT ──
-function openImport() { document.getElementById('import-modal').classList.add('open'); document.getElementById('import-result').style.display='none' }
-function closeImport() { document.getElementById('import-modal').classList.remove('open') }
-
-function doImport() {
-  const raw = document.getElementById('import-csv').value.trim()
-  if(!raw) return
-  const lines = raw.split('\n').filter(l=>l.trim())
-  const isHeader = lines[0].toLowerCase().includes('name') || lines[0].toLowerCase().includes('owner')
-  const start = isHeader ? 1 : 0
-  let n = 0
-  lines.slice(start).forEach(line => {
-    const p = line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
-    const name = p[0]
-    if(!name || name==='(No value)') return
-    // Check for duplicate
+function openImport(){document.getElementById('imodal').classList.add('open');document.getElementById('iok').style.display='none'}
+function closeImport(){document.getElementById('imodal').classList.remove('open')}
+function doImport(){
+  const raw=document.getElementById('icsv').value.trim(); if(!raw) return
+  const lines=raw.split('\n').filter(l=>l.trim())
+  const isHdr=lines[0].toLowerCase().includes('name')||lines[0].toLowerCase().includes('owner')
+  let n=0
+  lines.slice(isHdr?1:0).forEach(line=>{
+    const p=line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
+    const name=p[0]; if(!name||name.length<2) return
     if(clients.find(c=>c.name.toLowerCase()===name.toLowerCase())) return
-    clients.push({
-      id: Date.now().toString()+Math.random(),
-      name,
-      owner: p[1]||'',
-      ownerEmail: p[2]||'',
-      arr: Number(p[3])||0,
-      status: p[4]||'in_progress',
-      lastContact: p[5]||'',
-      threshold: Number(p[6])||14,
-      slackChannel: p[7]||''
-    })
+    clients.push({id:Date.now().toString()+Math.random(),name,owner:p[1]||'',ownerEmail:p[2]||'',arr:Number(p[3])||0,status:p[4]||'in_progress',lastContact:p[5]||'',threshold:Number(p[6])||14,slackChannel:p[7]||'',inSupport:(p[8]||'').toLowerCase()==='yes'?'yes':'no'})
     n++
   })
-  saveToStorage()
-  const res = document.getElementById('import-result')
-  res.textContent = `✓ Imported ${n} client${n!==1?'s':''}${n===0?' (all already exist)':''}`
-  res.style.display = 'block'
-  render()
-  setTimeout(closeImport, 1500)
+  save2Storage()
+  const ok=document.getElementById('iok')
+  ok.textContent=`✓ Imported ${n} client${n!==1?'s':''}`
+  ok.style.display='block'
+  render(); setTimeout(closeImport,1500)
 }
 
-// ── LOAD DATA ──
-async function loadAll() {
+// ── LOAD ──
+async function loadAll(){
   setSyncing(true)
-  // Load from Google Sheet
-  try {
-    const r = await fetch(SHEET_URL)
-    if(r.ok) {
-      const csv = await r.text()
-      const rows = csv.split('\n').filter(l=>l.trim())
-      const isHeader = rows[0].toLowerCase().includes('name')||rows[0].toLowerCase().includes('owner')||rows[0].toLowerCase().includes('ticket')
-      const start = isHeader ? 1 : 0
-      const sheetClients = []
-      rows.slice(start).forEach(line => {
-        const p = line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
-        if(!p[0]||p[0]==='(No value)'||p[0].length<2) return
-        // Try to detect format by column count and content
-        const name = p[0]
-        const owner = p[1]||''
-        if(name && !['Lost Client','Green','Yellow','Red','Archive Mode'].includes(owner)) {
-          // Looks like our format: name,owner,ownerEmail,arr,status...
-          sheetClients.push({
-            id: 'sheet_'+p[0].replace(/\s+/g,'_').toLowerCase(),
-            name: p[0],
-            owner: p[1]||'',
-            ownerEmail: p[2]||'',
-            arr: Number(p[3])||0,
-            status: p[4]||'in_progress',
-            lastContact: p[5]||'',
-            threshold: Number(p[6])||14,
-            slackChannel: p[7]||'',
-            inSupport: (p[8]||'').toLowerCase()==='yes'?'yes':'no'
-          })
-        }
+  // Load Google Sheet
+  try{
+    const r=await fetch(SHEET)
+    if(r.ok){
+      const csv=await r.text()
+      const rows=csv.split('\n').filter(l=>l.trim())
+      const isHdr=rows[0].toLowerCase().includes('name')
+      const sheet=[]
+      rows.slice(isHdr?1:0).forEach(line=>{
+        const p=line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
+        if(!p[0]||p[0].length<2) return
+        sheet.push({id:'s_'+p[0].toLowerCase().replace(/\s+/g,'_'),name:p[0],owner:p[1]||'',ownerEmail:p[2]||'',arr:Number(p[3])||0,status:p[4]||'in_progress',lastContact:p[5]||'',threshold:Number(p[6])||14,slackChannel:p[7]||'',inSupport:(p[8]||'').toLowerCase()==='yes'?'yes':'no'})
       })
-      if(sheetClients.length > 0) {
-        const localClients = clients.filter(c=>!c.id.startsWith('sheet_'))
-        clients = [...sheetClients, ...localClients]
-        saveToStorage()
-        updateOwnerDropdown()
-        showInfo(`Loaded ${sheetClients.length} clients from Google Sheet + ${localClients.length} locally added`)
+      if(sheet.length>0){
+        const local=clients.filter(c=>!c.id.startsWith('s_'))
+        clients=[...sheet,...local]
+        save2Storage()
       }
     }
-  } catch(e) {
-    console.warn('Sheet load failed:', e.message)
-  }
+  }catch(e){console.warn('Sheet:',e.message)}
 
-  // Load Jira tickets
-  try {
-    const r = await fetch('/api/jira')
-    if(r.ok) {
-      const data = await r.json()
-      if(data.issues) {
-        tickets = data.issues.map(i => ({
-          id: i.id, key: i.key,
-          summary: i.fields.summary,
-          status: i.fields.status.name,
-          priority: i.fields.priority?.name||'Medium',
-          project: i.fields.project?.key||'CIB',
-          assignee: i.fields.assignee?.emailAddress||'',
-          created: i.fields.created,
-          updated: i.fields.updated
-        }))
-        hideError()
-      } else if(data.error) {
-        showError('Jira: '+data.error)
-      }
+  // Load Jira
+  try{
+    const r=await fetch('/api/jira')
+    if(r.ok){
+      const data=await r.json()
+      if(data.issues) tickets=data.issues.map(i=>({id:i.id,key:i.key,summary:i.fields.summary,status:i.fields.status.name,priority:i.fields.priority?.name||'Medium',project:i.fields.project?.key||'CIB',assignee:i.fields.assignee?.emailAddress||'',created:i.fields.created,updated:i.fields.updated}))
     }
-  } catch(e) {
-    showError('Jira load failed: '+e.message)
-  }
+  }catch(e){console.warn('Jira:',e.message)}
 
-  document.getElementById('loading').style.display = 'none'
-  document.getElementById('tbl').style.display = ''
+  document.getElementById('loading').style.display='none'
+  document.getElementById('tbl').style.display=''
   render()
-  setSyncing(false, 'Synced '+new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'}))
+  setSyncing(false,'Synced '+new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'}))
 }
 
-function setSyncing(on, label) {
-  document.getElementById('sync-dot').className = 'sync-dot'+(on?' syncing':'')
-  document.getElementById('sync-label').textContent = label||(on?'Syncing...':'Live')
+function setSyncing(on,label){
+  document.getElementById('live-dot').className='live-dot'+(on?' syncing':'')
+  document.getElementById('live-label').textContent=label||(on?'Syncing...':'Live')
 }
-function showError(msg) { const e=document.getElementById('err'); e.textContent=msg; e.style.display='block' }
-function hideError() { document.getElementById('err').style.display='none' }
-function showInfo(msg) { const e=document.getElementById('info'); e.textContent=msg; e.style.display='block'; setTimeout(()=>e.style.display='none',4000) }
 
 loadAll()
-setInterval(loadAll, 60000)
+setInterval(loadAll,60000)
 </script>
 </body>
 </html>
