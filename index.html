@@ -135,8 +135,19 @@ td{padding:11px 14px;vertical-align:middle}
   <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
   <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
   <button class="filter-btn" onclick="setFilter('at_risk',this)">At Risk / Blocked</button>
-  <button class="filter-btn" onclick="setFilter('overdue',this)">Overdue follow-up</button>
+  <button class="filter-btn" onclick="setFilter('overdue',this)">Overdue</button>
   <button class="filter-btn" onclick="setFilter('has_tickets',this)">Has open tickets</button>
+  <select id="owner-filter" onchange="render()" style="background:var(--surface2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text2);outline:none;font-family:inherit;cursor:pointer">
+    <option value="">All owners</option>
+  </select>
+  <select id="sort-by" onchange="render()" style="background:var(--surface2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text2);outline:none;font-family:inherit;cursor:pointer">
+    <option value="risk">Sort: Risk first</option>
+    <option value="arr_desc">Sort: ARR high → low</option>
+    <option value="arr_asc">Sort: ARR low → high</option>
+    <option value="name">Sort: Name A–Z</option>
+    <option value="contact">Sort: Last contact</option>
+    <option value="tickets">Sort: Most tickets</option>
+  </select>
   <input class="search-input" id="search" placeholder="Search clients or owners..." oninput="render()"/>
 </div>
 
@@ -272,19 +283,31 @@ function setFilter(f,btn) {
   render()
 }
 
+function updateOwnerDropdown() {
+  const sel = document.getElementById('owner-filter')
+  const current = sel.value
+  const owners = [...new Set(clients.map(c=>c.owner).filter(Boolean))].sort()
+  sel.innerHTML = '<option value="">All owners</option>' + owners.map(o=>`<option value="${o}" ${o===current?'selected':''}>${o}</option>`).join('')
+}
+
 function filtered() {
   const q = document.getElementById('search').value.toLowerCase().trim()
+  const ownerF = document.getElementById('owner-filter')?.value || ''
+  const sortBy = document.getElementById('sort-by')?.value || 'risk'
   let list = [...clients]
   if(q) list = list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.owner||'').toLowerCase().includes(q))
+  if(ownerF) list = list.filter(c=>(c.owner||'').toLowerCase()===ownerF.toLowerCase())
   if(activeFilter==='active') list=list.filter(c=>!['completed','Lost Client'].includes(c.status))
   else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
   else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
   else if(activeFilter==='has_tickets') list=list.filter(c=>clientTickets(c).length>0)
-  list.sort((a,b)=>{
-    const so=(STATUS_ORDER[a.status]||5)-(STATUS_ORDER[b.status]||5)
-    if(so!==0) return so
-    return clientTickets(b).length-clientTickets(a).length
-  })
+  // Sort
+  if(sortBy==='arr_desc') list.sort((a,b)=>Number(b.arr||0)-Number(a.arr||0))
+  else if(sortBy==='arr_asc') list.sort((a,b)=>Number(a.arr||0)-Number(b.arr||0))
+  else if(sortBy==='name') list.sort((a,b)=>(a.name||'').localeCompare(b.name||''))
+  else if(sortBy==='contact') list.sort((a,b)=>(a.lastContact||'').localeCompare(b.lastContact||''))
+  else if(sortBy==='tickets') list.sort((a,b)=>clientTickets(b).length-clientTickets(a).length)
+  else list.sort((a,b)=>{const so=(STATUS_ORDER[a.status]||5)-(STATUS_ORDER[b.status]||5);if(so!==0)return so;return clientTickets(b).length-clientTickets(a).length})
   return list
 }
 
@@ -496,11 +519,10 @@ async function loadAll() {
         }
       })
       if(sheetClients.length > 0) {
-        // Merge sheet clients with locally added clients
-        const localIds = new Set(clients.filter(c=>!c.id.startsWith('sheet_')).map(c=>c.id))
         const localClients = clients.filter(c=>!c.id.startsWith('sheet_'))
         clients = [...sheetClients, ...localClients]
         saveToStorage()
+        updateOwnerDropdown()
         showInfo(`Loaded ${sheetClients.length} clients from Google Sheet + ${localClients.length} locally added`)
       }
     }
