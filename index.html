@@ -408,6 +408,18 @@ let editId = null
 
 // ── COLORS ──
 const OWNER_COLORS = ['#1a56db','#0e9f6e','#d97706','#7c3aed','#e02424','#0891b2','#be185d','#059669']
+// Valid SA names - only these show in the owner strip
+const VALID_OWNERS = ['payal','lovish','xeres','joan','anthony','chris','kashif','angel','ahtisham','thea','riaz','david','raag','ren','pinhua','jeremy','jesse']
+function isValidOwner(name) {
+  if(!name) return false
+  const n = name.toLowerCase().trim()
+  // Must be a real person name - at least 3 chars, no numbers, matches known list or looks like a name
+  if(n.length < 3) return false
+  if(/\d/.test(n)) return false
+  if(VALID_OWNERS.some(v => n.includes(v))) return true
+  // Also accept any single/double word name that looks like a person (no special chars)
+  return /^[a-z]+ ?[a-z]*$/.test(n) && n.length >= 4 && n.length <= 25
+}
 const ownerColor = name => OWNER_COLORS[Math.abs([...name].reduce((h,c)=>Math.imul(31,h)+c.charCodeAt(0)|0,0))%OWNER_COLORS.length]
 
 // ── HELPERS ──
@@ -538,7 +550,7 @@ function renderHero() {
 
 // ── OWNER STRIP ──
 function renderOwners() {
-  const owners=[...new Set(clients.map(c=>c.owner).filter(Boolean))].sort()
+  const owners=[...new Set(clients.map(c=>c.owner).filter(o=>isValidOwner(o)))].sort()
   document.getElementById('owner-strip').innerHTML = owners.map(o=>{
     const oc=clients.filter(c=>c.owner===o)
     const oArr=oc.reduce((s,c)=>s+Number(c.arr||0),0)
