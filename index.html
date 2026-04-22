@@ -473,26 +473,62 @@ function flagClass(c) {
 }
 
 // ── TICKET MATCH ──
+const STOP_WORDS = new Set(['the','and','for','with','from','that','this','have','been','will','not','are','was','its','into','our','their','your','all','one','can','has','but','also','more','when','some','than','then','only','just','over'])
+
+function significant(name) {
+  return name.toLowerCase().split(/[\s\-\/\(\)\[\]]+/).filter(w=>w.length>3&&!STOP_WORDS.has(w))
+}
+
+// Returns: 'exact' | 'partial' | null
+function matchType(clientName, ticketSummary, ownerEmail, assigneeEmail) {
+  const name = (clientName||'').toLowerCase()
+  const txt = (ticketSummary||'').toLowerCase()
+  const ns = name.replace(/\s+/g,'')
+  const txtns = txt.replace(/\s+/g,'')
+  const email = (ownerEmail||'').toLowerCase()
+
+  // Exact matches
+  if(txt.includes(name)) return 'exact'
+  if(txtns.includes(ns)) return 'exact'
+  if(email && assigneeEmail && email===assigneeEmail.toLowerCase()) return 'exact'
+
+  // All significant words match
+  const cWords = significant(name)
+  if(cWords.length>1 && cWords.every(w=>txt.includes(w))) return 'exact'
+
+  // Partial - any significant word matches
+  const tWords = significant(txt)
+  if(cWords.some(cw=>tWords.some(tw=>tw.includes(cw)||cw.includes(tw)))) return 'partial'
+
+  return null
+}
+
+function isDone(t) {
+  return ['Done','Closed','Resolved','SA: Task Completed','Completed'].some(s=>t.status.toLowerCase().includes(s.toLowerCase()))
+}
+
 function cTickets(c) {
-  const name=(c.name||'').toLowerCase()
-  const ns=name.replace(/\s+/g,'')
-  const words=name.split(' ').filter(w=>w.length>3)
-  const email=(c.ownerEmail||'').toLowerCase()
   return tickets.filter(t=>{
-    const txt=(t.summary||'').toLowerCase()
-    return txt.includes(name)||txt.replace(/\s+/g,'').includes(ns)||(words.length>1&&words.every(w=>txt.includes(w)))||(email&&(t.assignee||'').toLowerCase()===email)
-  }).filter(t=>!['Done','Closed','Resolved','SA: Task Completed','Completed'].some(s=>t.status.toLowerCase().includes(s.toLowerCase())))
+    if(isDone(t)) return false
+    const mt = matchType(c.name, t.summary, c.ownerEmail, t.assignee)
+    return mt==='exact'
+  })
+}
+
+function cPossibleTickets(c) {
+  return tickets.filter(t=>{
+    if(isDone(t)) return false
+    const mt = matchType(c.name, t.summary, c.ownerEmail, t.assignee)
+    return mt==='partial'
+  })
 }
 
 function matchClient(t) {
-  return clients.find(c=>{
-    const name=(c.name||'').toLowerCase()
-    const ns=name.replace(/\s+/g,'')
-    const words=name.split(' ').filter(w=>w.length>3)
-    const txt=(t.summary||'').toLowerCase()
-    const email=(c.ownerEmail||'').toLowerCase()
-    return txt.includes(name)||txt.replace(/\s+/g,'').includes(ns)||(words.length>1&&words.every(w=>txt.includes(w)))||(email&&(t.assignee||'').toLowerCase()===email)
-  })
+  // First try exact match
+  const exact = clients.find(c=>matchType(c.name,t.summary,c.ownerEmail,t.assignee)==='exact')
+  if(exact) return exact
+  // Fall back to partial
+  return clients.find(c=>matchType(c.name,t.summary,c.ownerEmail,t.assignee)==='partial')
 }
 
 // ── VIEWS ──
@@ -641,10 +677,14 @@ function render() {
     const col=ownerColor(c.owner||'?')
     const isSupport=(c.inSupport||'').toLowerCase()==='yes'
 
+    const possible3=cPossibleTickets(c)
     let tcBtn=''
-    if(open.length===0) tcBtn=`<span class="tc-btn tc-none">✓ None</span>`
-    else if(open.length<=2) tcBtn=`<button class="tc-btn tc-few" onclick="event.stopPropagation();openPanel('${c.id}')">${open.length} open →</button>`
-    else tcBtn=`<button class="tc-btn tc-many" onclick="event.stopPropagation();openPanel('${c.id}')">${open.length} open →</button>`
+    if(open.length===0 && possible3.length===0) tcBtn=`<span class="tc-btn tc-none">✓ None</span>`
+    else {
+      const label = open.length + (possible3.length?` +${possible3.length}?`:'')
+      const cls = open.length>2?'tc-many':open.length>0?'tc-few':'tc-none'
+      tcBtn=`<button class="tc-btn ${cls}" onclick="event.stopPropagation();openPanel('${c.id}')">${label} →</button>`
+    }
 
     return `<tr class="dr ${flagClass(c)}" onclick="openPanel('${c.id}')">
       <td>
@@ -742,33 +782,47 @@ function openPanel(id) {
 
   document.getElementById('ph-title').textContent=c.name
   document.getElementById('ph-sub').innerHTML=`<span style="display:inline-flex;align-items:center;gap:6px"><span class="av" style="width:18px;height:18px;font-size:8px;background:${col}18;color:${col}">${ini(c.owner)}</span>${escHtml(c.owner||'Unassigned')} · ${fARR(c.arr)}${c.inSupport==='yes'?' · 🎧 In support':''}</span>`
+  const possible2 = cPossibleTickets(c)
   document.getElementById('p-stats').innerHTML=`
-    <div class="ps"><div class="ps-n" style="color:var(--red)">${open.length}</div><div class="ps-l">Open</div></div>
-    <div class="ps"><div class="ps-n" style="color:var(--amber)">${stuck.length}</div><div class="ps-l">Stuck 5d+</div></div>
-    <div class="ps"><div class="ps-n" style="color:var(--red)">${high.length}</div><div class="ps-l">High priority</div></div>`
+    <div class="ps"><div class="ps-n" style="color:var(--red)">${open.length}</div><div class="ps-l">Confirmed</div></div>
+    <div class="ps"><div class="ps-n" style="color:#854d0e">${possible2.length}</div><div class="ps-l">Possible</div></div>
+    <div class="ps"><div class="ps-n" style="color:var(--amber)">${stuck.length}</div><div class="ps-l">Stuck 5d+</div></div>`
 
-  document.getElementById('p-body').innerHTML=open.length===0
-    ?'<div class="empty-state"><div class="es-icon">✓</div><div class="es-text">No open tickets for this client</div></div>'
-    :open.map(t=>{
-      const dOld=Math.floor((Date.now()-new Date(t.created).getTime())/86400000)
-      const dUpd=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
-      const stuck=dUpd>5
-      const priCls='pt-pri-'+(t.priority||'medium').toLowerCase().replace(' ','')
-      return `<a class="pt${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">
-        <div class="pt-top">
-          <span class="pt-key">${t.key}</span>
-          <span class="pt-proj ${t.project.toLowerCase()}">${t.project}</span>
-          <span class="${priCls}">${t.priority}</span>
-          ${stuck?`<span class="pt-stuck-tag">⚠ Stuck ${dUpd}d</span>`:''}
-        </div>
-        <div class="pt-sum">${escHtml(t.summary)}</div>
-        <div class="pt-bot">
-          <span class="pt-st ${stClass(t.status)}">${t.status}</span>
-          <span class="pt-age">Created ${dOld}d · Updated ${dUpd}d ago</span>
-          ${t.assignee?`<span style="font-size:11px;color:var(--ink3)">👤 ${t.assignee.split('@')[0]}</span>`:''}
-        </div>
-      </a>`
-    }).join('')
+  const possible = cPossibleTickets(c)
+
+  function ticketHTML(t, isPossible) {
+    const dOld=Math.floor((Date.now()-new Date(t.created).getTime())/86400000)
+    const dUpd=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
+    const stuck=dUpd>5
+    const priCls='pt-pri-'+(t.priority||'medium').toLowerCase().replace(' ','')
+    return `<a class="pt${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank" style="${isPossible?'border-style:dashed;opacity:.85':''}">
+      <div class="pt-top">
+        <span class="pt-key">${t.key}</span>
+        <span class="pt-proj ${t.project.toLowerCase()}">${t.project}</span>
+        <span class="${priCls}">${t.priority}</span>
+        ${isPossible?'<span style="font-size:10px;background:#fef9c3;color:#854d0e;padding:2px 7px;border-radius:5px;font-weight:600">⚡ Possible match</span>':''}
+        ${stuck?`<span class="pt-stuck-tag">⚠ Stuck ${dUpd}d</span>`:''}
+      </div>
+      <div class="pt-sum">${escHtml(t.summary)}</div>
+      <div class="pt-bot">
+        <span class="pt-st ${stClass(t.status)}">${t.status}</span>
+        <span class="pt-age">Created ${dOld}d · Updated ${dUpd}d ago</span>
+        ${t.assignee?`<span style="font-size:11px;color:var(--ink3)">👤 ${t.assignee.split('@')[0]}</span>`:''}
+      </div>
+    </a>`
+  }
+
+  let bodyHTML = ''
+  if(open.length===0 && possible.length===0) {
+    bodyHTML = '<div class="empty-state"><div class="es-icon">✓</div><div class="es-text">No open tickets for this client</div></div>'
+  } else {
+    if(open.length) bodyHTML += open.map(t=>ticketHTML(t,false)).join('')
+    if(possible.length) {
+      bodyHTML += `<div style="font-size:10px;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:.07em;margin:14px 0 8px;padding:8px 10px;background:#fef9c3;border-radius:6px">⚡ Possible matches — name partially matches ticket. Verify and update client name if correct (${possible.length})</div>`
+      bodyHTML += possible.map(t=>ticketHTML(t,true)).join('')
+    }
+  }
+  document.getElementById('p-body').innerHTML = bodyHTML
 
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
