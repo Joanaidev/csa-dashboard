@@ -75,6 +75,43 @@ td{padding:11px 14px;vertical-align:middle}
 .expand-row{display:none;background:var(--accent-bg)}
 .expand-row.open{display:table-row}
 .expand-cell{padding:12px 14px 14px 48px;border-bottom:0.5px solid var(--border)}
+/* SIDE PANEL */
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200;display:none}
+.panel-overlay.open{display:block}
+.side-panel{position:fixed;top:0;right:-520px;width:500px;height:100vh;background:var(--surface);border-left:0.5px solid var(--border);z-index:201;transition:right .25s ease;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,.08)}
+.side-panel.open{right:0}
+.panel-header{padding:20px 20px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.panel-title{font-size:16px;font-weight:700}
+.panel-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.panel-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);padding:4px;line-height:1}
+.panel-close:hover{color:var(--text)}
+.panel-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 20px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+.ps{background:var(--surface2);border-radius:8px;padding:10px 12px;text-align:center}
+.ps-num{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.ps-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
+.panel-body{flex:1;overflow-y:auto;padding:16px 20px}
+.panel-ticket{display:flex;flex-direction:column;gap:6px;padding:12px 14px;background:var(--surface2);border:0.5px solid var(--border);border-radius:10px;margin-bottom:8px;text-decoration:none;transition:all .15s;cursor:pointer}
+.panel-ticket:hover{border-color:var(--accent);background:var(--accent-bg)}
+.panel-ticket.stuck{border-left:3px solid var(--red)}
+.pt-top{display:flex;align-items:center;gap:8px}
+.pt-key{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700}
+.pt-proj{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;text-transform:uppercase}
+.pt-cib{background:var(--accent-bg);color:var(--accent-text)}
+.pt-sawp{background:var(--green-bg);color:var(--green)}
+.pt-pri{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:500}
+.pt-pri-highest,.pt-pri-high{background:var(--red-bg);color:var(--red)}
+.pt-pri-medium{background:var(--orange-bg);color:var(--orange)}
+.pt-pri-low{background:var(--green-bg);color:var(--green)}
+.pt-stuck{font-size:10px;color:var(--red);font-weight:600}
+.pt-sum{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.pt-bot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pt-status{font-size:10px;padding:2px 8px;border-radius:5px;font-weight:600}
+.pt-st-prog{background:var(--accent-bg);color:var(--accent-text)}
+.pt-st-todo{background:var(--surface2);color:var(--text3);border:0.5px solid var(--border)}
+.pt-st-wait{background:var(--orange-bg);color:var(--orange)}
+.pt-st-block{background:var(--red-bg);color:var(--red)}
+.pt-age{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.pt-assignee{font-size:11px;color:var(--text3)}
 .et{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;text-decoration:none;margin-bottom:5px;transition:all .15s}
 .et:hover{border-color:var(--accent)}
 .et.stuck{border-left:3px solid var(--red)}
@@ -238,6 +275,20 @@ td{padding:11px 14px;vertical-align:middle}
   </div>
 </div>
 
+<!-- SIDE PANEL -->
+<div class="panel-overlay" id="panel-overlay" onclick="closePanel()"></div>
+<div class="side-panel" id="side-panel">
+  <div class="panel-header">
+    <div>
+      <div class="panel-title" id="panel-title">Client Tickets</div>
+      <div class="panel-sub" id="panel-sub"></div>
+    </div>
+    <button class="panel-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-stats" id="panel-stats"></div>
+  <div class="panel-body" id="panel-body"></div>
+</div>
+
 <script>
 // ── CONFIG ──
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLiidNVrvJry5SYilGIKm7f76KoroRblKraPNXcD2mP9YwqzsSvug6xLyKsPri-SOLVE-cmgj1WnZ_/pub?gid=1701754036&single=true&output=csv'
@@ -349,8 +400,8 @@ function render() {
     let tcBadge = open.length===0
       ? `<span class="tcount-badge tcount-green">✓ None</span>`
       : open.length<=2
-        ? `<span class="tcount-badge tcount-orange">${open.length} open</span>`
-        : `<span class="tcount-badge tcount-red">${open.length} open</span>`
+        ? `<span class="tcount-badge tcount-orange" onclick="event.stopPropagation();openPanel('${c.id}')" style="cursor:pointer">${open.length} open →</span>`
+        : `<span class="tcount-badge tcount-red" onclick="event.stopPropagation();openPanel('${c.id}')" style="cursor:pointer">${open.length} open →</span>`
     const preview = open.slice(0,2).map(t=>`
       <a class="ticket-item" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank" onclick="event.stopPropagation()">
         <span class="ticket-key">${t.key}</span>
@@ -393,6 +444,58 @@ function render() {
 }
 
 function toggleExp(id) { expanded.has(id)?expanded.delete(id):expanded.add(id); render() }
+
+function openPanel(id) {
+  const c = clients.find(x=>x.id===id)
+  if(!c) return
+  const open = clientTickets(c)
+  const stuck = open.filter(t=>{ const d=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000); return d>5 })
+  const high = open.filter(t=>['Highest','High'].includes(t.priority))
+
+  document.getElementById('panel-title').textContent = c.name + ' — Open Tickets'
+  document.getElementById('panel-sub').textContent = (c.owner||'') + (c.inSupport==='yes'?' · 🎧 In Support':'')
+  document.getElementById('panel-stats').innerHTML = `
+    <div class="ps"><div class="ps-num" style="color:var(--red)">${open.length}</div><div class="ps-label">Open</div></div>
+    <div class="ps"><div class="ps-num" style="color:var(--orange)">${stuck.length}</div><div class="ps-label">Stuck 5d+</div></div>
+    <div class="ps"><div class="ps-num" style="color:var(--red)">${high.length}</div><div class="ps-label">High priority</div></div>`
+
+  if(open.length === 0) {
+    document.getElementById('panel-body').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">✓ No open tickets for this client</div>'
+  } else {
+    document.getElementById('panel-body').innerHTML = open.map(t => {
+      const dOld = Math.floor((Date.now()-new Date(t.created).getTime())/86400000)
+      const dUpd = Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
+      const stuck = dUpd > 5
+      const priClass = 'pt-pri-'+(t.priority||'medium').toLowerCase().replace(' ','')
+      let stClass = 'pt-st-todo'
+      if(['In Progress','In Review'].includes(t.status)) stClass='pt-st-prog'
+      else if(t.status==='Blocked') stClass='pt-st-block'
+      else if(t.status==='Waiting on Solutions') stClass='pt-st-wait'
+      return `<a class="panel-ticket${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">
+        <div class="pt-top">
+          <span class="pt-key">${t.key}</span>
+          <span class="pt-proj pt-${t.project.toLowerCase()}">${t.project}</span>
+          <span class="pt-pri ${priClass}">${t.priority}</span>
+          ${stuck?'<span class="pt-stuck">⚠ Stuck '+dUpd+'d</span>':''}
+        </div>
+        <div class="pt-sum">${t.summary}</div>
+        <div class="pt-bot">
+          <span class="pt-status ${stClass}">${t.status}</span>
+          <span class="pt-age">Created ${dOld}d ago · Updated ${dUpd}d ago</span>
+          ${t.assignee?`<span class="pt-assignee">👤 ${t.assignee.split('@')[0]}</span>`:''}
+        </div>
+      </a>`
+    }).join('')
+  }
+
+  document.getElementById('panel-overlay').classList.add('open')
+  document.getElementById('side-panel').classList.add('open')
+}
+
+function closePanel() {
+  document.getElementById('panel-overlay').classList.remove('open')
+  document.getElementById('side-panel').classList.remove('open')
+}
 
 // ── CRUD ──
 function saveToStorage() { localStorage.setItem('sth_dash_clients', JSON.stringify(clients)) }
