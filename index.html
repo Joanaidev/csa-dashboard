@@ -374,17 +374,73 @@ function filtered() {
 
 // ── RENDER ──
 function renderStats() {
-  const total=clients.length
-  const arr=clients.reduce((s,c)=>s+Number(c.arr||0),0)
-  const overdue=clients.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length
-  const risk=clients.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length
-  const openT=clients.reduce((s,c)=>s+clientTickets(c).length,0)
-  document.getElementById('stats').innerHTML=`
-    <div class="stat"><div class="stat-num blue">${total}</div><div class="stat-label">Total clients</div></div>
-    <div class="stat"><div class="stat-num">${fmtARR(arr)}</div><div class="stat-label">Total ARR</div></div>
-    <div class="stat"><div class="stat-num red">${overdue}</div><div class="stat-label">Overdue</div></div>
-    <div class="stat"><div class="stat-num orange">${risk}</div><div class="stat-label">At risk / blocked</div></div>
-    <div class="stat"><div class="stat-num red">${openT}</div><div class="stat-label">Open tickets</div></div>`
+  const ownerF = document.getElementById('owner-filter')?.value || ''
+  const list = filtered()
+  const total = list.length
+  const arr = list.reduce((s,c)=>s+Number(c.arr||0),0)
+  const overdue = list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length
+  const risk = list.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length
+  const openT = list.reduce((s,c)=>s+clientTickets(c).length,0)
+  const inSup = list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
+  const arrInSup = inSup.reduce((s,c)=>s+Number(c.arr||0),0)
+  const arrNotSup = arr - arrInSup
+
+  let html = ''
+  if(ownerF) {
+    // Owner view - show their personal stats
+    html = `
+      <div class="stat"><div class="stat-num blue">${total}</div><div class="stat-label">${ownerF}&rsquo;s clients</div></div>
+      <div class="stat"><div class="stat-num green">${fmtARR(arr)}</div><div class="stat-label">${ownerF}&rsquo;s ARR</div></div>
+      <div class="stat"><div class="stat-num red">${openT}</div><div class="stat-label">Open tickets</div></div>
+      <div class="stat"><div class="stat-num orange">${overdue}</div><div class="stat-label">Overdue</div></div>
+      <div class="stat"><div class="stat-num orange">${risk}</div><div class="stat-label">At risk</div></div>`
+  } else if(activeFilter==='in_support' || activeFilter==='not_support') {
+    html = `
+      <div class="stat"><div class="stat-num blue">${total}</div><div class="stat-label">${activeFilter==='in_support'?'In support':'Not in support'}</div></div>
+      <div class="stat"><div class="stat-num">${fmtARR(arr)}</div><div class="stat-label">ARR</div></div>
+      <div class="stat"><div class="stat-num red">${openT}</div><div class="stat-label">Open tickets</div></div>
+      <div class="stat"><div class="stat-num orange">${overdue}</div><div class="stat-label">Overdue</div></div>
+      <div class="stat"><div class="stat-num red">${risk}</div><div class="stat-label">At risk</div></div>`
+  } else {
+    // Default all-clients view
+    const owners = [...new Set(clients.map(c=>c.owner).filter(Boolean))].sort()
+    const ownerCards = owners.map(owner => {
+      const oc = clients.filter(c=>c.owner===owner)
+      const oArr = oc.reduce((s,c)=>s+Number(c.arr||0),0)
+      const oT = oc.reduce((s,c)=>s+clientTickets(c).length,0)
+      return `<div style="text-align:center;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .1s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="document.getElementById('owner-filter').value='${owner}';render()">
+        <div style="font-size:13px;font-weight:700;color:var(--accent)">${fmtARR(oArr)}</div>
+        <div style="font-size:10px;color:var(--text2);font-weight:600">${owner}</div>
+        <div style="font-size:10px;color:var(--text3)">${oc.length} clients · ${oT} tickets</div>
+      </div>`
+    }).join('<div style="width:0.5px;background:var(--border);align-self:stretch"></div>')
+
+    const totalARR = clients.reduce((s,c)=>s+Number(c.arr||0),0)
+    const allInSup = clients.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
+    const allArrInSup = allInSup.reduce((s,c)=>s+Number(c.arr||0),0)
+
+    html = `
+      <div class="stat"><div class="stat-num blue">${clients.length}</div><div class="stat-label">Total clients</div></div>
+      <div class="stat"><div class="stat-num">${fmtARR(totalARR)}</div><div class="stat-label">Total ARR</div></div>
+      <div class="stat"><div class="stat-num red">${clients.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length}</div><div class="stat-label">Overdue</div></div>
+      <div class="stat"><div class="stat-num orange">${clients.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length}</div><div class="stat-label">At risk</div></div>
+      <div class="stat"><div class="stat-num red">${clients.reduce((s,c)=>s+clientTickets(c).length,0)}</div><div class="stat-label">Open tickets</div></div>
+      <div class="stat" style="grid-column:span 2">
+        <div style="display:flex;gap:16px">
+          <div><div class="stat-num green" style="font-size:16px">${fmtARR(allArrInSup)}</div><div class="stat-label">🎧 ARR in support</div></div>
+          <div style="width:0.5px;background:var(--border)"></div>
+          <div><div class="stat-num" style="font-size:16px">${fmtARR(totalARR-allArrInSup)}</div><div class="stat-label">ARR not in support</div></div>
+        </div>
+      </div>
+      <div class="stat" style="grid-column:span 3">
+        <div class="stat-label" style="margin-bottom:8px">Click an owner to filter</div>
+        <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap">${ownerCards}</div>
+      </div>`
+  }
+  document.getElementById('stats').innerHTML = html
+  document.getElementById('stats').style.gridTemplateColumns = ownerF || ['in_support','not_support'].includes(activeFilter)
+    ? 'repeat(5,minmax(0,1fr))'
+    : 'repeat(5,minmax(0,1fr))'
 }
 
 function render() {
