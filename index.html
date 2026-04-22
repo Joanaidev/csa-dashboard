@@ -279,6 +279,7 @@ tbody tr.dr:hover .act-btns{opacity:1}
   <button class="filter-chip" onclick="setFilter('overdue',this)">Overdue</button>
   <button class="filter-chip" onclick="setFilter('tickets',this)">Has tickets</button>
   <button class="filter-chip" onclick="setFilter('support',this)">🎧 In support</button>
+  <button class="filter-chip" onclick="setFilter('onboarding',this)">🚀 Onboarding</button>
   <div class="filter-right">
     <select class="sort-sel" id="sort-sel" onchange="render()">
       <option value="risk">Risk first</option>
@@ -389,8 +390,16 @@ tbody tr.dr:hover .act-btns{opacity:1}
       </div>
       <div class="fg"><label>Last contact</label><input id="f-contact" type="date"/></div>
       <div class="fg"><label>Slack channel</label><input id="f-slack" placeholder="client-support"/></div>
-      <div class="fg full"><label>Support status</label>
+      <div class="fg"><label>Support status</label>
         <select id="f-support"><option value="no">Not in support</option><option value="yes">🎧 In support</option></select>
+      </div>
+      <div class="fg"><label>Lifecycle stage</label>
+        <select id="f-lifecycle">
+          <option value="">Active</option>
+          <option value="onboarding">🚀 Onboarding</option>
+          <option value="support">🎧 Support</option>
+          <option value="offboarding">⚠ Offboarding</option>
+        </select>
       </div>
     </div>
     <div class="err-msg" id="merr"></div>
@@ -576,6 +585,7 @@ function getList() {
   else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
   else if(activeFilter==='tickets') list=list.filter(c=>cTickets(c).length>0)
   else if(activeFilter==='support') list=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
+  else if(activeFilter==='onboarding') list=list.filter(c=>(c.lifecycle||'').toLowerCase()==='onboarding')
   if(sort==='arr_desc') list.sort((a,b)=>Number(b.arr||0)-Number(a.arr||0))
   else if(sort==='arr_asc') list.sort((a,b)=>Number(a.arr||0)-Number(b.arr||0))
   else if(sort==='name') list.sort((a,b)=>(a.name||'').localeCompare(b.name||''))
@@ -596,6 +606,7 @@ function renderHero() {
   const risk=list.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length
   const openT=list.reduce((s,c)=>s+cTickets(c).length,0)
   const inSup=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
+  const inOnboard=list.filter(c=>(c.lifecycle||'').toLowerCase()==='onboarding')
   const arrIn=inSup.reduce((s,c)=>s+Number(c.arr||0),0)
   const arrOut=arr-arrIn
   const label = activeOwner ? `${activeOwner}'s clients` : 'All clients'
@@ -629,14 +640,14 @@ function renderHero() {
     <div class="hcard" style="padding:0;overflow:hidden;cursor:default">
       <div class="support-split">
         <div class="ss-half" style="cursor:pointer" onclick="setFilter('support',document.querySelectorAll('.filter-chip')[5])">
-          <div class="ss-num" style="color:var(--green)">${fARR(arrIn)}</div>
+          <div class="ss-num" style="color:var(--green)">${inSup.length}</div>
           <div class="ss-label">🎧 In support</div>
-          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${inSup.length} clients</div>
+          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${fARR(arrIn)}</div>
         </div>
-        <div class="ss-half">
-          <div class="ss-num" style="color:var(--ink2)">${fARR(arrOut)}</div>
-          <div class="ss-label">Not in support</div>
-          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${list.length-inSup.length} clients</div>
+        <div class="ss-half" style="cursor:pointer" onclick="setFilter('onboarding',document.querySelectorAll('.filter-chip')[6])">
+          <div class="ss-num" style="color:var(--blue)">${inOnboard.length}</div>
+          <div class="ss-label">🚀 Onboarding</div>
+          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${fARR(inOnboard.reduce((s,c)=>s+Number(c.arr||0),0))}</div>
         </div>
       </div>
     </div>`
@@ -691,7 +702,7 @@ function render() {
     return `<tr class="dr ${flagClass(c)}" onclick="openPanel('${c.id}')">
       <td>
         <div style="display:flex;align-items:center;gap:8px">
-          <div class="cn">${escHtml(c.name)}${isSupport?`<span class="sup-badge">🎧 Support</span>`:''}</div>
+          <div class="cn">${escHtml(c.name)}${isSupport?`<span class="sup-badge">🎧 Support</span>`:''}${(c.lifecycle||'').toLowerCase()==='onboarding'?`<span class="sup-badge" style="background:var(--blue-soft);color:var(--blue)">🚀 Onboarding</span>`:''}</div>
         </div>
         <div class="ca">${fARR(c.arr)}</div>
       </td>
@@ -860,6 +871,7 @@ function openAdd(){
   document.getElementById('f-status').value='in_progress'
   document.getElementById('f-threshold').value='14'
   document.getElementById('f-support').value='no'
+  document.getElementById('f-lifecycle').value=''
   document.getElementById('cmodal').classList.add('open')
 }
 
@@ -877,6 +889,7 @@ function openEdit(id){
   document.getElementById('f-contact').value=c.lastContact||''
   document.getElementById('f-slack').value=c.slackChannel||''
   document.getElementById('f-support').value=c.inSupport||'no'
+  document.getElementById('f-lifecycle').value=c.lifecycle||''
   document.getElementById('cmodal').classList.add('open')
 }
 
@@ -884,7 +897,12 @@ function saveClient(){
   const name=document.getElementById('f-name').value.trim()
   if(!name){document.getElementById('merr').textContent='Client name is required';document.getElementById('merr').style.display='block';return}
   const id=editId||Date.now().toString()
-  const client={id,name,owner:document.getElementById('f-owner').value,ownerEmail:document.getElementById('f-email').value,arr:Number(document.getElementById('f-arr').value)||0,status:document.getElementById('f-status').value,threshold:Number(document.getElementById('f-threshold').value)||14,lastContact:document.getElementById('f-contact').value,slackChannel:document.getElementById('f-slack').value,inSupport:document.getElementById('f-support').value}
+  const lifecycle=document.getElementById('f-lifecycle').value
+  // Auto-sync support flag with lifecycle
+  let inSupport=document.getElementById('f-support').value
+  if(lifecycle==='support') inSupport='yes'
+  if(lifecycle==='onboarding'||lifecycle==='') inSupport='no'
+  const client={id,name,owner:document.getElementById('f-owner').value,ownerEmail:document.getElementById('f-email').value,arr:Number(document.getElementById('f-arr').value)||0,status:document.getElementById('f-status').value,threshold:Number(document.getElementById('f-threshold').value)||14,lastContact:document.getElementById('f-contact').value,slackChannel:document.getElementById('f-slack').value,inSupport,lifecycle}
   const idx=clients.findIndex(c=>c.id===id)
   if(idx>=0) clients[idx]=client; else clients.push(client)
   save2Storage()
@@ -959,7 +977,9 @@ async function loadAll(){
       rows.slice(isHdr?1:0).forEach(line=>{
         const p=line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
         if(!p[0]||p[0].length<2) return
-        sheet.push({id:'s_'+p[0].toLowerCase().replace(/\s+/g,'_'),name:p[0],owner:p[1]||'',ownerEmail:p[2]||'',arr:Number(p[3])||0,status:p[4]||'in_progress',lastContact:p[5]||'',threshold:Number(p[6])||14,slackChannel:p[7]||'',inSupport:(p[8]||'').toLowerCase()==='yes'?'yes':'no'})
+        const sheetInSupport=(p[8]||'').toLowerCase()==='yes'?'yes':'no'
+        const sheetLifecycle=(p[9]||'').toLowerCase()
+        sheet.push({id:'s_'+p[0].toLowerCase().replace(/\s+/g,'_'),name:p[0],owner:p[1]||'',ownerEmail:p[2]||'',arr:Number(p[3])||0,status:p[4]||'in_progress',lastContact:p[5]||'',threshold:Number(p[6])||14,slackChannel:p[7]||'',inSupport:sheetInSupport,lifecycle:sheetLifecycle})
       })
       if(sheet.length>0){
         // Load overrides (UI edits like last contact) from localStorage
