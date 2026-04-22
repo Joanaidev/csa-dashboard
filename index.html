@@ -487,6 +487,11 @@ function switchView(v, btn) {
 // ── FILTER ──
 function setFilter(f,btn) {
   activeFilter=f
+  // Clear owner filter when clicking All
+  if(f==='all') {
+    activeOwner=''
+    document.querySelectorAll('.owner-pill').forEach(p=>p.classList.remove('active'))
+  }
   document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
   render()
@@ -520,6 +525,8 @@ function getList() {
 
 // ── HERO STATS ──
 function renderHero() {
+  // Always calculate from ALL clients for the top stats
+  const all = clients
   const list = activeOwner ? clients.filter(c=>(c.owner||'').toLowerCase()===activeOwner.toLowerCase()) : clients
   const total=list.length
   const arr=list.reduce((s,c)=>s+Number(c.arr||0),0)
@@ -529,23 +536,49 @@ function renderHero() {
   const inSup=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
   const arrIn=inSup.reduce((s,c)=>s+Number(c.arr||0),0)
   const arrOut=arr-arrIn
-
-  const label = activeOwner ? `${activeOwner}'s clients` : 'Total clients'
+  const label = activeOwner ? `${activeOwner}'s clients` : 'All clients'
 
   document.getElementById('hero').innerHTML = `
-    <div class="hcard"><div class="hcard-num blue">${total}</div><div class="hcard-label">${label}</div>${activeOwner?`<div class="hcard-sub">${fARR(arr)} ARR</div>`:''}</div>
-    ${!activeOwner?`<div class="hcard"><div class="hcard-num">${fARR(arr)}</div><div class="hcard-label">Total ARR</div></div>`:''}
-    <div class="hcard"><div class="hcard-num red">${openT}</div><div class="hcard-label">Open tickets</div></div>
-    <div class="hcard"><div class="hcard-num amber">${overdue}</div><div class="hcard-label">Overdue follow-ups</div></div>
-    <div class="hcard"><div class="hcard-num red">${risk}</div><div class="hcard-label">At risk / blocked</div></div>
-    <div class="hcard" style="padding:0;overflow:hidden">
+    <div class="hcard clickable" onclick="setFilter('all',document.querySelector('.filter-chip'))">
+      <div class="hcard-num blue">${total}</div>
+      <div class="hcard-label">${label}</div>
+      <div class="hcard-sub">${activeOwner?fARR(arr)+' ARR':openT+' open tickets total'}</div>
+    </div>
+    <div class="hcard">
+      <div class="hcard-num">${fARR(arr)}</div>
+      <div class="hcard-label">${activeOwner?activeOwner+"'s ARR":'Total ARR'}</div>
+      <div class="hcard-sub">${activeOwner?total+' clients':'across all clients'}</div>
+    </div>
+    <div class="hcard clickable" onclick="setFilter('tickets',document.querySelectorAll('.filter-chip')[4])">
+      <div class="hcard-num red">${openT}</div>
+      <div class="hcard-label">Open tickets</div>
+      <div class="hcard-sub">${list.filter(c=>cTickets(c).length>0).length} clients affected</div>
+    </div>
+    <div class="hcard clickable" onclick="setFilter('overdue',document.querySelectorAll('.filter-chip')[3])">
+      <div class="hcard-num amber">${overdue}</div>
+      <div class="hcard-label">Overdue follow-ups</div>
+      <div class="hcard-sub">Need contact now</div>
+    </div>
+    <div class="hcard clickable" onclick="setFilter('at_risk',document.querySelectorAll('.filter-chip')[2])">
+      <div class="hcard-num red">${risk}</div>
+      <div class="hcard-label">At risk / blocked</div>
+      <div class="hcard-sub">${fARR(list.filter(c=>['at_risk','blocked','Red'].includes(c.status)).reduce((s,c)=>s+Number(c.arr||0),0))} ARR at risk</div>
+    </div>
+    <div class="hcard" style="padding:0;overflow:hidden;cursor:default">
       <div class="support-split">
-        <div class="ss-half"><div class="ss-num" style="color:var(--green)">${fARR(arrIn)}</div><div class="ss-label">🎧 In support</div></div>
-        <div class="ss-half"><div class="ss-num" style="color:var(--ink2)">${fARR(arrOut)}</div><div class="ss-label">Not in support</div></div>
+        <div class="ss-half" style="cursor:pointer" onclick="setFilter('support',document.querySelectorAll('.filter-chip')[5])">
+          <div class="ss-num" style="color:var(--green)">${fARR(arrIn)}</div>
+          <div class="ss-label">🎧 In support</div>
+          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${inSup.length} clients</div>
+        </div>
+        <div class="ss-half">
+          <div class="ss-num" style="color:var(--ink2)">${fARR(arrOut)}</div>
+          <div class="ss-label">Not in support</div>
+          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${list.length-inSup.length} clients</div>
+        </div>
       </div>
     </div>`
-  if(!activeOwner) document.getElementById('hero').style.gridTemplateColumns='repeat(5,1fr) 1.8fr'
-  else document.getElementById('hero').style.gridTemplateColumns='repeat(4,1fr) 1.8fr'
+  document.getElementById('hero').style.gridTemplateColumns='repeat(5,1fr) 1.8fr'
 }
 
 // ── OWNER STRIP ──
