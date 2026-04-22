@@ -136,6 +136,8 @@ tbody tr.dr:hover .act-btns{opacity:1}
 .act-btn{background:var(--surface2);border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:500;color:var(--ink2);cursor:pointer;font-family:inherit;transition:all .15s}
 .act-btn:hover{background:var(--surface3);color:var(--ink)}
 .act-btn.del:hover{background:var(--red-soft);color:var(--red)}
+.act-btn.contact{background:var(--green-soft);color:var(--green);font-weight:600}
+.act-btn.contact:hover{background:var(--green-mid);color:var(--green)}
 .empty-state{padding:60px;text-align:center;color:var(--ink3)}
 .es-icon{font-size:40px;margin-bottom:12px;opacity:.2}
 .es-text{font-size:14px;font-weight:500}
@@ -707,8 +709,9 @@ function render() {
       <td>${tcBtn}</td>
       <td onclick="event.stopPropagation()">
         <div class="act-btns">
-          <button class="act-btn" onclick="openEdit('${c.id}')">Edit</button>
-          <button class="act-btn del" onclick="delClient('${c.id}')">Delete</button>
+          <button class="act-btn contact" onclick="event.stopPropagation();logContact('${c.id}')" title="Log contact as today">✓ Contacted</button>
+          <button class="act-btn" onclick="event.stopPropagation();openEdit('${c.id}')">Edit</button>
+          <button class="act-btn del" onclick="event.stopPropagation();delClient('${c.id}')">Delete</button>
         </div>
       </td>
     </tr>`
@@ -872,6 +875,32 @@ function saveClient(){
 }
 
 function delClient(id){if(!confirm('Delete this client?')) return; clients=clients.filter(c=>c.id!==id); save2Storage(); render()}
+function logContact(id) {
+  const idx = clients.findIndex(c=>c.id===id)
+  if(idx<0) return
+  const today = new Date().toISOString().slice(0,10)
+  clients[idx].lastContact = today
+  save2Storage()
+  // Flash green confirmation
+  render()
+  // Show brief toast
+  showToast(`✓ Logged contact for ${clients[idx].name}`)
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('toast')
+  if(!toast) {
+    toast = document.createElement('div')
+    toast.id = 'toast'
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0d0f12;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:500;transition:opacity .3s;box-shadow:0 4px 16px rgba(0,0,0,.2)'
+    document.body.appendChild(toast)
+  }
+  toast.textContent = msg
+  toast.style.opacity = '1'
+  clearTimeout(toast._t)
+  toast._t = setTimeout(()=>toast.style.opacity='0', 2500)
+}
+
 function closeModal(){document.getElementById('cmodal').classList.remove('open')}
 
 // ── IMPORT ──
