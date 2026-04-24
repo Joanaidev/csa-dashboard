@@ -220,6 +220,21 @@ tbody tr.dr:hover .acts{opacity:1}
 .import-note{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--ink2);margin-bottom:14px;line-height:1.7}
 .import-note code{background:var(--surface3);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px}
 
+/* TEAM CARDS */
+.team-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;transition:all .2s;display:flex;align-items:center;gap:14px}
+.team-card:hover{box-shadow:var(--shadow-md)}
+.team-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.team-info{flex:1;min-width:0}
+.team-name{font-size:14px;font-weight:600;color:var(--ink)}
+.team-email{font-size:11px;color:var(--ink3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.team-meta{display:flex;align-items:center;gap:6px;margin-top:6px}
+.role-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em}
+.role-cso{background:var(--blue-soft);color:var(--blue)}
+.role-sa{background:var(--green-soft);color:var(--green)}
+.role-pm{background:var(--purple-soft);color:var(--purple)}
+.team-acts{display:flex;gap:4px;opacity:0;transition:opacity .15s;flex-shrink:0}
+.team-card:hover .team-acts{opacity:1}
+
 /* TOAST */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0d0f12;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:500;opacity:0;transition:opacity .3s;box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none}
 </style>
@@ -236,6 +251,7 @@ tbody tr.dr:hover .acts{opacity:1}
     <div class="view-tabs">
       <button class="view-tab active" onclick="switchView('clients',this)">Clients</button>
       <button class="view-tab" onclick="switchView('jira',this)">Jira Tickets</button>
+      <button class="view-tab" onclick="switchView('team',this)">👥 Team</button>
     </div>
     <div class="live-badge"><span class="live-dot" id="live-dot"></span><span id="live-label">Loading</span></div>
     <button class="btn" onclick="loadAll()">↻ Refresh</button>
@@ -312,6 +328,35 @@ tbody tr.dr:hover .acts{opacity:1}
   <div id="jt-list"></div>
 </div>
 
+<!-- TEAM VIEW -->
+<div class="jira-wrap" id="team-view">
+  <div class="jira-hdr">
+    <div class="jira-title">Team Members</div>
+    <button class="btn-primary" onclick="openAddMember()" style="font-size:12px;padding:6px 14px">+ Add member</button>
+  </div>
+  <div id="team-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px"></div>
+</div>
+
+<!-- ADD/EDIT MEMBER MODAL -->
+<div class="moverlay" id="tmmodal" onclick="if(event.target===this)closeTM()">
+  <div class="modal" style="width:420px">
+    <h3 id="tm-ttl">Add team member</h3>
+    <div class="fg"><label>Full name *</label><input id="tm-name" placeholder="e.g. Kashif Amin"/></div>
+    <div class="fg"><label>Email (for Jira matching)</label><input id="tm-email" placeholder="c.kashif.amin@bitwave.io"/></div>
+    <div class="fg"><label>Role</label>
+      <select id="tm-role">
+        <option value="CSO">CSO — Customer Success Owner</option>
+        <option value="SA">SA — Solutions Architect</option>
+      </select>
+    </div>
+    <div style="color:var(--red);font-size:12px;display:none" id="tm-err"></div>
+    <div class="ma">
+      <button class="btn-cancel" onclick="closeTM()">Cancel</button>
+      <button class="btn-save" onclick="saveMember()" id="tm-save">Add member</button>
+    </div>
+  </div>
+</div>
+
 <!-- SIDE PANEL -->
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
@@ -329,9 +374,10 @@ tbody tr.dr:hover .acts{opacity:1}
     <h3 id="modal-ttl">Add client</h3>
     <div class="mg">
       <div class="fg full"><label>Client name *</label><input id="f-name" placeholder="e.g. Ava Labs"/></div>
-      <div class="fg"><label>SA Owner</label><input id="f-owner" placeholder="e.g. Kashif"/></div>
+      <div class="fg"><label>CSO (Customer Success Owner)</label><select id="f-cso"><option value="">— None —</option></select></div>
       <div class="fg"><label>ARR (USD)</label><input id="f-arr" type="number" placeholder="120000"/></div>
-      <div class="fg full"><label>Owner email (for Jira matching)</label><input id="f-email" placeholder="c.kashif.amin@bitwave.io"/></div>
+      <div class="fg"><label>SA (Solutions Architect)</label><select id="f-sa"><option value="">— None —</option></select></div>
+      <div class="fg"><label>SA email (for Jira matching)</label><input id="f-email" placeholder="c.kashif.amin@bitwave.io"/></div>
       <div class="fg"><label>Status</label>
         <select id="f-status">
           <option value="in_progress">In Progress</option>
@@ -421,6 +467,10 @@ async function sbUpsert(client) {
   const row = {
     id: client.id,
     name: client.name,
+    cso: client.cso||null,
+    sa: client.sa||null,
+    cso_email: client.csoEmail||null,
+    sa_email: client.saEmail||null,
     owner: client.owner||null,
     owner_email: client.ownerEmail||null,
     arr: Number(client.arr)||0,
@@ -466,8 +516,12 @@ function rowToClient(row) {
   return {
     id: row.id,
     name: row.name,
-    owner: row.owner||'',
-    ownerEmail: row.owner_email||'',
+    owner: row.owner||row.cso||'',
+    ownerEmail: row.owner_email||row.cso_email||row.sa_email||'',
+    cso: row.cso||row.owner||'',
+    sa: row.sa||'',
+    csoEmail: row.cso_email||'',
+    saEmail: row.sa_email||row.owner_email||'',
     arr: row.arr||0,
     status: row.status||'in_progress',
     lastContact: row.last_contact||'',
@@ -511,9 +565,12 @@ function matchType(c,t) {
   const name=(c.name||'').toLowerCase()
   const txt=(t.summary||'').toLowerCase()
   const ns=name.replace(/\s+/g,'')
-  const email=(c.ownerEmail||'').toLowerCase()
+  const assignee=(t.assignee||'').toLowerCase()
+  // Match by name
   if(txt.includes(name)||txt.replace(/\s+/g,'').includes(ns)) return 'exact'
-  if(email&&(t.assignee||'').toLowerCase()===email) return 'exact'
+  // Match by any team member email (CSO or SA)
+  const emails=[c.ownerEmail,c.saEmail,c.csoEmail].filter(Boolean).map(e=>e.toLowerCase())
+  if(emails.some(e=>e===assignee)) return 'exact'
   const cw=sigWords(name);const tw=sigWords(txt)
   if(cw.length>1&&cw.every(w=>txt.includes(w))) return 'exact'
   if(cw.some(cw=>tw.some(tw=>tw.includes(cw)||cw.includes(tw)))) return 'partial'
@@ -567,7 +624,7 @@ function getList() {
   const sort=document.getElementById('sort-sel').value
   let list=[...clients]
   if(q) list=list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.owner||'').toLowerCase().includes(q))
-  if(activeOwner) list=list.filter(c=>(c.owner||'').toLowerCase()===activeOwner.toLowerCase())
+  if(activeOwner) list=list.filter(c=>[c.cso,c.sa,c.owner].some(n=>(n||'').toLowerCase()===activeOwner.toLowerCase()))
   if(activeFilter!=='churned') list=list.filter(c=>!c.churned)
   if(activeFilter==='active') list=list.filter(c=>!['completed'].includes(c.status))
   else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
@@ -641,7 +698,8 @@ function renderHero() {
 
 // ── OWNER STRIP ──
 function renderOwners() {
-  const owners=[...new Set(clients.filter(c=>!c.churned).map(c=>c.owner).filter(isValidOwner))].sort()
+  const allNames=[...new Set(clients.filter(c=>!c.churned).flatMap(c=>[c.cso,c.sa,c.owner]).filter(n=>n&&isValidOwner(n)))].sort()
+  const owners=allNames
   document.getElementById('owner-strip').innerHTML=owners.map(o=>{
     const oc=clients.filter(c=>c.owner===o&&!c.churned)
     const oArr=oc.reduce((s,c)=>s+Number(c.arr||0),0)
@@ -709,10 +767,17 @@ function renderTable() {
         <div class="ca">${fARR(c.arr)}</div>
       </td>
       <td>
-        <div style="display:flex;align-items:center;gap:7px">
-          <div class="av" style="background:${col}18;color:${col}">${ini(c.owner)}</div>
-          <span style="font-size:13px;font-weight:500;color:var(--ink2)">${esc(c.owner||'—')}</span>
-        </div>
+        ${c.cso?`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
+          <div class="av" style="width:20px;height:20px;font-size:7px;background:${ownerColor(c.cso)}18;color:${ownerColor(c.cso)}">${ini(c.cso)}</div>
+          <span style="font-size:11px;color:var(--ink2);font-weight:500">${esc(c.cso)}</span>
+          <span class="role-badge role-cso" style="font-size:8px;padding:1px 5px">CSO</span>
+        </div>`:''}
+        ${c.sa?`<div style="display:flex;align-items:center;gap:5px">
+          <div class="av" style="width:20px;height:20px;font-size:7px;background:${ownerColor(c.sa)}18;color:${ownerColor(c.sa)}">${ini(c.sa)}</div>
+          <span style="font-size:11px;color:var(--ink2);font-weight:500">${esc(c.sa)}</span>
+          <span class="role-badge role-sa" style="font-size:8px;padding:1px 5px">SA</span>
+        </div>`:''}
+        ${!c.cso&&!c.sa?`<span style="font-size:12px;color:var(--ink3)">${esc(c.owner||'—')}</span>`:''}
       </td>
       <td>${statusBadge(c.status)}</td>
       <td>
@@ -831,6 +896,7 @@ function openAdd(){
   document.getElementById('f-threshold').value='14'
   document.getElementById('f-support').value='no'
   document.getElementById('f-canton').value=''
+  populateOwnerDropdowns()
   document.getElementById('cmodal').classList.add('open')
 }
 
@@ -841,8 +907,12 @@ function openEdit(id){
   document.getElementById('merr').style.display='none'
   document.getElementById('f-name').value=c.name||''
   document.getElementById('f-arr').value=c.arr||''
-  document.getElementById('f-owner').value=c.owner||''
-  document.getElementById('f-email').value=c.ownerEmail||''
+  document.getElementById('f-email').value=c.saEmail||c.ownerEmail||''
+  populateOwnerDropdowns()
+  setTimeout(()=>{
+    if(document.getElementById('f-cso')) document.getElementById('f-cso').value=c.cso||''
+    if(document.getElementById('f-sa')) document.getElementById('f-sa').value=c.sa||''
+  },50)
   document.getElementById('f-status').value=c.status||'in_progress'
   document.getElementById('f-threshold').value=String(c.threshold||14)
   document.getElementById('f-contact').value=c.lastContact||''
@@ -856,10 +926,20 @@ async function saveClient(){
   const name=document.getElementById('f-name').value.trim()
   if(!name){document.getElementById('merr').textContent='Client name is required';document.getElementById('merr').style.display='block';return}
   const inSupport=document.getElementById('f-support').value
+  const csoSel=document.getElementById('f-cso')
+  const saSel=document.getElementById('f-sa')
+  const cso=csoSel?.value||''
+  const sa=saSel?.value||''
+  const csoMember=teamMembers.find(m=>m.name===cso)
+  const saMember=teamMembers.find(m=>m.name===sa)
   const client={
     id:editId||Date.now().toString(),
-    name,owner:document.getElementById('f-owner').value,
-    ownerEmail:document.getElementById('f-email').value,
+    name,
+    owner:cso||sa||'',
+    ownerEmail:document.getElementById('f-email').value||saMember?.email||csoMember?.email||'',
+    cso,sa,
+    csoEmail:csoMember?.email||'',
+    saEmail:saMember?.email||document.getElementById('f-email').value||'',
     arr:Number(document.getElementById('f-arr').value)||0,
     status:document.getElementById('f-status').value,
     threshold:Number(document.getElementById('f-threshold').value)||14,
@@ -1011,6 +1091,10 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 async function loadAll(){
   setSyncing(true)
 
+  // 0. Load team members
+  await loadTeam()
+  renderTeam()
+
   // 1. Load from Supabase (primary source of truth)
   try {
     const rows = await sbGet()
@@ -1063,6 +1147,151 @@ function setSyncing(on,label,state){
   const dot=document.getElementById('live-dot')
   dot.className='live-dot'+(on?' syncing':state==='error'?' error':'')
   document.getElementById('live-label').textContent=label||(on?'Syncing...':'Live')
+}
+
+// ── TEAM MANAGEMENT ──
+let teamMembers = []
+let editMemberId = null
+
+async function loadTeam() {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/team_members?select=*&active=eq.true&order=name.asc`, {headers:SB_HEADERS})
+    if(r.ok) teamMembers = await r.json()
+  } catch(e) { console.warn('Team load failed:', e) }
+}
+
+function renderTeam() {
+  const grid = document.getElementById('team-grid')
+  if(!grid) return
+  if(!teamMembers.length) { grid.innerHTML='<div style="color:var(--ink3);padding:20px">No team members yet. Click + Add member.</div>'; return }
+  
+  // Group by role
+  const csos = teamMembers.filter(m=>m.role==='CSO')
+  const sas = teamMembers.filter(m=>m.role==='SA')
+  const others = teamMembers.filter(m=>m.role!=='CSO'&&m.role!=='SA')
+  const sorted = [...csos,...sas,...others]
+
+  grid.innerHTML = sorted.map(m => {
+    const col = ownerColor(m.name)
+    const clientCount = clients.filter(c=>c.cso===m.name||c.sa===m.name||c.owner===m.name).length
+    const roleClass = m.role==='CSO'?'role-cso':m.role==='SA'?'role-sa':'role-pm'
+    return `<div class="team-card">
+      <div class="team-av" style="background:${col}18;color:${col}">${ini(m.name)}</div>
+      <div class="team-info">
+        <div class="team-name">${esc(m.name)}</div>
+        <div class="team-email">${esc(m.email||'No email set')}</div>
+        <div class="team-meta">
+          <span class="role-badge ${roleClass}">${m.role}</span>
+          <span style="font-size:11px;color:var(--ink3)">${clientCount} client${clientCount!==1?'s':''}</span>
+        </div>
+      </div>
+      <div class="team-acts">
+        <button class="act" onclick="openEditMember('${m.id}')">Edit</button>
+        <button class="act red" onclick="removeMember('${m.id}','${esc(m.name)}')">Remove</button>
+      </div>
+    </div>`
+  }).join('')
+
+  // Also populate CSO and SA dropdowns in client modal
+  populateOwnerDropdowns()
+}
+
+function populateOwnerDropdowns() {
+  const csos = teamMembers.filter(m=>m.role==='CSO')
+  const sas = teamMembers.filter(m=>m.role==='SA')
+  const csoSel = document.getElementById('f-cso')
+  const saSel = document.getElementById('f-sa')
+  if(!csoSel||!saSel) return
+  const csoVal = csoSel.value
+  const saVal = saSel.value
+  csoSel.innerHTML = '<option value="">— None —</option>' + csos.map(m=>`<option value="${esc(m.name)}" data-email="${esc(m.email||'')}"> ${esc(m.name)}</option>`).join('')
+  saSel.innerHTML = '<option value="">— None —</option>' + sas.map(m=>`<option value="${esc(m.name)}" data-email="${esc(m.email||'')}"> ${esc(m.name)}</option>`).join('')
+  if(csoVal) csoSel.value = csoVal
+  if(saVal) saSel.value = saVal
+  // Auto-fill email when SA selected
+  saSel.onchange = () => {
+    const opt = saSel.selectedOptions[0]
+    if(opt?.dataset.email) document.getElementById('f-email').value = opt.dataset.email
+  }
+}
+
+function openAddMember() {
+  editMemberId = null
+  document.getElementById('tm-ttl').textContent = 'Add team member'
+  document.getElementById('tm-save').textContent = 'Add member'
+  document.getElementById('tm-err').style.display = 'none'
+  ;['tm-name','tm-email'].forEach(id=>document.getElementById(id).value='')
+  document.getElementById('tm-role').value = 'CSO'
+  document.getElementById('tmmodal').classList.add('open')
+}
+
+function openEditMember(id) {
+  const m = teamMembers.find(x=>x.id===id); if(!m) return
+  editMemberId = id
+  document.getElementById('tm-ttl').textContent = 'Edit team member'
+  document.getElementById('tm-save').textContent = 'Save changes'
+  document.getElementById('tm-err').style.display = 'none'
+  document.getElementById('tm-name').value = m.name||''
+  document.getElementById('tm-email').value = m.email||''
+  document.getElementById('tm-role').value = m.role||'CSO'
+  document.getElementById('tmmodal').classList.add('open')
+}
+
+async function saveMember() {
+  const name = document.getElementById('tm-name').value.trim()
+  if(!name) { document.getElementById('tm-err').textContent='Name is required'; document.getElementById('tm-err').style.display='block'; return }
+  const member = {
+    id: editMemberId || 'tm_'+name.toLowerCase().replace(/\s+/g,'_')+'_'+Date.now(),
+    name,
+    email: document.getElementById('tm-email').value.trim(),
+    role: document.getElementById('tm-role').value,
+    active: true
+  }
+  // Update local
+  const idx = teamMembers.findIndex(m=>m.id===member.id)
+  if(idx>=0) teamMembers[idx]=member; else teamMembers.push(member)
+  closeTM(); renderTeam()
+  showToast(`✓ ${member.name} saved`)
+  // Save to Supabase
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/team_members`, {
+      method:'POST',
+      headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates'},
+      body: JSON.stringify(member)
+    })
+  } catch(e) { console.warn('Team member save failed:', e) }
+}
+
+async function removeMember(id, name) {
+  if(!confirm(`Remove ${name} from the team?`)) return
+  teamMembers = teamMembers.filter(m=>m.id!==id)
+  renderTeam()
+  showToast(`${name} removed`)
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/team_members?id=eq.${id}`, {
+      method:'PATCH', headers:SB_HEADERS, body:JSON.stringify({active:false})
+    })
+  } catch(e) { console.warn(e) }
+}
+
+function closeTM() { document.getElementById('tmmodal').classList.remove('open') }
+
+// ── UPDATE switchView to handle team ──
+const _origSwitch = switchView
+function switchView(v, btn) {
+  activeView = v
+  document.querySelectorAll('.view-tab').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
+  document.getElementById('clients-view').style.display = v==='clients'?'':'none'
+  document.getElementById('jira-view').style.display = v==='jira'?'':'none'
+  document.getElementById('team-view').style.display = v==='team'?'':'none'
+  document.querySelector('.hero').style.display = v==='clients'?'':'none'
+  document.getElementById('owner-strip').style.display = v==='clients'?'':'none'
+  document.querySelector('.filters').style.display = v==='clients'?'':'none'
+  const sb = document.getElementById('stuck-bar')
+  sb.style.display = v==='clients'&&sb.classList.contains('show')?'flex':'none'
+  if(v==='jira') renderJira()
+  if(v==='team') renderTeam()
 }
 
 loadAll()
