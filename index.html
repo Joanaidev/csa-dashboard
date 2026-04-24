@@ -14,160 +14,164 @@
   --green:#0e9f6e;--green-soft:#f0fdf9;--green-mid:#a7f3d0;
   --red:#e02424;--red-soft:#fef2f2;--red-mid:#fecaca;
   --amber:#d97706;--amber-soft:#fffbeb;--amber-mid:#fde68a;
+  --purple:#7c3aed;--purple-soft:#f5f3ff;
   --border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.12);
   --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
   --shadow-md:0 4px 16px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
   --shadow-lg:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
   --r:10px;--r-sm:7px;--r-lg:14px;
 }
-html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;min-height:100vh}
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:10px}
 
-/* ── TOPBAR ── */
-.topbar{
-  background:rgba(255,255,255,.85);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  height:56px;padding:0 28px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:100;
-}
+.topbar{background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:56px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .brand{display:flex;align-items:center;gap:10px}
-.brand-mark{
-  width:30px;height:30px;border-radius:8px;
-  background:linear-gradient(135deg,#1a56db,#6875f5);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(26,86,219,.3);
-}
-.brand-name{font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+.brand-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#1a56db,#6875f5);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(26,86,219,.3)}
+.brand-name{font-size:15px;font-weight:600;letter-spacing:-.02em}
 .brand-name span{color:var(--blue);font-weight:700}
 .topbar-right{display:flex;align-items:center;gap:8px}
 .live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--ink3);background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 10px}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px var(--green-soft);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 2px rgba(14,159,110,.2)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(14,159,110,.1)}}
-.live-dot.syncing{background:var(--amber);box-shadow:0 0 0 2px var(--amber-soft)}
-.btn-ghost{background:none;border:1px solid var(--border2);color:var(--ink2);border-radius:var(--r-sm);padding:6px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px}
-.btn-ghost:hover{background:var(--surface2);border-color:var(--border2)}
-.btn-primary{background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px;box-shadow:0 1px 3px rgba(26,86,219,.3)}
-.btn-primary:hover{background:#1446c0;box-shadow:0 3px 10px rgba(26,86,219,.35);transform:translateY(-1px)}
-
-/* ── VIEWS ── */
-.view-tabs{display:flex;align-items:center;gap:2px;background:var(--surface2);border-radius:var(--r-sm);padding:3px}
-.view-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;color:var(--ink3);cursor:pointer;transition:all .15s;border:none;background:none;font-family:inherit}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.live-dot.syncing{background:var(--amber);animation:none}
+.live-dot.error{background:var(--red);animation:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(14,159,110,.4)}70%{box-shadow:0 0 0 6px rgba(14,159,110,0)}}
+.btn{background:none;border:1px solid var(--border2);color:var(--ink2);border-radius:var(--r-sm);padding:6px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn:hover{background:var(--surface2);border-color:var(--border2)}
+.btn-primary{background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 1px 3px rgba(26,86,219,.3)}
+.btn-primary:hover{background:#1446c0;transform:translateY(-1px);box-shadow:0 3px 10px rgba(26,86,219,.3)}
+.view-tabs{display:flex;gap:2px;background:var(--surface2);border-radius:var(--r-sm);padding:3px}
+.view-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;color:var(--ink3);cursor:pointer;border:none;background:none;font-family:inherit;transition:all .15s}
 .view-tab.active{background:#fff;color:var(--ink);box-shadow:var(--shadow);font-weight:600}
 
-/* ── HERO STATS ── */
-.hero{padding:24px 28px 0}
+.hero{padding:20px 28px 0}
 .hero-grid{display:grid;grid-template-columns:repeat(5,1fr) 1.8fr;gap:10px}
-.hcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;transition:all .2s;cursor:default}
-.hcard:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
-.hcard.clickable{cursor:pointer}
+.hcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;transition:all .2s}
+.hcard.click{cursor:pointer}
+.hcard.click:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .hcard-num{font-size:26px;font-weight:700;letter-spacing:-.03em;font-family:'DM Mono',monospace;margin-bottom:2px}
 .hcard-label{font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
 .hcard-sub{font-size:11px;color:var(--ink4);margin-top:3px}
 .hcard-num.blue{color:var(--blue)}.hcard-num.green{color:var(--green)}.hcard-num.red{color:var(--red)}.hcard-num.amber{color:var(--amber)}
-.support-split{display:flex;gap:0;height:100%}
-.ss-half{flex:1;display:flex;flex-direction:column;justify-content:center;padding:18px 20px}
-.ss-half:first-child{border-right:1px solid var(--border)}
-.ss-num{font-size:20px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-.02em}
-.ss-label{font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.split-card{padding:0;overflow:hidden;display:flex}
+.split-half{flex:1;padding:18px 16px;cursor:pointer;transition:background .15s}
+.split-half:hover{background:var(--surface2)}
+.split-half:first-child{border-right:1px solid var(--border)}
+.split-num{font-size:20px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-.02em}
+.split-label{font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.split-sub{font-size:10px;color:var(--ink4);margin-top:2px}
 
-/* ── OWNER STRIP ── */
-.owner-strip{padding:12px 28px;display:flex;gap:8px;align-items:center;overflow-x:auto}
+.owner-strip{padding:12px 28px;display:flex;gap:8px;overflow-x:auto}
 .owner-strip::-webkit-scrollbar{height:0}
-.owner-pill{display:flex;align-items:center;gap:7px;padding:6px 14px 6px 6px;background:var(--surface);border:1px solid var(--border);border-radius:30px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
-.owner-pill:hover{border-color:var(--blue-mid);background:var(--blue-soft)}
-.owner-pill.active{background:var(--blue);border-color:var(--blue);color:#fff}
-.owner-pill.active .op-name{color:#fff}
-.owner-pill.active .op-arr,.owner-pill.active .op-count{color:rgba(255,255,255,.7)}
+.op{display:flex;align-items:center;gap:7px;padding:6px 14px 6px 6px;background:var(--surface);border:1px solid var(--border);border-radius:30px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.op:hover{border-color:var(--blue-mid)}
+.op.active{background:var(--blue);border-color:var(--blue)}
+.op.active .op-name{color:#fff}
+.op.active .op-meta{color:rgba(255,255,255,.65)}
 .op-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
 .op-name{font-size:12px;font-weight:600;color:var(--ink)}
-.op-arr{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace}
-.op-count{font-size:10px;color:var(--ink4);margin-left:2px}
+.op-meta{font-size:10px;color:var(--ink3)}
 
-/* ── FILTERS ── */
-.filters{padding:0 28px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.filter-chip{background:var(--surface);border:1px solid var(--border);color:var(--ink2);border-radius:20px;padding:5px 13px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
-.filter-chip:hover{border-color:var(--blue-mid);color:var(--blue)}
-.filter-chip.active{background:var(--blue-soft);border-color:var(--blue-mid);color:var(--blue);font-weight:600}
-.filter-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-.search-box{position:relative}
-.search-box input{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 14px 7px 34px;font-size:13px;color:var(--ink);outline:none;width:220px;font-family:inherit;transition:all .15s}
-.search-box input:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(26,86,219,.08)}
-.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink4);font-size:14px;pointer-events:none}
+.stuck-bar{margin:0 28px;background:#fff5f5;border:1px solid #fecaca;border-radius:var(--r);padding:12px 16px;display:none}
+.stuck-bar.show{display:flex;gap:10px;align-items:flex-start}
+.stuck-list{flex:1;display:flex;flex-direction:column;gap:4px;max-height:150px;overflow-y:auto}
+.stuck-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.stuck-key{font-family:'DM Mono',monospace;color:var(--blue);font-weight:600;font-size:11px;text-decoration:none;flex-shrink:0}
+.stuck-key:hover{text-decoration:underline}
+.stuck-sum{color:var(--ink2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stuck-cl{font-size:10px;font-weight:600;color:var(--blue);background:var(--blue-soft);padding:1px 6px;border-radius:5px;flex-shrink:0}
+.stuck-age{font-size:10px;font-weight:700;color:var(--red);flex-shrink:0}
+
+.filters{padding:12px 28px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fchip{background:var(--surface);border:1px solid var(--border);color:var(--ink2);border-radius:20px;padding:5px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.fchip:hover{border-color:var(--blue-mid);color:var(--blue)}
+.fchip.active{background:var(--blue-soft);border-color:var(--blue-mid);color:var(--blue);font-weight:600}
+.filter-right{margin-left:auto;display:flex;gap:8px}
 .sort-sel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 12px;font-size:12px;font-weight:500;color:var(--ink2);outline:none;font-family:inherit;cursor:pointer}
+.search-wrap{position:relative}
+.search-wrap input{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 14px 7px 32px;font-size:13px;color:var(--ink);outline:none;width:210px;font-family:inherit;transition:all .15s}
+.search-wrap input:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(26,86,219,.08)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none}
 
-/* ── TABLE ── */
 .table-wrap{padding:0 28px 28px}
 .table-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow)}
 table{width:100%;border-collapse:collapse}
 thead tr{background:var(--surface2);border-bottom:1px solid var(--border)}
 th{padding:10px 16px;font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;text-align:left;white-space:nowrap}
-tbody tr.dr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+tbody tr.dr{border-bottom:1px solid var(--bg);transition:background .1s;cursor:pointer}
 tbody tr.dr:last-child{border-bottom:none}
 tbody tr.dr:hover{background:#fafbff}
-tbody tr.dr.flag-red{box-shadow:inset 3px 0 0 var(--red)}
-tbody tr.dr.flag-amber{box-shadow:inset 3px 0 0 var(--amber)}
-td{padding:14px 16px;vertical-align:middle}
+tbody tr.dr.fl-red{box-shadow:inset 3px 0 0 var(--red)}
+tbody tr.dr.fl-amber{box-shadow:inset 3px 0 0 var(--amber)}
+tbody tr.dr.fl-purple{box-shadow:inset 3px 0 0 var(--purple)}
+td{padding:13px 16px;vertical-align:middle}
 .cn{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
 .ca{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;margin-top:1px}
 .av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.chip{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.03em;white-space:nowrap;display:inline-block}
-.chip-blue{background:var(--blue-soft);color:var(--blue)}
-.chip-red{background:var(--red-soft);color:var(--red)}
-.chip-amber{background:var(--amber-soft);color:var(--amber)}
-.chip-green{background:var(--green-soft);color:var(--green)}
-.chip-gray{background:var(--surface2);color:var(--ink3)}
-.tc-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.03em;white-space:nowrap;display:inline-block}
+.b-blue{background:var(--blue-soft);color:var(--blue)}
+.b-red{background:var(--red-soft);color:var(--red)}
+.b-amber{background:var(--amber-soft);color:var(--amber)}
+.b-green{background:var(--green-soft);color:var(--green)}
+.b-gray{background:var(--surface2);color:var(--ink3)}
+.b-purple{background:var(--purple-soft);color:var(--purple)}
+.tag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;display:inline-flex;align-items:center;gap:3px;margin-left:5px;vertical-align:middle}
+.tag-support{background:var(--green-soft);color:var(--green)}
+.tag-onboard{background:var(--blue-soft);color:var(--blue)}
+.tag-canton{background:var(--purple-soft);color:var(--purple)}
+.tag-churned{background:var(--red-soft);color:var(--red)}
+.tc-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
 .tc-none{background:var(--green-soft);color:var(--green)}
 .tc-few{background:var(--amber-soft);color:var(--amber)}
 .tc-many{background:var(--red-soft);color:var(--red)}
-.tc-btn:hover{filter:brightness(.95);transform:scale(1.02)}
-.contact-ok{color:var(--ink2);font-family:'DM Mono',monospace;font-size:12px}
-.contact-warn{color:var(--amber);font-weight:600;font-family:'DM Mono',monospace;font-size:12px}
-.contact-over{color:var(--red);font-weight:600;font-family:'DM Mono',monospace;font-size:12px}
-.sup-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;background:var(--green-soft);color:var(--green);margin-left:6px;vertical-align:middle}
-.act-btns{display:flex;gap:4px;opacity:0;transition:opacity .15s}
-tbody tr.dr:hover .act-btns{opacity:1}
-.act-btn{background:var(--surface2);border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:500;color:var(--ink2);cursor:pointer;font-family:inherit;transition:all .15s}
-.act-btn:hover{background:var(--surface3);color:var(--ink)}
-.act-btn.del:hover{background:var(--red-soft);color:var(--red)}
-.act-btn.contact{background:var(--green-soft);color:var(--green);font-weight:600}
-.act-btn.contact:hover{background:var(--green-mid);color:var(--green)}
+.tc-btn:hover{filter:brightness(.93)}
+.ct-ok{color:var(--ink2);font-family:'DM Mono',monospace;font-size:12px}
+.ct-warn{color:var(--amber);font-weight:600;font-family:'DM Mono',monospace;font-size:12px}
+.ct-over{color:var(--red);font-weight:600;font-family:'DM Mono',monospace;font-size:12px}
+.acts{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+tbody tr.dr:hover .acts{opacity:1}
+.act{background:var(--surface2);border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:500;color:var(--ink2);cursor:pointer;font-family:inherit;transition:all .15s}
+.act:hover{background:var(--surface3)}
+.act.green{color:var(--green);background:var(--green-soft)}
+.act.green:hover{background:var(--green-mid)}
+.act.red:hover{background:var(--red-soft);color:var(--red)}
+.act.amber:hover{background:var(--amber-soft);color:var(--amber)}
 .empty-state{padding:60px;text-align:center;color:var(--ink3)}
-.es-icon{font-size:40px;margin-bottom:12px;opacity:.2}
-.es-text{font-size:14px;font-weight:500}
+.es-icon{font-size:36px;margin-bottom:12px;opacity:.2}
 .loading-state{padding:60px;text-align:center;color:var(--ink3)}
 .spinner{width:28px;height:28px;border:2.5px solid var(--surface3);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── JIRA VIEW ── */
-.jira-view{padding:0 28px 28px;display:none}
-.jira-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+/* JIRA VIEW */
+.jira-wrap{padding:0 28px 28px;display:none}
+.jira-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .jira-title{font-size:16px;font-weight:700;letter-spacing:-.02em}
-.jira-filters{display:flex;gap:8px}
-.jt-list{display:flex;flex-direction:column;gap:6px}
-.jt{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-decoration:none;transition:all .15s;cursor:pointer}
+.arr-banner{background:var(--amber-soft);border:1px solid var(--amber-mid);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.arr-num{font-size:22px;font-weight:700;color:var(--amber);font-family:'DM Mono',monospace}
+.arr-label{font-size:12px;color:var(--amber);font-weight:500;margin-top:2px}
+.jt{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-decoration:none;transition:all .15s;margin-bottom:6px}
 .jt:hover{border-color:var(--blue-mid);box-shadow:var(--shadow-md);transform:translateX(2px)}
 .jt.stuck{border-left:3px solid var(--red)}
-.jt-key{font-size:11px;font-family:'DM Mono',monospace;color:var(--blue);font-weight:600;min-width:75px;margin-top:1px}
+.jt-key{font-size:11px;font-family:'DM Mono',monospace;color:var(--blue);font-weight:700;min-width:72px;margin-top:1px;flex-shrink:0}
 .jt-body{flex:1;min-width:0}
 .jt-sum{font-size:13px;font-weight:500;color:var(--ink);line-height:1.4}
-.jt-meta{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
-.jt-client{font-size:11px;font-weight:600;color:var(--blue);background:var(--blue-soft);padding:2px 8px;border-radius:6px}
-.jt-arr{font-size:11px;color:var(--green);font-weight:600;font-family:'DM Mono',monospace;background:var(--green-soft);padding:2px 7px;border-radius:6px}
+.jt-meta{display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap}
+.jt-cl{font-size:11px;font-weight:600;color:var(--blue);background:var(--blue-soft);padding:2px 7px;border-radius:5px}
+.jt-arr{font-size:11px;font-weight:600;color:var(--green);background:var(--green-soft);padding:2px 7px;border-radius:5px;font-family:'DM Mono',monospace}
 .jt-age{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
-.jt-assignee{font-size:11px;color:var(--ink3)}
 .jt-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
-.jt-arr-total{background:var(--amber-soft);border:1px solid var(--amber-mid);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-.jt-arr-total-num{font-size:22px;font-weight:700;color:var(--amber);font-family:'DM Mono',monospace;letter-spacing:-.02em}
-.jt-arr-total-label{font-size:12px;color:var(--amber);font-weight:500}
+.st{font-size:10px;padding:3px 8px;border-radius:5px;font-weight:600;white-space:nowrap}
+.st-prog{background:var(--blue-soft);color:var(--blue)}
+.st-todo{background:var(--surface2);color:var(--ink3)}
+.st-wait{background:var(--amber-soft);color:var(--amber)}
+.st-block{background:var(--red-soft);color:var(--red)}
+.st-done{background:var(--green-soft);color:var(--green)}
+.pri{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600}
+.pri-highest,.pri-high{background:var(--red-soft);color:var(--red)}
+.pri-medium{background:var(--amber-soft);color:var(--amber)}
+.pri-low{background:var(--green-soft);color:var(--green)}
 
-/* ── SIDE PANEL ── */
+/* PANEL */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:200;display:none;backdrop-filter:blur(2px)}
 .overlay.open{display:block}
 .panel{position:fixed;top:0;right:-540px;width:520px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:201;transition:right .3s cubic-bezier(.25,.46,.45,.94);display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
@@ -175,37 +179,31 @@ tbody tr.dr:hover .act-btns{opacity:1}
 .ph{padding:22px 24px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
 .ph-title{font-size:17px;font-weight:700;letter-spacing:-.02em}
 .ph-sub{font-size:12px;color:var(--ink3);margin-top:3px}
-.ph-close{background:var(--surface2);border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--ink3);transition:all .15s;flex-shrink:0}
-.ph-close:hover{background:var(--surface3);color:var(--ink)}
+.ph-close{background:var(--surface2);border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--ink3);transition:all .15s}
+.ph-close:hover{background:var(--surface3)}
 .p-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);flex-shrink:0}
 .ps{background:var(--surface);padding:14px 18px;text-align:center}
 .ps-n{font-size:20px;font-weight:700;font-family:'DM Mono',monospace}
 .ps-l{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
 .p-body{flex:1;overflow-y:auto;padding:18px 24px}
-.pt{display:flex;flex-direction:column;gap:6px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;text-decoration:none;transition:all .15s;cursor:pointer}
+.pt{display:flex;flex-direction:column;gap:6px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;text-decoration:none;transition:all .15s}
 .pt:hover{border-color:var(--blue-mid);background:var(--blue-soft)}
 .pt.stuck{border-left:3px solid var(--red)}
+.pt.possible{border-style:dashed;opacity:.85}
 .pt-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .pt-key{font-size:11px;font-family:'DM Mono',monospace;color:var(--blue);font-weight:700;min-width:70px}
 .pt-proj{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;text-transform:uppercase}
-.cib{background:var(--blue-soft);color:var(--blue)}
-.sawp{background:var(--green-soft);color:var(--green)}
-.pt-pri-high,.pt-pri-highest{background:var(--red-soft);color:var(--red);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600}
-.pt-pri-medium{background:var(--amber-soft);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600}
-.pt-pri-low{background:var(--green-soft);color:var(--green);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600}
-.pt-stuck-tag{font-size:10px;color:var(--red);font-weight:600}
+.cib{background:var(--blue-soft);color:var(--blue)}.sawp{background:var(--green-soft);color:var(--green)}
+.pt-possible{font-size:10px;background:#fef9c3;color:#854d0e;padding:2px 7px;border-radius:5px;font-weight:600}
+.pt-stuck{font-size:10px;color:var(--red);font-weight:600}
 .pt-sum{font-size:13px;font-weight:500;color:var(--ink);line-height:1.4}
 .pt-bot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pt-st{font-size:10px;padding:2px 8px;border-radius:5px;font-weight:600}
-.st-prog{background:var(--blue-soft);color:var(--blue)}
-.st-todo{background:var(--surface3);color:var(--ink3)}
-.st-wait{background:var(--amber-soft);color:var(--amber)}
-.st-block{background:var(--red-soft);color:var(--red)}
 .pt-age{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+.possible-hdr{font-size:10px;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:.07em;margin:14px 0 8px;padding:8px 10px;background:#fef9c3;border-radius:6px}
 
-/* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.modal-overlay.open{display:flex}
+/* MODAL */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.moverlay.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .2s ease}
 @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .modal h3{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:20px}
@@ -213,28 +211,25 @@ tbody tr.dr:hover .act-btns{opacity:1}
 .fg label{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em}
 .fg input,.fg select,.fg textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:9px 13px;color:var(--ink);font-size:13px;outline:none;font-family:inherit;transition:all .15s;width:100%}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.08);background:#fff}
-.fg textarea{resize:vertical}
 .mg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .full{grid-column:span 2}
 .ma{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
-.btn-cancel{background:none;border:1px solid var(--border2);color:var(--ink2);border-radius:var(--r-sm);padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s}
-.btn-cancel:hover{background:var(--surface2)}
-.btn-save{background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 1px 3px rgba(26,86,219,.3)}
-.btn-save:hover{background:#1446c0;box-shadow:0 3px 10px rgba(26,86,219,.3)}
-.import-note{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--ink2);margin-bottom:16px;line-height:1.7}
+.btn-cancel{background:none;border:1px solid var(--border2);color:var(--ink2);border-radius:var(--r-sm);padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit}
+.btn-save{background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 1px 3px rgba(26,86,219,.3)}
+.btn-save:hover{background:#1446c0}
+.import-note{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--ink2);margin-bottom:14px;line-height:1.7}
 .import-note code{background:var(--surface3);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px}
-.err-msg{color:var(--red);font-size:12px;margin-top:8px;display:none}
-.ok-msg{color:var(--green);font-size:12px;margin-top:8px;display:none}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0d0f12;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:500;opacity:0;transition:opacity .3s;box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none}
 </style>
 </head>
 <body>
+<div id="toast"></div>
 
-<!-- TOPBAR -->
 <div class="topbar">
   <div class="brand">
-    <div class="brand-mark">
-      <svg width="14" height="14" viewBox="0 0 16 16"><polygon points="8,1 15,4.5 15,11.5 8,15 1,11.5 1,4.5" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
-    </div>
+    <div class="brand-mark"><svg width="14" height="14" viewBox="0 0 16 16"><polygon points="8,1 15,4.5 15,11.5 8,15 1,11.5 1,4.5" fill="none" stroke="#fff" stroke-width="1.5"/></svg></div>
     <div class="brand-name"><span>Bitwave</span> · Solutions Hub</div>
   </div>
   <div class="topbar-right">
@@ -242,48 +237,36 @@ tbody tr.dr:hover .act-btns{opacity:1}
       <button class="view-tab active" onclick="switchView('clients',this)">Clients</button>
       <button class="view-tab" onclick="switchView('jira',this)">Jira Tickets</button>
     </div>
-    <div class="live-badge">
-      <span class="live-dot" id="live-dot"></span>
-      <span id="live-label">Loading</span>
-    </div>
-    <button class="btn-ghost" onclick="loadAll()">↻ Refresh</button>
-    <button class="btn-ghost" onclick="exportCSV()">↓ Export</button>
-    <button class="btn-ghost" onclick="openDigest()">📋 Weekly digest</button>
+    <div class="live-badge"><span class="live-dot" id="live-dot"></span><span id="live-label">Loading</span></div>
+    <button class="btn" onclick="loadAll()">↻ Refresh</button>
+    <button class="btn" onclick="exportCSV()">↓ Export</button>
+    <button class="btn" onclick="openDigest()">📋 Digest</button>
     <button class="btn-primary" onclick="openAdd()">+ Add client</button>
-    <button class="btn-ghost" onclick="openImport()">↑ CSV</button>
+    <button class="btn" onclick="openImport()">↑ CSV</button>
   </div>
 </div>
 
-<!-- HERO STATS -->
-<div class="hero" id="hero-wrap">
-  <div class="hero-grid" id="hero"></div>
-</div>
-
-<!-- STUCK ALERTS -->
-<div id="stuck-banner" style="display:none;margin:0 28px 0;padding:12px 16px;background:#fff5f5;border:1px solid #fecaca;border-radius:10px;display:flex;align-items:flex-start;gap:12px">
+<div class="hero"><div class="hero-grid" id="hero"></div></div>
+<div class="owner-strip" id="owner-strip"></div>
+<div class="stuck-bar" id="stuck-bar">
   <span style="font-size:16px;flex-shrink:0">🚨</span>
   <div style="flex:1">
-    <div style="font-size:12px;font-weight:700;color:#e02424;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em" id="stuck-title">Stuck tickets — no update in 7+ days</div>
-    <div id="stuck-list" style="display:flex;flex-direction:column;gap:4px"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px" id="stuck-title">Stuck tickets</div>
+    <div class="stuck-list" id="stuck-list"></div>
   </div>
 </div>
-
-<!-- OWNER STRIP -->
-<div class="owner-strip" id="owner-strip"></div>
-
-<!-- FILTERS -->
 <div class="filters">
-  <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
-  <button class="filter-chip" onclick="setFilter('active',this)">Active</button>
-  <button class="filter-chip" onclick="setFilter('at_risk',this)">At risk</button>
-  <button class="filter-chip" onclick="setFilter('overdue',this)">Overdue</button>
-  <button class="filter-chip" onclick="setFilter('tickets',this)">Has tickets</button>
-  <button class="filter-chip" onclick="setFilter('support',this)">🎧 In support</button>
-  <button class="filter-chip" onclick="setFilter('onboarding',this)">🚀 Onboarding</button>
-  <button class="filter-chip" onclick="setFilter('canton',this)">⬡ Canton</button>
-  <button class="filter-chip" onclick="setFilter('churned',this)">💀 Churned</button>
+  <button class="fchip active" onclick="setF('all',this)">All</button>
+  <button class="fchip" onclick="setF('active',this)">Active</button>
+  <button class="fchip" onclick="setF('at_risk',this)">At risk</button>
+  <button class="fchip" onclick="setF('overdue',this)">Overdue</button>
+  <button class="fchip" onclick="setF('tickets',this)">Has tickets</button>
+  <button class="fchip" onclick="setF('support',this)">🎧 Support</button>
+  <button class="fchip" onclick="setF('onboarding',this)">🚀 Onboarding</button>
+  <button class="fchip" onclick="setF('canton',this)">⬡ Canton</button>
+  <button class="fchip" onclick="setF('churned',this)">💀 Churned</button>
   <div class="filter-right">
-    <select class="sort-sel" id="sort-sel" onchange="render()">
+    <select class="sort-sel" id="sort-sel" onchange="renderTable()">
       <option value="risk">Risk first</option>
       <option value="arr_desc">ARR ↓</option>
       <option value="arr_asc">ARR ↑</option>
@@ -291,78 +274,49 @@ tbody tr.dr:hover .act-btns{opacity:1}
       <option value="tickets">Most tickets</option>
       <option value="contact">Last contact</option>
     </select>
-    <div class="search-box">
+    <div class="search-wrap">
       <span class="search-icon">⌕</span>
-      <input id="search" placeholder="Search clients or owners..." oninput="render()"/>
+      <input id="search" placeholder="Search clients or owners..." oninput="renderTable()"/>
     </div>
   </div>
 </div>
 
-<!-- CLIENTS TABLE -->
 <div class="table-wrap" id="clients-view">
   <div class="table-box">
-    <div class="loading-state" id="loading"><div class="spinner"></div>Loading clients and Jira tickets...</div>
+    <div class="loading-state" id="loading"><div class="spinner"></div>Loading from database...</div>
     <table id="tbl" style="display:none">
       <thead><tr>
-        <th>Client</th>
-        <th>Owner</th>
-        <th>Status</th>
-        <th>Last contact</th>
-        <th>Open tickets</th>
-        <th style="width:1%"></th>
+        <th>Client</th><th>Owner</th><th>Status</th><th>Last contact</th><th>Open tickets</th><th style="width:1%"></th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
-    <div class="empty-state" id="empty" style="display:none">
-      <div class="es-icon">◈</div>
-      <div class="es-text">No clients match this filter</div>
-    </div>
+    <div class="empty-state" id="empty" style="display:none"><div class="es-icon">◈</div><p>No clients match this filter</p></div>
   </div>
 </div>
 
-<!-- JIRA VIEW -->
-<div class="jira-view" id="jira-view">
-  <div class="jira-header">
+<div class="jira-wrap" id="jira-view">
+  <div class="jira-hdr">
     <div class="jira-title">All open Jira tickets</div>
-    <div class="jira-filters">
-      <select class="sort-sel" id="jira-filter" onchange="renderJira()">
+    <div style="display:flex;gap:8px">
+      <select class="sort-sel" id="jira-f" onchange="renderJira()">
         <option value="all">All projects</option>
         <option value="CIB">CIB only</option>
         <option value="SAWP">SAWP only</option>
-        <option value="stuck">Stuck 5d+</option>
+        <option value="stuck">Stuck 7d+</option>
         <option value="high">High priority</option>
       </select>
-      <div class="search-box">
-        <span class="search-icon">⌕</span>
-        <input id="jira-search" placeholder="Search tickets..." oninput="renderJira()"/>
-      </div>
+      <div class="search-wrap"><span class="search-icon">⌕</span><input id="jira-search" placeholder="Search tickets..." oninput="renderJira()"/></div>
     </div>
   </div>
-  <div id="jira-arr-banner"></div>
-  <div class="jt-list" id="jt-list"></div>
-</div>
-
-<!-- DIGEST MODAL -->
-<div class="modal-overlay" id="dmodal" onclick="if(event.target===this)closeDig()">
-  <div class="modal" style="width:600px">
-    <h3>📋 Weekly Team Digest</h3>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:16px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.8;color:var(--ink2);max-height:400px;overflow-y:auto;white-space:pre-wrap" id="digest-text"></div>
-    <div class="ma">
-      <button class="btn-cancel" onclick="closeDig()">Close</button>
-      <button class="btn-save" onclick="copyDigest()">📋 Copy to clipboard</button>
-    </div>
-    <div id="copy-ok" style="font-size:12px;color:var(--green);text-align:center;margin-top:8px;display:none">✓ Copied to clipboard</div>
-  </div>
+  <div id="arr-banner"></div>
+  <div id="jt-list"></div>
 </div>
 
 <!-- SIDE PANEL -->
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
   <div class="ph">
-    <div>
-      <div class="ph-title" id="ph-title">Tickets</div>
-      <div class="ph-sub" id="ph-sub"></div>
-    </div>
+    <div><div class="ph-title" id="ph-title">Tickets</div><div class="ph-sub" id="ph-sub"></div></div>
     <button class="ph-close" onclick="closePanel()">✕</button>
   </div>
   <div class="p-stats" id="p-stats"></div>
@@ -370,14 +324,14 @@ tbody tr.dr:hover .act-btns{opacity:1}
 </div>
 
 <!-- CLIENT MODAL -->
-<div class="modal-overlay" id="cmodal" onclick="if(event.target===this)closeModal()">
+<div class="moverlay" id="cmodal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <h3 id="modal-ttl">Add client</h3>
     <div class="mg">
       <div class="fg full"><label>Client name *</label><input id="f-name" placeholder="e.g. Ava Labs"/></div>
       <div class="fg"><label>SA Owner</label><input id="f-owner" placeholder="e.g. Kashif"/></div>
       <div class="fg"><label>ARR (USD)</label><input id="f-arr" type="number" placeholder="120000"/></div>
-      <div class="fg full"><label>Owner email (Jira matching)</label><input id="f-email" placeholder="c.kashif.amin@bitwave.io"/></div>
+      <div class="fg full"><label>Owner email (for Jira matching)</label><input id="f-email" placeholder="c.kashif.amin@bitwave.io"/></div>
       <div class="fg"><label>Status</label>
         <select id="f-status">
           <option value="in_progress">In Progress</option>
@@ -387,25 +341,22 @@ tbody tr.dr:hover .act-btns{opacity:1}
           <option value="not_started">Not Started</option>
         </select>
       </div>
-      <div class="fg"><label>Follow-up (days)</label>
+      <div class="fg"><label>Follow-up threshold</label>
         <select id="f-threshold"><option value="7">7 days</option><option value="14" selected>14 days</option><option value="30">30 days</option></select>
       </div>
-      <div class="fg"><label>Last contact</label><input id="f-contact" type="date"/></div>
+      <div class="fg"><label>Last contact date</label><input id="f-contact" type="date"/></div>
       <div class="fg"><label>Slack channel</label><input id="f-slack" placeholder="client-support"/></div>
-      <div class="fg"><label>Lifecycle stage</label>
+      <div class="fg"><label>Lifecycle</label>
         <select id="f-support">
-          <option value="no">🚀 Onboarding — not yet in support</option>
+          <option value="no">🚀 Onboarding</option>
           <option value="yes">🎧 In support</option>
         </select>
       </div>
       <div class="fg"><label>Canton integration</label>
-        <select id="f-canton">
-          <option value="">No Canton</option>
-          <option value="yes">⬡ Has Canton</option>
-        </select>
+        <select id="f-canton"><option value="">No Canton</option><option value="yes">⬡ Has Canton</option></select>
       </div>
     </div>
-    <div class="err-msg" id="merr"></div>
+    <div style="color:var(--red);font-size:12px;display:none" id="merr"></div>
     <div class="ma">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save" onclick="saveClient()" id="msave">Add client</button>
@@ -414,167 +365,201 @@ tbody tr.dr:hover .act-btns{opacity:1}
 </div>
 
 <!-- IMPORT MODAL -->
-<div class="modal-overlay" id="imodal" onclick="if(event.target===this)closeImport()">
+<div class="moverlay" id="imodal" onclick="if(event.target===this)closeImport()">
   <div class="modal" style="width:540px">
     <h3>Import clients from CSV</h3>
     <div class="import-note">
-      Columns in order: <code>name</code>, <code>owner</code>, <code>ownerEmail</code>, <code>arr</code>, <code>status</code>, <code>lastContact</code>, <code>threshold</code>, <code>slackChannel</code>, <code>inSupport</code><br/>
-      First row can be a header — it will be skipped. Duplicates are skipped automatically.
+      Column order: <code>name</code>, <code>owner</code>, <code>ownerEmail</code>, <code>arr</code>, <code>status</code>, <code>lastContact</code>, <code>threshold</code>, <code>slackChannel</code>, <code>inSupport</code><br/>
+      First row can be a header — skipped automatically. Duplicates are skipped.
     </div>
-    <div class="fg"><label>Paste CSV</label>
-      <textarea id="icsv" rows="10" placeholder="name,owner,arr,status&#10;Ava Labs,Xeres,200000,in_progress&#10;Cumberland,Kashif,140000,in_progress"></textarea>
-    </div>
-    <div class="ok-msg" id="iok"></div>
+    <div class="fg"><label>Paste CSV</label><textarea id="icsv" rows="9" placeholder="name,owner,arr,status&#10;Ava Labs,Xeres,200000,in_progress"></textarea></div>
+    <div style="font-size:12px;color:var(--green);display:none;margin-bottom:8px" id="iok"></div>
     <div class="ma">
       <button class="btn-cancel" onclick="closeImport()">Cancel</button>
-      <button class="btn-save" onclick="doImport()">Import</button>
+      <button class="btn-save" onclick="doImport()">Import to database</button>
     </div>
+  </div>
+</div>
+
+<!-- DIGEST MODAL -->
+<div class="moverlay" id="dmodal" onclick="if(event.target===this)closeDig()">
+  <div class="modal" style="width:600px">
+    <h3>📋 Weekly Team Digest</h3>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:16px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.8;color:var(--ink2);max-height:400px;overflow-y:auto;white-space:pre-wrap" id="digest-text"></div>
+    <div class="ma">
+      <button class="btn-cancel" onclick="closeDig()">Close</button>
+      <button class="btn-save" onclick="copyDigest()">📋 Copy to clipboard</button>
+    </div>
+    <div style="font-size:12px;color:var(--green);text-align:center;margin-top:8px;display:none" id="copy-ok">✓ Copied!</div>
   </div>
 </div>
 
 <script>
 // ── CONFIG ──
+const SUPABASE_URL = 'https://ozkfingocfzrfneijtxc.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im96a2ZpbmdvY2Z6cmZuZWlqdHhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNDk5MDgsImV4cCI6MjA5MjYyNTkwOH0.ZzbyZc2_umnpJASFbBNQX-JTdTU5BcW0y8TjLVcQ98E'
+const SB_HEADERS = {'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'}
 const SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLiidNVrvJry5SYilGIKm7f76KoroRblKraPNXcD2mP9YwqzsSvug6xLyKsPri-SOLVE-cmgj1WnZ_/pub?gid=1701754036&single=true&output=csv'
 
 // ── STATE ──
-let clients = JSON.parse(localStorage.getItem('bw_clients') || '[]')
+let clients = []
 let tickets = []
 let activeFilter = 'all'
 let activeOwner = ''
 let activeView = 'clients'
 let editId = null
 
-// ── COLORS ──
-const OWNER_COLORS = ['#1a56db','#0e9f6e','#d97706','#7c3aed','#e02424','#0891b2','#be185d','#059669']
-// Valid SA names - only these show in the owner strip
-const VALID_OWNERS = ['payal','lovish','xeres','joan','anthony','chris','kashif','angel','ahtisham','thea','riaz','david','raag','ren','pinhua','jeremy','jesse']
-function isValidOwner(name) {
-  if(!name) return false
-  const n = name.toLowerCase().trim()
-  // Must be a real person name - at least 3 chars, no numbers, matches known list or looks like a name
-  if(n.length < 3) return false
-  if(/\d/.test(n)) return false
-  if(VALID_OWNERS.some(v => n.includes(v))) return true
-  // Also accept any single/double word name that looks like a person (no special chars)
-  return /^[a-z]+ ?[a-z]*$/.test(n) && n.length >= 4 && n.length <= 25
+// ── SUPABASE ──
+async function sbGet() {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/clients?select=*&order=name.asc`, {headers:SB_HEADERS})
+  if(!r.ok) throw new Error(await r.text())
+  return r.json()
 }
-const ownerColor = name => OWNER_COLORS[Math.abs([...name].reduce((h,c)=>Math.imul(31,h)+c.charCodeAt(0)|0,0))%OWNER_COLORS.length]
+
+async function sbUpsert(client) {
+  // Map JS fields to DB columns
+  const row = {
+    id: client.id,
+    name: client.name,
+    owner: client.owner||null,
+    owner_email: client.ownerEmail||null,
+    arr: Number(client.arr)||0,
+    status: client.status||'in_progress',
+    last_contact: client.lastContact||null,
+    threshold: Number(client.threshold)||14,
+    slack_channel: client.slackChannel||null,
+    in_support: client.inSupport==='yes',
+    lifecycle: client.lifecycle||'onboarding',
+    canton: !!client.canton,
+    churned: !!client.churned,
+    churn_date: client.churnDate||null,
+    updated_at: new Date().toISOString()
+  }
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/clients`, {
+    method:'POST',
+    headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=representation'},
+    body: JSON.stringify(row)
+  })
+  if(!r.ok) throw new Error(await r.text())
+  return r.json()
+}
+
+async function sbPatch(id, updates) {
+  // Map JS field names to DB column names
+  const dbUpdates = {}
+  if(updates.lastContact!==undefined) dbUpdates.last_contact = updates.lastContact||null
+  if(updates.status!==undefined) dbUpdates.status = updates.status
+  if(updates.inSupport!==undefined) dbUpdates.in_support = updates.inSupport==='yes'
+  if(updates.lifecycle!==undefined) dbUpdates.lifecycle = updates.lifecycle
+  if(updates.canton!==undefined) dbUpdates.canton = !!updates.canton
+  if(updates.churned!==undefined) dbUpdates.churned = !!updates.churned
+  if(updates.churnDate!==undefined) dbUpdates.churn_date = updates.churnDate||null
+  dbUpdates.updated_at = new Date().toISOString()
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/clients?id=eq.${id}`, {
+    method:'PATCH', headers:SB_HEADERS, body:JSON.stringify(dbUpdates)
+  })
+  if(!r.ok) throw new Error(await r.text())
+}
+
+// Map DB row to JS client object
+function rowToClient(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    owner: row.owner||'',
+    ownerEmail: row.owner_email||'',
+    arr: row.arr||0,
+    status: row.status||'in_progress',
+    lastContact: row.last_contact||'',
+    threshold: row.threshold||14,
+    slackChannel: row.slack_channel||'',
+    inSupport: row.in_support?'yes':'no',
+    lifecycle: row.lifecycle||'onboarding',
+    canton: !!row.canton,
+    churned: !!row.churned,
+    churnDate: row.churn_date||'',
+    updatedAt: row.updated_at
+  }
+}
 
 // ── HELPERS ──
-const dSince = d => !d ? 9999 : Math.floor((Date.now()-new Date(d).getTime())/86400000)
-const fARR = n => { n=Number(n)||0; return n>=1000000?'$'+(n/1e6).toFixed(1)+'M':'$'+(n/1000).toFixed(0)+'k' }
-const ini = n => (n||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()
-const escHtml = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+const OWNER_COLORS=['#1a56db','#0e9f6e','#d97706','#7c3aed','#e02424','#0891b2','#be185d','#059669']
+const VALID_OWNERS=['payal','lovish','xeres','joan','anthony','chris','kashif','angel','ahtisham','thea','riaz','david','raag','ren','pinhua','jeremy','jesse']
+const ownerColor=n=>OWNER_COLORS[Math.abs([...n].reduce((h,c)=>Math.imul(31,h)+c.charCodeAt(0)|0,0))%OWNER_COLORS.length]
+const isValidOwner=n=>{if(!n)return false;const l=n.toLowerCase().trim();if(l.length<3||/\d/.test(l))return false;if(VALID_OWNERS.some(v=>l.includes(v)))return true;return /^[a-z]+ ?[a-z]*$/.test(l)&&l.length>=4&&l.length<=25}
+const dSince=d=>!d?9999:Math.floor((Date.now()-new Date(d).getTime())/86400000)
+const fARR=n=>{n=Number(n)||0;return n>=1000000?'$'+(n/1e6).toFixed(1)+'M':'$'+(n/1000).toFixed(0)+'k'}
+const ini=n=>(n||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+const DONE_ST=['done','closed','resolved','sa: task completed','completed','sa: completed']
+const isDone=t=>DONE_ST.some(s=>t.status.toLowerCase().includes(s))
 
-function statusChip(s) {
-  const map = {in_progress:['chip-blue','In Progress'],at_risk:['chip-amber','At Risk'],blocked:['chip-red','Blocked'],completed:['chip-green','Completed'],not_started:['chip-gray','Not Started'],Green:['chip-green','Active'],Yellow:['chip-amber','Needs Attention'],Red:['chip-red','At Risk']}
-  const [cls,lbl] = map[s] || ['chip-gray', s||'Unknown']
-  return `<span class="chip ${cls}">${lbl}</span>`
+function statusBadge(s) {
+  const m={in_progress:['b-blue','In Progress'],at_risk:['b-amber','At Risk'],blocked:['b-red','Blocked'],completed:['b-green','Completed'],not_started:['b-gray','Not Started'],Green:['b-green','Active'],Yellow:['b-amber','Needs Attention'],Red:['b-red','At Risk']}
+  const [c,l]=m[s]||['b-gray',s||'—']
+  return `<span class="badge ${c}">${l}</span>`
 }
+function statusOrder(s){return{blocked:0,Red:0,at_risk:1,Yellow:1,in_progress:2,Green:2,not_started:3,completed:4}[s]||5}
+function ctClass(c){const d=dSince(c.lastContact),t=Number(c.threshold)||14;return d>=t*2?'ct-over':d>=t?'ct-warn':'ct-ok'}
+function flagClass(c){const d=dSince(c.lastContact),t=Number(c.threshold)||14;if(c.churned)return'fl-purple';if(d>=t*2)return'fl-red';if(d>=t)return'fl-amber';return''}
 
-function statusOrder(s) {
-  return {blocked:0,Red:0,at_risk:1,Yellow:1,in_progress:2,Green:2,not_started:3,completed:4}[s]||5
-}
+// ── TICKET MATCHING ──
+const STOP=new Set(['the','and','for','with','from','that','this','have','been','will','not','are','was','its','into','our','their','your','all','one','can','has','but','also'])
+function sigWords(s){return s.toLowerCase().split(/[\s\-\/\(\)\[\]]+/).filter(w=>w.length>3&&!STOP.has(w))}
 
-function contactClass(c) {
-  const d=dSince(c.lastContact),t=Number(c.threshold)||14
-  return d>=t*2?'contact-over':d>=t?'contact-warn':'contact-ok'
-}
-
-function flagClass(c) {
-  const d=dSince(c.lastContact),t=Number(c.threshold)||14
-  return d>=t*2?'flag-red':d>=t?'flag-amber':''
-}
-
-// ── TICKET MATCH ──
-const STOP_WORDS = new Set(['the','and','for','with','from','that','this','have','been','will','not','are','was','its','into','our','their','your','all','one','can','has','but','also','more','when','some','than','then','only','just','over'])
-
-function significant(name) {
-  return name.toLowerCase().split(/[\s\-\/\(\)\[\]]+/).filter(w=>w.length>3&&!STOP_WORDS.has(w))
-}
-
-// Returns: 'exact' | 'partial' | null
-function matchType(clientName, ticketSummary, ownerEmail, assigneeEmail) {
-  const name = (clientName||'').toLowerCase()
-  const txt = (ticketSummary||'').toLowerCase()
-  const ns = name.replace(/\s+/g,'')
-  const txtns = txt.replace(/\s+/g,'')
-  const email = (ownerEmail||'').toLowerCase()
-
-  // Exact matches
-  if(txt.includes(name)) return 'exact'
-  if(txtns.includes(ns)) return 'exact'
-  if(email && assigneeEmail && email===assigneeEmail.toLowerCase()) return 'exact'
-
-  // All significant words match
-  const cWords = significant(name)
-  if(cWords.length>1 && cWords.every(w=>txt.includes(w))) return 'exact'
-
-  // Partial - any significant word matches
-  const tWords = significant(txt)
-  if(cWords.some(cw=>tWords.some(tw=>tw.includes(cw)||cw.includes(tw)))) return 'partial'
-
+function matchType(c,t) {
+  const name=(c.name||'').toLowerCase()
+  const txt=(t.summary||'').toLowerCase()
+  const ns=name.replace(/\s+/g,'')
+  const email=(c.ownerEmail||'').toLowerCase()
+  if(txt.includes(name)||txt.replace(/\s+/g,'').includes(ns)) return 'exact'
+  if(email&&(t.assignee||'').toLowerCase()===email) return 'exact'
+  const cw=sigWords(name);const tw=sigWords(txt)
+  if(cw.length>1&&cw.every(w=>txt.includes(w))) return 'exact'
+  if(cw.some(cw=>tw.some(tw=>tw.includes(cw)||cw.includes(tw)))) return 'partial'
   return null
 }
 
-function isDone(t) {
-  return ['Done','Closed','Resolved','SA: Task Completed','Completed'].some(s=>t.status.toLowerCase().includes(s.toLowerCase()))
-}
+function cTickets(c){return tickets.filter(t=>!isDone(t)&&matchType(c,t)==='exact')}
+function cPossible(c){return tickets.filter(t=>!isDone(t)&&matchType(c,t)==='partial')}
+function matchClient(t){return clients.find(c=>matchType(c,t)==='exact')||clients.find(c=>matchType(c,t)==='partial')}
 
-function cTickets(c) {
-  return tickets.filter(t=>{
-    if(isDone(t)) return false
-    const mt = matchType(c.name, t.summary, c.ownerEmail, t.assignee)
-    return mt==='exact'
-  })
-}
-
-function cPossibleTickets(c) {
-  return tickets.filter(t=>{
-    if(isDone(t)) return false
-    const mt = matchType(c.name, t.summary, c.ownerEmail, t.assignee)
-    return mt==='partial'
-  })
-}
-
-function matchClient(t) {
-  // First try exact match
-  const exact = clients.find(c=>matchType(c.name,t.summary,c.ownerEmail,t.assignee)==='exact')
-  if(exact) return exact
-  // Fall back to partial
-  return clients.find(c=>matchType(c.name,t.summary,c.ownerEmail,t.assignee)==='partial')
+function stClass(s){
+  const l=s.toLowerCase()
+  if(l.includes('progress')||l.includes('review')) return 'st-prog'
+  if(l.includes('block')) return 'st-block'
+  if(l.includes('waiting')) return 'st-wait'
+  if(DONE_ST.some(d=>l.includes(d))) return 'st-done'
+  return 'st-todo'
 }
 
 // ── VIEWS ──
-function switchView(v, btn) {
-  activeView = v
+function switchView(v,btn) {
+  activeView=v
   document.querySelectorAll('.view-tab').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
-  document.getElementById('clients-view').style.display = v==='clients'?'':'none'
-  document.getElementById('jira-view').style.display = v==='jira'?'':'none'
-  document.getElementById('hero-wrap').style.display = v==='clients'?'':'none'
-  document.getElementById('owner-strip').style.display = v==='clients'?'':'none'
-  document.querySelector('.filters').style.display = v==='clients'?'':'none'
+  document.getElementById('clients-view').style.display=v==='clients'?'':'none'
+  document.getElementById('jira-view').style.display=v==='jira'?'':'none'
+  document.querySelector('.hero').style.display=v==='clients'?'':'none'
+  document.getElementById('owner-strip').style.display=v==='clients'?'':'none'
+  document.querySelector('.filters').style.display=v==='clients'?'':'none'
+  document.getElementById('stuck-bar').style.display=v==='clients'&&document.getElementById('stuck-bar').classList.contains('show')?'flex':'none'
   if(v==='jira') renderJira()
 }
 
 // ── FILTER ──
-function setFilter(f,btn) {
+function setF(f,btn) {
   activeFilter=f
-  // Clear owner filter when clicking All
-  if(f==='all') {
-    activeOwner=''
-    document.querySelectorAll('.owner-pill').forEach(p=>p.classList.remove('active'))
-  }
-  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'))
+  if(f==='all'){activeOwner='';document.querySelectorAll('.op').forEach(p=>p.classList.remove('active'))}
+  document.querySelectorAll('.fchip').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
-  render()
+  renderTable()
 }
 
 function setOwner(o) {
-  activeOwner = activeOwner===o?'':o
-  document.querySelectorAll('.owner-pill').forEach(p=>p.classList.toggle('active',p.dataset.owner===activeOwner))
-  render()
+  activeOwner=activeOwner===o?'':o
+  document.querySelectorAll('.op').forEach(p=>p.classList.toggle('active',p.dataset.owner===activeOwner))
+  renderTable()
 }
 
 function getList() {
@@ -583,14 +568,13 @@ function getList() {
   let list=[...clients]
   if(q) list=list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.owner||'').toLowerCase().includes(q))
   if(activeOwner) list=list.filter(c=>(c.owner||'').toLowerCase()===activeOwner.toLowerCase())
-  // Hide churned from all views except the churned filter
   if(activeFilter!=='churned') list=list.filter(c=>!c.churned)
   if(activeFilter==='active') list=list.filter(c=>!['completed'].includes(c.status))
   else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
   else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
   else if(activeFilter==='tickets') list=list.filter(c=>cTickets(c).length>0)
-  else if(activeFilter==='support') list=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
-  else if(activeFilter==='onboarding') list=list.filter(c=>(c.lifecycle||'').toLowerCase()==='onboarding')
+  else if(activeFilter==='support') list=list.filter(c=>c.inSupport==='yes')
+  else if(activeFilter==='onboarding') list=list.filter(c=>c.lifecycle==='onboarding')
   else if(activeFilter==='canton') list=list.filter(c=>c.canton)
   else if(activeFilter==='churned') list=list.filter(c=>c.churned)
   if(sort==='arr_desc') list.sort((a,b)=>Number(b.arr||0)-Number(a.arr||0))
@@ -602,137 +586,147 @@ function getList() {
   return list
 }
 
-// ── HERO STATS ──
+// ── HERO ──
 function renderHero() {
-  // Always calculate from ALL clients for the top stats
-  const all = clients
-  const list = activeOwner ? clients.filter(c=>(c.owner||'').toLowerCase()===activeOwner.toLowerCase()) : clients
-  const total=list.length
-  const arr=list.reduce((s,c)=>s+Number(c.arr||0),0)
-  const overdue=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length
-  const risk=list.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length
-  const openT=list.reduce((s,c)=>s+cTickets(c).length,0)
-  const inSup=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
-  const inOnboard=list.filter(c=>(c.lifecycle||'').toLowerCase()==='onboarding')
+  const src = activeOwner?clients.filter(c=>(c.owner||'').toLowerCase()===activeOwner.toLowerCase()):clients.filter(c=>!c.churned)
+  const total=src.length,arr=src.reduce((s,c)=>s+Number(c.arr||0),0)
+  const overdue=src.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length
+  const risk=src.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length
+  const openT=src.reduce((s,c)=>s+cTickets(c).length,0)
+  const inSup=src.filter(c=>c.inSupport==='yes')
+  const inOnboard=src.filter(c=>c.lifecycle==='onboarding')
   const arrIn=inSup.reduce((s,c)=>s+Number(c.arr||0),0)
-  const arrOut=arr-arrIn
-  const label = activeOwner ? `${activeOwner}'s clients` : 'All clients'
+  const churned=clients.filter(c=>c.churned)
+  const arrChurned=churned.reduce((s,c)=>s+Number(c.arr||0),0)
 
-  document.getElementById('hero').innerHTML = `
-    <div class="hcard clickable" onclick="setFilter('all',document.querySelector('.filter-chip'))">
+  document.getElementById('hero').innerHTML=`
+    <div class="hcard click" onclick="setF('all',document.querySelector('.fchip'))">
       <div class="hcard-num blue">${total}</div>
-      <div class="hcard-label">${label}</div>
-      <div class="hcard-sub">${activeOwner?fARR(arr)+' ARR':openT+' open tickets total'}</div>
+      <div class="hcard-label">${activeOwner?activeOwner+"'s clients":'All clients'}</div>
+      <div class="hcard-sub">${openT} open tickets</div>
     </div>
-    <div class="hcard">
-      <div class="hcard-num">${fARR(arr)}</div>
-      <div class="hcard-label">${activeOwner?activeOwner+"'s ARR":'Total ARR'}</div>
-      <div class="hcard-sub">${activeOwner?total+' clients':'across all clients'}</div>
-    </div>
-    <div class="hcard clickable" onclick="setFilter('tickets',document.querySelectorAll('.filter-chip')[4])">
+    <div class="hcard click" onclick="setF('tickets',document.querySelectorAll('.fchip')[4])">
       <div class="hcard-num red">${openT}</div>
       <div class="hcard-label">Open tickets</div>
-      <div class="hcard-sub">${list.filter(c=>cTickets(c).length>0).length} clients affected</div>
+      <div class="hcard-sub">${src.filter(c=>cTickets(c).length>0).length} clients affected</div>
     </div>
-    <div class="hcard clickable" onclick="setFilter('overdue',document.querySelectorAll('.filter-chip')[3])">
+    <div class="hcard click" onclick="setF('overdue',document.querySelectorAll('.fchip')[3])">
       <div class="hcard-num amber">${overdue}</div>
       <div class="hcard-label">Overdue follow-ups</div>
       <div class="hcard-sub">Need contact now</div>
     </div>
-    <div class="hcard clickable" onclick="setFilter('at_risk',document.querySelectorAll('.filter-chip')[2])">
+    <div class="hcard click" onclick="setF('at_risk',document.querySelectorAll('.fchip')[2])">
       <div class="hcard-num red">${risk}</div>
       <div class="hcard-label">At risk / blocked</div>
-      <div class="hcard-sub">${fARR(list.filter(c=>['at_risk','blocked','Red'].includes(c.status)).reduce((s,c)=>s+Number(c.arr||0),0))} ARR at risk</div>
+      <div class="hcard-sub">${fARR(src.filter(c=>['at_risk','blocked','Red'].includes(c.status)).reduce((s,c)=>s+Number(c.arr||0),0))} ARR</div>
     </div>
-    <div class="hcard" style="padding:0;overflow:hidden;cursor:default">
-      <div class="support-split">
-        <div class="ss-half" style="cursor:pointer" onclick="setFilter('support',document.querySelectorAll('.filter-chip')[5])">
-          <div class="ss-num" style="color:var(--green)">${inSup.length}</div>
-          <div class="ss-label">🎧 In support</div>
-          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${fARR(arrIn)}</div>
-        </div>
-        <div class="ss-half" style="cursor:pointer" onclick="setFilter('onboarding',document.querySelectorAll('.filter-chip')[6])">
-          <div class="ss-num" style="color:var(--blue)">${inOnboard.length}</div>
-          <div class="ss-label">🚀 Onboarding</div>
-          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${fARR(inOnboard.reduce((s,c)=>s+Number(c.arr||0),0))}</div>
-        </div>
+    <div class="hcard click" onclick="setF('churned',document.querySelectorAll('.fchip')[8])">
+      <div class="hcard-num" style="color:var(--purple)">${churned.length}</div>
+      <div class="hcard-label">Churned clients</div>
+      <div class="hcard-sub">${fARR(arrChurned)} ARR lost</div>
+    </div>
+    <div class="hcard split-card">
+      <div class="split-half" onclick="setF('support',document.querySelectorAll('.fchip')[5])">
+        <div class="split-num" style="color:var(--green)">${inSup.length}</div>
+        <div class="split-label">🎧 In support</div>
+        <div class="split-sub">${fARR(arrIn)}</div>
+      </div>
+      <div class="split-half" onclick="setF('onboarding',document.querySelectorAll('.fchip')[6])">
+        <div class="split-num" style="color:var(--blue)">${inOnboard.length}</div>
+        <div class="split-label">🚀 Onboarding</div>
+        <div class="split-sub">${fARR(inOnboard.reduce((s,c)=>s+Number(c.arr||0),0))}</div>
       </div>
     </div>`
-  document.getElementById('hero').style.gridTemplateColumns='repeat(5,1fr) 1.8fr'
 }
 
 // ── OWNER STRIP ──
 function renderOwners() {
-  const owners=[...new Set(clients.map(c=>c.owner).filter(o=>isValidOwner(o)))].sort()
-  document.getElementById('owner-strip').innerHTML = owners.map(o=>{
-    const oc=clients.filter(c=>c.owner===o)
+  const owners=[...new Set(clients.filter(c=>!c.churned).map(c=>c.owner).filter(isValidOwner))].sort()
+  document.getElementById('owner-strip').innerHTML=owners.map(o=>{
+    const oc=clients.filter(c=>c.owner===o&&!c.churned)
     const oArr=oc.reduce((s,c)=>s+Number(c.arr||0),0)
     const oT=oc.reduce((s,c)=>s+cTickets(c).length,0)
     const col=ownerColor(o)
-    return `<div class="owner-pill${activeOwner===o?' active':''}" data-owner="${o}" onclick="setOwner('${o}')">
+    return `<div class="op${activeOwner===o?' active':''}" data-owner="${o}" onclick="setOwner('${o}')">
       <div class="av op-av" style="background:${col}20;color:${col}">${ini(o)}</div>
       <div>
         <div class="op-name">${o}</div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span class="op-arr">${fARR(oArr)}</span>
-          <span class="op-count">${oc.length} clients · ${oT} tickets</span>
-        </div>
+        <div class="op-meta">${fARR(oArr)} · ${oc.length} clients · ${oT} tickets</div>
       </div>
     </div>`
   }).join('')
 }
 
+// ── STUCK ALERTS ──
+function renderStuck() {
+  const stuck=tickets.filter(t=>{
+    if(isDone(t)) return false
+    return Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>=7
+  })
+  const bar=document.getElementById('stuck-bar')
+  if(!stuck.length){bar.classList.remove('show');bar.style.display='none';return}
+  bar.classList.add('show');bar.style.display='flex'
+  document.getElementById('stuck-title').textContent=`Stuck tickets (${stuck.length}) — no update in 7+ days`
+  document.getElementById('stuck-list').innerHTML=stuck.map(t=>{
+    const d=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
+    const cl=matchClient(t)
+    return `<div class="stuck-item">
+      <a class="stuck-key" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">${t.key}</a>
+      <span class="stuck-sum">${esc(t.summary)}</span>
+      ${cl?`<span class="stuck-cl">${esc(cl.name)}</span>`:''}
+      <span class="stuck-age">${d}d</span>
+    </div>`
+  }).join('')
+}
+
 // ── TABLE ──
-function render() {
-  renderHero()
-  renderOwners()
+function renderTable() {
+  renderHero(); renderOwners()
   const list=getList()
   document.getElementById('tbl').style.display=list.length?'':'none'
   document.getElementById('empty').style.display=list.length?'none':''
   if(!list.length) return
   document.getElementById('tbody').innerHTML=list.map(c=>{
     const open=cTickets(c)
+    const poss=cPossible(c)
     const days=dSince(c.lastContact)
     const t=Number(c.threshold)||14
     const col=ownerColor(c.owner||'?')
-    const isSupport=(c.inSupport||'').toLowerCase()==='yes'
-
-    const possible3=cPossibleTickets(c)
-    let tcBtn=''
-    if(open.length===0 && possible3.length===0) tcBtn=`<span class="tc-btn tc-none">✓ None</span>`
-    else {
-      const label = open.length + (possible3.length?` +${possible3.length}?`:'')
-      const cls = open.length>2?'tc-many':open.length>0?'tc-few':'tc-none'
-      tcBtn=`<button class="tc-btn ${cls}" onclick="event.stopPropagation();openPanel('${c.id}')">${label} →</button>`
-    }
+    const isSupport=c.inSupport==='yes'
+    const label=open.length+(poss.length?` +${poss.length}?`:'')
+    const tcBtn=open.length===0&&poss.length===0
+      ?`<span class="tc-btn tc-none">✓ None</span>`
+      :`<button class="tc-btn ${open.length>2?'tc-many':open.length>0?'tc-few':'tc-none'}" onclick="event.stopPropagation();openPanel('${c.id}')">${label} open →</button>`
 
     return `<tr class="dr ${flagClass(c)}" onclick="openPanel('${c.id}')">
       <td>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="cn">${escHtml(c.name)}${isSupport?`<span class="sup-badge">🎧 Support</span>`:''}${(c.lifecycle||'').toLowerCase()==='onboarding'?`<span class="sup-badge" style="background:var(--blue-soft);color:var(--blue)">🚀 Onboarding</span>`:''}${c.canton?`<span class="sup-badge" style="background:#f5f3ff;color:#7c3aed">⬡ Canton</span>`:''}</div>
+        <div class="cn">${esc(c.name)}
+          ${isSupport?'<span class="tag tag-support">🎧 Support</span>':''}
+          ${!isSupport&&c.lifecycle==='onboarding'?'<span class="tag tag-onboard">🚀 Onboarding</span>':''}
+          ${c.canton?'<span class="tag tag-canton">⬡ Canton</span>':''}
+          ${c.churned?'<span class="tag tag-churned">💀 Churned</span>':''}
         </div>
         <div class="ca">${fARR(c.arr)}</div>
       </td>
       <td>
         <div style="display:flex;align-items:center;gap:7px">
           <div class="av" style="background:${col}18;color:${col}">${ini(c.owner)}</div>
-          <span style="font-size:13px;font-weight:500;color:var(--ink2)">${escHtml(c.owner||'—')}</span>
+          <span style="font-size:13px;font-weight:500;color:var(--ink2)">${esc(c.owner||'—')}</span>
         </div>
       </td>
-      <td>${statusChip(c.status)}</td>
+      <td>${statusBadge(c.status)}</td>
       <td>
-        <div class="${contactClass(c)}">${c.lastContact?days+'d ago':'Never'}</div>
-        ${days>=t?`<div style="font-size:10px;color:${days>=t*2?'var(--red)':'var(--amber)'};font-weight:500;margin-top:1px">⚠ Follow up needed</div>`:''}
+        <div class="${ctClass(c)}">${c.lastContact?days+'d ago':'Never'}</div>
+        ${days>=t?`<div style="font-size:10px;color:${days>=t*2?'var(--red)':'var(--amber)'};font-weight:500;margin-top:1px">⚠ Follow up</div>`:''}
       </td>
       <td>${tcBtn}</td>
       <td onclick="event.stopPropagation()">
-        <div class="act-btns">
-          ${!c.churned?`<button class="act-btn contact" onclick="event.stopPropagation();logContact('${c.id}')" title="Log contact as today">✓ Contacted</button>`:''}
-          <button class="act-btn" onclick="event.stopPropagation();openEdit('${c.id}')">Edit</button>
+        <div class="acts">
+          ${!c.churned?`<button class="act green" onclick="logContact('${c.id}')">✓ Contacted</button>`:''}
+          <button class="act" onclick="openEdit('${c.id}')">Edit</button>
           ${c.churned
-            ?`<button class="act-btn" onclick="event.stopPropagation();unchurnClient('${c.id}')" style="color:var(--green)">↩ Restore</button>`
-            :`<button class="act-btn del" onclick="event.stopPropagation();delClient('${c.id}')">Churn</button>`
-          }
+            ?`<button class="act amber" onclick="unchurn('${c.id}')">↩ Restore</button>`
+            :`<button class="act red" onclick="churnClient('${c.id}')">Churn</button>`}
         </div>
       </td>
     </tr>`
@@ -740,139 +734,93 @@ function render() {
 }
 
 // ── JIRA VIEW ──
-function stClass(s) {
-  if(['In Progress','In Review'].includes(s)) return 'st-prog'
-  if(s==='Blocked') return 'st-block'
-  if(s==='Waiting on Solutions') return 'st-wait'
-  return 'st-todo'
-}
-
 function renderJira() {
-  const f=document.getElementById('jira-filter')?.value||'all'
+  const f=document.getElementById('jira-f')?.value||'all'
   const q=(document.getElementById('jira-search')?.value||'').toLowerCase()
-  const DONE_ST=['Done','Closed','Resolved','SA: Task Completed','Completed']
-  let list=[...tickets].filter(t=>!DONE_ST.some(s=>t.status.toLowerCase().includes(s.toLowerCase())))
+  let list=tickets.filter(t=>!isDone(t))
   if(f==='CIB') list=list.filter(t=>t.project==='CIB')
   else if(f==='SAWP') list=list.filter(t=>t.project==='SAWP')
-  else if(f==='stuck') list=list.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>5)
+  else if(f==='stuck') list=list.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>=7)
   else if(f==='high') list=list.filter(t=>['High','Highest'].includes(t.priority))
   if(q) list=list.filter(t=>(t.summary||'').toLowerCase().includes(q))
-
-  // Calculate total ARR at risk
-  const clientsWithTickets=new Set(list.map(t=>matchClient(t)?.id).filter(Boolean))
-  const arrAtRisk=clients.filter(c=>clientsWithTickets.has(c.id)).reduce((s,c)=>s+Number(c.arr||0),0)
-
-  document.getElementById('jira-arr-banner').innerHTML=`
-    <div class="jt-arr-total">
-      <div>
-        <div class="jt-arr-total-num">${fARR(arrAtRisk)}</div>
-        <div class="jt-arr-total-label">ARR across ${clientsWithTickets.size} clients with open tickets (${list.length} tickets total)</div>
-      </div>
-      <div style="font-size:12px;color:var(--amber);font-weight:500">${list.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>5).length} stuck 5d+</div>
+  const affectedClients=new Set(list.map(t=>matchClient(t)?.id).filter(Boolean))
+  const arrAtRisk=clients.filter(c=>affectedClients.has(c.id)).reduce((s,c)=>s+Number(c.arr||0),0)
+  document.getElementById('arr-banner').innerHTML=`
+    <div class="arr-banner">
+      <div><div class="arr-num">${fARR(arrAtRisk)}</div><div class="arr-label">ARR across ${affectedClients.size} clients with open tickets · ${list.length} tickets · ${list.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>=7).length} stuck 7d+</div></div>
     </div>`
-
   document.getElementById('jt-list').innerHTML=list.map(t=>{
-    const client=matchClient(t)
+    const cl=matchClient(t)
     const dOld=Math.floor((Date.now()-new Date(t.created).getTime())/86400000)
     const dUpd=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
-    const stuck=dUpd>5
-    const priCls='pt-pri-'+(t.priority||'medium').toLowerCase().replace(' ','')
+    const stuck=dUpd>=7
     return `<a class="jt${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">
       <div class="jt-key">${t.key}</div>
       <div class="jt-body">
-        <div class="jt-sum">${escHtml(t.summary)}</div>
+        <div class="jt-sum">${esc(t.summary)}</div>
         <div class="jt-meta">
-          ${client?`<span class="jt-client">${escHtml(client.name)}</span><span class="jt-arr">${fARR(client.arr)}</span>`:'<span style="font-size:11px;color:var(--ink4)">Client not matched</span>'}
-          <span class="chip ${t.project==='CIB'?'chip-blue':'chip-green'}" style="font-size:9px;padding:1px 6px">${t.project}</span>
-          <span class="jt-age">${dOld}d old · updated ${dUpd}d ago${stuck?' ⚠':''}</span>
-          ${t.assignee?`<span class="jt-assignee">👤 ${t.assignee.split('@')[0]}</span>`:''}
+          ${cl?`<span class="jt-cl">${esc(cl.name)}</span><span class="jt-arr">${fARR(cl.arr)}</span>`:'<span style="font-size:11px;color:var(--ink4)">No client matched</span>'}
+          <span class="badge ${t.project==='CIB'?'b-blue':'b-green'}" style="font-size:9px;padding:1px 6px">${t.project}</span>
+          <span class="jt-age">${dOld}d old · upd ${dUpd}d ago${stuck?' ⚠':''}</span>
+          ${t.assignee?`<span style="font-size:11px;color:var(--ink3)">👤 ${t.assignee.split('@')[0]}</span>`:''}
         </div>
       </div>
       <div class="jt-right">
-        <span class="pt-st ${stClass(t.status)}" style="font-size:10px;padding:3px 8px;border-radius:5px;font-weight:600">${t.status}</span>
-        <span class="${priCls}" style="font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">${t.priority}</span>
+        <span class="st ${stClass(t.status)}">${t.status}</span>
+        <span class="pri pri-${(t.priority||'medium').toLowerCase().replace(' ','')}">${t.priority}</span>
       </div>
     </a>`
-  }).join('')||'<div class="empty-state"><div class="es-icon">✓</div><div class="es-text">No open tickets match this filter</div></div>'
+  }).join('')||'<div class="empty-state"><div class="es-icon">✓</div><p>No tickets match</p></div>'
 }
 
 // ── PANEL ──
 function openPanel(id) {
-  const c=clients.find(x=>x.id===id); if(!c) return
-  const open=cTickets(c)
+  const c=clients.find(x=>x.id===id);if(!c) return
+  const open=cTickets(c),poss=cPossible(c)
   const stuck=open.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>5)
   const high=open.filter(t=>['High','Highest'].includes(t.priority))
   const col=ownerColor(c.owner||'?')
-
   document.getElementById('ph-title').textContent=c.name
-  document.getElementById('ph-sub').innerHTML=`<span style="display:inline-flex;align-items:center;gap:6px"><span class="av" style="width:18px;height:18px;font-size:8px;background:${col}18;color:${col}">${ini(c.owner)}</span>${escHtml(c.owner||'Unassigned')} · ${fARR(c.arr)}${c.inSupport==='yes'?' · 🎧 In support':''}</span>`
-  const possible2 = cPossibleTickets(c)
+  document.getElementById('ph-sub').innerHTML=`<span style="display:inline-flex;align-items:center;gap:6px"><span class="av" style="width:18px;height:18px;font-size:7px;background:${col}18;color:${col}">${ini(c.owner)}</span>${esc(c.owner||'—')} · ${fARR(c.arr)}${c.inSupport==='yes'?' · 🎧 Support':' · 🚀 Onboarding'}${c.canton?' · ⬡ Canton':''}</span>`
   document.getElementById('p-stats').innerHTML=`
     <div class="ps"><div class="ps-n" style="color:var(--red)">${open.length}</div><div class="ps-l">Confirmed</div></div>
-    <div class="ps"><div class="ps-n" style="color:#854d0e">${possible2.length}</div><div class="ps-l">Possible</div></div>
+    <div class="ps"><div class="ps-n" style="color:#854d0e">${poss.length}</div><div class="ps-l">Possible</div></div>
     <div class="ps"><div class="ps-n" style="color:var(--amber)">${stuck.length}</div><div class="ps-l">Stuck 5d+</div></div>`
 
-  const possible = cPossibleTickets(c)
-
-  function ticketHTML(t, isPossible) {
+  function tHTML(t,isPoss) {
     const dOld=Math.floor((Date.now()-new Date(t.created).getTime())/86400000)
     const dUpd=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
-    const stuck=dUpd>5
-    const priCls='pt-pri-'+(t.priority||'medium').toLowerCase().replace(' ','')
-    return `<a class="pt${stuck?' stuck':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank" style="${isPossible?'border-style:dashed;opacity:.85':''}">
+    const s=dUpd>5
+    return `<a class="pt${s?' stuck':''}${isPoss?' possible':''}" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">
       <div class="pt-top">
         <span class="pt-key">${t.key}</span>
         <span class="pt-proj ${t.project.toLowerCase()}">${t.project}</span>
-        <span class="${priCls}">${t.priority}</span>
-        ${isPossible?'<span style="font-size:10px;background:#fef9c3;color:#854d0e;padding:2px 7px;border-radius:5px;font-weight:600">⚡ Possible match</span>':''}
-        ${stuck?`<span class="pt-stuck-tag">⚠ Stuck ${dUpd}d</span>`:''}
+        <span class="pri pri-${(t.priority||'medium').toLowerCase().replace(' ','')}">${t.priority}</span>
+        ${isPoss?'<span class="pt-possible">⚡ Possible match</span>':''}
+        ${s?`<span class="pt-stuck">⚠ Stuck ${dUpd}d</span>`:''}
       </div>
-      <div class="pt-sum">${escHtml(t.summary)}</div>
+      <div class="pt-sum">${esc(t.summary)}</div>
       <div class="pt-bot">
-        <span class="pt-st ${stClass(t.status)}">${t.status}</span>
+        <span class="st ${stClass(t.status)}">${t.status}</span>
         <span class="pt-age">Created ${dOld}d · Updated ${dUpd}d ago</span>
         ${t.assignee?`<span style="font-size:11px;color:var(--ink3)">👤 ${t.assignee.split('@')[0]}</span>`:''}
       </div>
     </a>`
   }
 
-  let bodyHTML = ''
-  if(open.length===0 && possible.length===0) {
-    bodyHTML = '<div class="empty-state"><div class="es-icon">✓</div><div class="es-text">No open tickets for this client</div></div>'
-  } else {
-    if(open.length) bodyHTML += open.map(t=>ticketHTML(t,false)).join('')
-    if(possible.length) {
-      bodyHTML += `<div style="font-size:10px;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:.07em;margin:14px 0 8px;padding:8px 10px;background:#fef9c3;border-radius:6px">⚡ Possible matches — name partially matches ticket. Verify and update client name if correct (${possible.length})</div>`
-      bodyHTML += possible.map(t=>ticketHTML(t,true)).join('')
-    }
+  let body=''
+  if(!open.length&&!poss.length) body='<div class="empty-state"><div class="es-icon">✓</div><p>No open tickets</p></div>'
+  else {
+    body=open.map(t=>tHTML(t,false)).join('')
+    if(poss.length) body+=`<div class="possible-hdr">⚡ Possible matches — verify and update client name if correct (${poss.length})</div>`+poss.map(t=>tHTML(t,true)).join('')
   }
-  document.getElementById('p-body').innerHTML = bodyHTML
-
+  document.getElementById('p-body').innerHTML=body
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
 }
 function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open')}
 
-// ── CRUD ──
-function save2Storage(){
-  localStorage.setItem('bw_clients',JSON.stringify(clients))
-  // Save ALL editable fields as overrides keyed by client id
-  // This ensures sheet reloads never wipe UI changes
-  const overrides = JSON.parse(localStorage.getItem('bw_overrides')||'{}')
-  clients.forEach(c=>{
-    if(!overrides[c.id]) overrides[c.id] = {}
-    // Only save fields that can be edited in UI
-    const editableFields = ['lastContact','status','inSupport','lifecycle','threshold','owner','ownerEmail','slackChannel','canton','notes']
-    editableFields.forEach(f=>{ if(c[f]!==undefined && c[f]!==null && c[f]!=='') overrides[c.id][f]=c[f] })
-  })
-  localStorage.setItem('bw_overrides', JSON.stringify(overrides))
-}
-
-function getOverride(id, field) {
-  const overrides = JSON.parse(localStorage.getItem('bw_overrides')||'{}')
-  return overrides[id]?.[field]
-}
-
+// ── CRUD (all writes go to Supabase) ──
 function openAdd(){
   editId=null
   document.getElementById('modal-ttl').textContent='Add client'
@@ -887,7 +835,7 @@ function openAdd(){
 }
 
 function openEdit(id){
-  editId=id; const c=clients.find(x=>x.id===id); if(!c) return
+  editId=id;const c=clients.find(x=>x.id===id);if(!c) return
   document.getElementById('modal-ttl').textContent='Edit client'
   document.getElementById('msave').textContent='Save changes'
   document.getElementById('merr').style.display='none'
@@ -904,69 +852,64 @@ function openEdit(id){
   document.getElementById('cmodal').classList.add('open')
 }
 
-function saveClient(){
+async function saveClient(){
   const name=document.getElementById('f-name').value.trim()
   if(!name){document.getElementById('merr').textContent='Client name is required';document.getElementById('merr').style.display='block';return}
-  const id=editId||Date.now().toString()
   const inSupport=document.getElementById('f-support').value
-  // Lifecycle is derived from inSupport - no separate field needed
-  const lifecycle = inSupport==='yes' ? 'support' : 'onboarding'
-  const client={id,name,owner:document.getElementById('f-owner').value,ownerEmail:document.getElementById('f-email').value,arr:Number(document.getElementById('f-arr').value)||0,status:document.getElementById('f-status').value,threshold:Number(document.getElementById('f-threshold').value)||14,lastContact:document.getElementById('f-contact').value,slackChannel:document.getElementById('f-slack').value,inSupport,lifecycle,canton:document.getElementById('f-canton').value==='yes'}
-  const idx=clients.findIndex(c=>c.id===id)
-  if(idx>=0) clients[idx]=client; else clients.push(client)
-  save2Storage()
-  closeModal()
-  render()
-  renderStuckAlerts()
-  showToast(`✓ ${client.name} saved`)
-}
-
-function delClient(id){
-  const c=clients.find(x=>x.id===id)
-  if(!c) return
-  const action = confirm(`Move "${c.name}" to churned clients?\n\nClick OK to mark as churned, or Cancel to keep them.`)
-  if(!action) return
-  const idx=clients.findIndex(x=>x.id===id)
-  clients[idx].churned=true
-  clients[idx].churnDate=new Date().toISOString().slice(0,10)
-  save2Storage()
-  render()
-  showToast(`${c.name} moved to churned`)
-}
-function logContact(id) {
-  const idx = clients.findIndex(c=>c.id===id)
-  if(idx<0) return
-  const today = new Date().toISOString().slice(0,10)
-  const name = clients[idx].name
-  clients[idx].lastContact = today
-  save2Storage()
-  render()
-  renderStuckAlerts()
-  showToast(`✓ Contacted ${name} logged for today`)
-}
-
-function showToast(msg) {
-  let toast = document.getElementById('toast')
-  if(!toast) {
-    toast = document.createElement('div')
-    toast.id = 'toast'
-    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0d0f12;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:500;transition:opacity .3s;box-shadow:0 4px 16px rgba(0,0,0,.2)'
-    document.body.appendChild(toast)
+  const client={
+    id:editId||Date.now().toString(),
+    name,owner:document.getElementById('f-owner').value,
+    ownerEmail:document.getElementById('f-email').value,
+    arr:Number(document.getElementById('f-arr').value)||0,
+    status:document.getElementById('f-status').value,
+    threshold:Number(document.getElementById('f-threshold').value)||14,
+    lastContact:document.getElementById('f-contact').value,
+    slackChannel:document.getElementById('f-slack').value,
+    inSupport,lifecycle:inSupport==='yes'?'support':'onboarding',
+    canton:document.getElementById('f-canton').value==='yes',
+    churned:false
   }
-  toast.textContent = msg
-  toast.style.opacity = '1'
-  clearTimeout(toast._t)
-  toast._t = setTimeout(()=>toast.style.opacity='0', 2500)
+  // Update local immediately
+  const idx=clients.findIndex(c=>c.id===client.id)
+  if(idx>=0) clients[idx]=client; else clients.push(client)
+  closeModal(); renderTable()
+  // Save to Supabase
+  try {
+    await sbUpsert(client)
+    showToast(`✓ ${client.name} saved`)
+  } catch(e) {
+    showToast(`⚠ Saved locally but Supabase error: ${e.message}`)
+  }
 }
 
-function unchurnClient(id){
-  const idx=clients.findIndex(c=>c.id===id)
-  if(idx<0) return
+async function logContact(id){
+  const idx=clients.findIndex(c=>c.id===id);if(idx<0) return
+  const today=new Date().toISOString().slice(0,10)
   const name=clients[idx].name
-  delete clients[idx].churned
-  delete clients[idx].churnDate
-  save2Storage(); render()
-  showToast(`${name} restored to active clients`)
+  clients[idx].lastContact=today
+  renderTable(); renderStuck()
+  showToast(`✓ Contact logged for ${name}`)
+  try { await sbPatch(id,{lastContact:today}) } catch(e) { console.warn('Supabase patch failed:',e) }
+}
+
+async function churnClient(id){
+  const c=clients.find(x=>x.id===id);if(!c) return
+  if(!confirm(`Mark "${c.name}" as churned?\n\nThey will move to the Churned view. ARR will be excluded from totals.`)) return
+  const idx=clients.findIndex(x=>x.id===id)
+  const today=new Date().toISOString().slice(0,10)
+  clients[idx].churned=true; clients[idx].churnDate=today
+  renderTable(); renderHero()
+  showToast(`${c.name} marked as churned`)
+  try { await sbPatch(id,{churned:true,churnDate:today}) } catch(e) { console.warn(e) }
+}
+
+async function unchurn(id){
+  const idx=clients.findIndex(c=>c.id===id);if(idx<0) return
+  const name=clients[idx].name
+  clients[idx].churned=false; clients[idx].churnDate=''
+  renderTable(); renderHero()
+  showToast(`${name} restored to active`)
+  try { await sbPatch(id,{churned:false,churnDate:null}) } catch(e) { console.warn(e) }
 }
 
 function closeModal(){document.getElementById('cmodal').classList.remove('open')}
@@ -974,181 +917,75 @@ function closeModal(){document.getElementById('cmodal').classList.remove('open')
 // ── IMPORT ──
 function openImport(){document.getElementById('imodal').classList.add('open');document.getElementById('iok').style.display='none'}
 function closeImport(){document.getElementById('imodal').classList.remove('open')}
-function doImport(){
-  const raw=document.getElementById('icsv').value.trim(); if(!raw) return
+async function doImport(){
+  const raw=document.getElementById('icsv').value.trim();if(!raw) return
   const lines=raw.split('\n').filter(l=>l.trim())
   const isHdr=lines[0].toLowerCase().includes('name')||lines[0].toLowerCase().includes('owner')
-  let n=0
-  lines.slice(isHdr?1:0).forEach(line=>{
+  let n=0, errs=0
+  for(const line of lines.slice(isHdr?1:0)) {
     const p=line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
-    const name=p[0]; if(!name||name.length<2) return
-    if(clients.find(c=>c.name.toLowerCase()===name.toLowerCase())) return
-    clients.push({id:Date.now().toString()+Math.random(),name,owner:p[1]||'',ownerEmail:p[2]||'',arr:Number(p[3])||0,status:p[4]||'in_progress',lastContact:p[5]||'',threshold:Number(p[6])||14,slackChannel:p[7]||'',inSupport:(p[8]||'').toLowerCase()==='yes'?'yes':'no'})
-    n++
-  })
-  save2Storage()
+    const name=p[0];if(!name||name.length<2) continue
+    if(clients.find(c=>c.name.toLowerCase()===name.toLowerCase())) continue
+    const inSupport=(p[8]||'').toLowerCase()==='yes'?'yes':'no'
+    const client={id:Date.now().toString()+Math.random(),name,owner:p[1]||'',ownerEmail:p[2]||'',arr:Number(p[3])||0,status:p[4]||'in_progress',lastContact:p[5]||'',threshold:Number(p[6])||14,slackChannel:p[7]||'',inSupport,lifecycle:inSupport==='yes'?'support':'onboarding',canton:false,churned:false}
+    clients.push(client)
+    try { await sbUpsert(client); n++ } catch(e) { errs++; console.warn(e) }
+  }
   const ok=document.getElementById('iok')
-  ok.textContent=`✓ Imported ${n} client${n!==1?'s':''}`
-  ok.style.display='block'
-  render(); setTimeout(closeImport,1500)
+  ok.textContent=`✓ Imported ${n} clients to database${errs?` (${errs} errors)`:''}`;ok.style.display='block'
+  renderTable(); setTimeout(closeImport,1500)
 }
 
-// ── LOAD ──
-async function loadAll(){
-  setSyncing(true)
-  // Load Google Sheet
-  try{
-    const r=await fetch(SHEET)
-    if(r.ok){
-      const csv=await r.text()
-      const rows=csv.split('\n').filter(l=>l.trim())
-      const isHdr=rows[0].toLowerCase().includes('name')
-      const sheet=[]
-      rows.slice(isHdr?1:0).forEach(line=>{
-        const p=line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
-        if(!p[0]||p[0].length<2) return
-        const sheetInSupport=(p[8]||'').toLowerCase()==='yes'?'yes':'no'
-        const sheetLifecycle = sheetInSupport==='yes' ? 'support' : 'onboarding'
-        sheet.push({id:'s_'+p[0].toLowerCase().replace(/\s+/g,'_'),name:p[0],owner:p[1]||'',ownerEmail:p[2]||'',arr:Number(p[3])||0,status:p[4]||'in_progress',lastContact:p[5]||'',threshold:Number(p[6])||14,slackChannel:p[7]||'',inSupport:sheetInSupport,lifecycle:sheetLifecycle})
-      })
-      if(sheet.length>0){
-        // Load overrides (UI edits like last contact) from localStorage
-        const overrides = JSON.parse(localStorage.getItem('bw_overrides')||'{}')
-        // Merge: sheet is base, but UI edits (overrides) always win
-        const merged = sheet.map(c => {
-          const ov = overrides[c.id] || {}
-          return {...c, ...ov}
-        })
-        // Keep locally-added clients (not from sheet)
-        const local = clients.filter(c=>!c.id.startsWith('s_'))
-        clients = [...merged, ...local]
-        save2Storage()
-      }
-    }
-  }catch(e){console.warn('Sheet:',e.message)}
-
-  // Load Jira
-  try{
-    const r=await fetch('/api/jira')
-    if(r.ok){
-      const data=await r.json()
-      if(data.issues) tickets=data.issues.map(i=>({id:i.id,key:i.key,summary:i.fields.summary,status:i.fields.status.name,priority:i.fields.priority?.name||'Medium',project:i.fields.project?.key||'CIB',assignee:i.fields.assignee?.emailAddress||'',created:i.fields.created,updated:i.fields.updated}))
-    }
-  }catch(e){console.warn('Jira:',e.message)}
-
-  document.getElementById('loading').style.display='none'
-  document.getElementById('tbl').style.display=''
-  render()
-  renderStuckAlerts()
-  setSyncing(false,'Synced '+new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'}))
-}
-
-function setSyncing(on,label){
-  document.getElementById('live-dot').className='live-dot'+(on?' syncing':'')
-  document.getElementById('live-label').textContent=label||(on?'Syncing...':'Live')
-}
-
-loadAll()
-setInterval(loadAll,60000)
-
-// ── STUCK ALERTS ──
-function renderStuckAlerts() {
-  const DONE_STATUSES = ['Done','Closed','Resolved','SA: Task Completed','Completed','Won\'t Do','Duplicate','Cannot Reproduce','Invalid']
-  const stuckTickets = tickets.filter(t => {
-    if(DONE_STATUSES.some(s=>t.status.toLowerCase().includes(s.toLowerCase()))) return false
-    const dUpd = Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
-    return dUpd >= 7
+// ── EXPORT ──
+function exportCSV(){
+  const hdrs=['Client','Owner','Owner Email','ARR','Status','Last Contact','In Support','Lifecycle','Canton','Churned','Churn Date','Open Tickets','Stuck Tickets']
+  const rows=clients.map(c=>{
+    const open=cTickets(c)
+    const stuck=open.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>5)
+    return[c.name,c.owner,c.ownerEmail,c.arr,c.status,c.lastContact,c.inSupport==='yes'?'Yes':'No',c.lifecycle,c.canton?'Yes':'No',c.churned?'Yes':'No',c.churnDate,open.length,stuck.length].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',')
   })
-
-  const banner = document.getElementById('stuck-banner')
-  if(!stuckTickets.length) { banner.style.display='none'; return }
-  banner.style.display='flex'
-  document.getElementById('stuck-title').textContent = `Stuck tickets (${stuckTickets.length}) — no update in 7+ days`
-
-  const list = document.getElementById('stuck-list')
-  list.style.maxHeight = '180px'
-  list.style.overflowY = 'auto'
-  list.innerHTML = stuckTickets.map(t => {
-    const dUpd = Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
-    const client = matchClient(t)
-    return `<div style="display:flex;align-items:center;gap:8px;font-size:12px">
-      <a href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank" style="font-family:'DM Mono',monospace;color:var(--blue);font-weight:600;font-size:11px;text-decoration:none">${t.key}</a>
-      <span style="color:var(--ink2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t.summary)}</span>
-      ${client?`<span style="font-size:10px;font-weight:600;color:var(--blue);background:var(--blue-soft);padding:1px 6px;border-radius:5px;flex-shrink:0">${escHtml(client.name)}</span>`:''}
-      <span style="font-size:10px;font-weight:700;color:var(--red);flex-shrink:0">${dUpd}d no update</span>
-    </div>`
-  }).join('')
-
-
+  const csv=[hdrs.join(','),...rows].join('\n')
+  const a=document.createElement('a')
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}))
+  a.download=`bitwave-clients-${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
 }
 
-// ── EXPORT CSV ──
-function exportCSV() {
-  const headers = ['Client','Owner','Owner Email','ARR','Status','Last Contact','Threshold','Slack Channel','In Support','Open Tickets','Stuck Tickets']
-  const rows = clients.map(c => {
-    const open = cTickets(c)
-    const stuck = open.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>5)
-    return [
-      c.name, c.owner, c.ownerEmail, c.arr, c.status,
-      c.lastContact, c.threshold, c.slackChannel,
-      c.inSupport==='yes'?'Yes':'No',
-      open.length, stuck.length
-    ].map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(',')
-  })
-  const csv = [headers.join(','), ...rows].join('\n')
-  const blob = new Blob([csv], {type:'text/csv'})
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href=url; a.download=`bitwave-clients-${new Date().toISOString().slice(0,10)}.csv`
-  a.click(); URL.revokeObjectURL(url)
-}
-
-// ── WEEKLY DIGEST ──
-function openDigest() {
-  const now = new Date().toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
-  const totalArr = clients.reduce((s,c)=>s+Number(c.arr||0),0)
-  const openTickets = tickets.filter(t=>!['Done','Closed','Resolved'].includes(t.status))
-  const stuck = openTickets.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>=7)
-  const overdue = clients.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
-  const atRisk = clients.filter(c=>['at_risk','blocked','Red'].includes(c.status))
-  const inSup = clients.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
-
-  // Owner breakdown
-  const owners = [...new Set(clients.map(c=>c.owner).filter(o=>isValidOwner(o)))].sort()
-  const ownerLines = owners.map(o => {
-    const oc = clients.filter(c=>c.owner===o)
-    const oArr = oc.reduce((s,c)=>s+Number(c.arr||0),0)
-    const oTickets = oc.reduce((s,c)=>s+cTickets(c).length,0)
-    const oOverdue = oc.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length
-    return `  ${o.padEnd(12)} ${String(oc.length).padStart(2)} clients  ${fARR(oArr).padStart(7)}  ${String(oTickets).padStart(2)} tickets${oOverdue>0?`  ⚠ ${oOverdue} overdue`:''}`
+// ── DIGEST ──
+function openDigest(){
+  const now=new Date().toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+  const active=clients.filter(c=>!c.churned)
+  const totalArr=active.reduce((s,c)=>s+Number(c.arr||0),0)
+  const openT=tickets.filter(t=>!isDone(t))
+  const stuck=openT.filter(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>=7)
+  const overdue=active.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
+  const atRisk=active.filter(c=>['at_risk','blocked','Red'].includes(c.status))
+  const inSup=active.filter(c=>c.inSupport==='yes')
+  const churned=clients.filter(c=>c.churned)
+  const owners=[...new Set(active.map(c=>c.owner).filter(isValidOwner))].sort()
+  const ownerLines=owners.map(o=>{
+    const oc=active.filter(c=>c.owner===o)
+    const oArr=oc.reduce((s,c)=>s+Number(c.arr||0),0)
+    const oT=oc.reduce((s,c)=>s+cTickets(c).length,0)
+    const oOv=oc.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14)).length
+    return`  ${o.padEnd(12)} ${String(oc.length).padStart(2)} clients  ${fARR(oArr).padStart(7)}  ${String(oT).padStart(2)} tickets${oOv>0?`  ⚠ ${oOv} overdue`:''}`
   }).join('\n')
-
-  // At risk clients
-  const riskLines = atRisk.length
-    ? atRisk.map(c=>`  • ${c.name} (${c.owner||'Unassigned'}) — ${fARR(c.arr)} — ${c.status.replace('_',' ')}`).join('\n')
-    : '  None this week ✓'
-
-  // Stuck tickets
-  const stuckLines = stuck.length
-    ? stuck.slice(0,8).map(t=>{
-        const d=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
-        const cl=matchClient(t)
-        return `  • [${t.key}] ${t.summary.slice(0,60)}${t.summary.length>60?'...':''} — ${d}d no update${cl?' ('+cl.name+')':''}`
-      }).join('\n')
-    : '  None ✓'
-
-  const text = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const riskLines=atRisk.length?atRisk.map(c=>`  • ${c.name} (${c.owner||'—'}) — ${fARR(c.arr)} — ${c.status}`).join('\n'):'  None ✓'
+  const stuckLines=stuck.length?stuck.slice(0,10).map(t=>{const d=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000);const cl=matchClient(t);return`  • [${t.key}] ${t.summary.slice(0,55)}... — ${d}d${cl?' ('+cl.name+')':''}`}).join('\n'):'  None ✓'
+  document.getElementById('digest-text').textContent=`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 BITWAVE SOLUTIONS — WEEKLY DIGEST
 ${now}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 OVERVIEW
-  Total clients:    ${clients.length}
-  Total ARR:        ${fARR(totalArr)}
-  Open tickets:     ${openTickets.length}
-  Stuck 7d+:        ${stuck.length}
+  Active clients:     ${active.length}
+  Total ARR:          ${fARR(totalArr)}
+  Open tickets:       ${openT.length}
+  Stuck 7d+:          ${stuck.length}
   Overdue follow-ups: ${overdue.length}
-  In support:       ${inSup.length} clients (${fARR(inSup.reduce((s,c)=>s+Number(c.arr||0),0))} ARR)
+  In support:         ${inSup.length} (${fARR(inSup.reduce((s,c)=>s+Number(c.arr||0),0))})
+  Onboarding:         ${active.filter(c=>c.lifecycle==='onboarding').length}
+  Churned this period:${churned.length} (${fARR(churned.reduce((s,c)=>s+Number(c.arr||0),0))} ARR lost)
 
 👥 BY OWNER
 ${ownerLines}
@@ -1156,26 +993,80 @@ ${ownerLines}
 ⚠️  AT RISK / BLOCKED
 ${riskLines}
 
-🔴 STUCK TICKETS (7+ days no update)
+🔴 STUCK TICKETS
 ${stuckLines}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Generated by Bitwave Solutions Hub`
-
-  document.getElementById('digest-text').textContent = text
-  document.getElementById('copy-ok').style.display = 'none'
+  document.getElementById('copy-ok').style.display='none'
   document.getElementById('dmodal').classList.add('open')
 }
+function closeDig(){document.getElementById('dmodal').classList.remove('open')}
+function copyDigest(){navigator.clipboard.writeText(document.getElementById('digest-text').textContent).then(()=>{const ok=document.getElementById('copy-ok');ok.style.display='block';setTimeout(()=>ok.style.display='none',2000)})}
 
-function closeDig() { document.getElementById('dmodal').classList.remove('open') }
+// ── TOAST ──
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity='0',2500)}
 
-function copyDigest() {
-  navigator.clipboard.writeText(document.getElementById('digest-text').textContent).then(()=>{
-    const ok = document.getElementById('copy-ok')
-    ok.style.display='block'
-    setTimeout(()=>ok.style.display='none', 2000)
-  })
+// ── LOAD ──
+async function loadAll(){
+  setSyncing(true)
+
+  // 1. Load from Supabase (primary source of truth)
+  try {
+    const rows = await sbGet()
+    if(rows && rows.length>0) {
+      clients = rows.map(rowToClient)
+    }
+  } catch(e) {
+    console.warn('Supabase load failed:', e.message)
+    setSyncing(false,'DB error','error')
+  }
+
+  // 2. Load from Google Sheet - add NEW clients not already in Supabase
+  try {
+    const r=await fetch(SHEET)
+    if(r.ok){
+      const csv=await r.text()
+      const rows=csv.split('\n').filter(l=>l.trim())
+      const isHdr=rows[0].toLowerCase().includes('name')
+      for(const line of rows.slice(isHdr?1:0)) {
+        const p=line.split(',').map(x=>x.trim().replace(/^"|"$/g,''))
+        if(!p[0]||p[0].length<2) continue
+        const sheetId='s_'+p[0].toLowerCase().replace(/\s+/g,'_')
+        // Only add if not already in Supabase
+        if(clients.find(c=>c.id===sheetId||c.name.toLowerCase()===p[0].toLowerCase())) continue
+        const inSupport=(p[8]||'').toLowerCase()==='yes'?'yes':'no'
+        const newClient={id:sheetId,name:p[0],owner:p[1]||'',ownerEmail:p[2]||'',arr:Number(p[3])||0,status:p[4]||'in_progress',lastContact:p[5]||'',threshold:Number(p[6])||14,slackChannel:p[7]||'',inSupport,lifecycle:inSupport==='yes'?'support':'onboarding',canton:false,churned:false}
+        clients.push(newClient)
+        // Save new sheet client to Supabase
+        sbUpsert(newClient).catch(()=>{})
+      }
+    }
+  } catch(e){ console.warn('Sheet:',e.message) }
+
+  // 3. Load Jira tickets
+  try {
+    const r=await fetch('/api/jira',{headers:{'X-Jira-Email':localStorage.getItem('sth_jira_email')||'','X-Jira-Token':localStorage.getItem('sth_jira_token')||''}})
+    if(r.ok){
+      const data=await r.json()
+      if(data.issues) tickets=data.issues.map(i=>({id:i.id,key:i.key,summary:i.fields.summary,status:i.fields.status.name,priority:i.fields.priority?.name||'Medium',project:i.fields.project?.key||'CIB',assignee:i.fields.assignee?.emailAddress||'',created:i.fields.created,updated:i.fields.updated}))
+    }
+  } catch(e){ console.warn('Jira:',e.message) }
+
+  document.getElementById('loading').style.display='none'
+  document.getElementById('tbl').style.display=''
+  renderTable(); renderStuck()
+  setSyncing(false,`Synced ${new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'})}`)
 }
+
+function setSyncing(on,label,state){
+  const dot=document.getElementById('live-dot')
+  dot.className='live-dot'+(on?' syncing':state==='error'?' error':'')
+  document.getElementById('live-label').textContent=label||(on?'Syncing...':'Live')
+}
+
+loadAll()
+setInterval(loadAll,60000)
 </script>
 </body>
 </html>
