@@ -280,6 +280,8 @@ tbody tr.dr:hover .act-btns{opacity:1}
   <button class="filter-chip" onclick="setFilter('tickets',this)">Has tickets</button>
   <button class="filter-chip" onclick="setFilter('support',this)">🎧 In support</button>
   <button class="filter-chip" onclick="setFilter('onboarding',this)">🚀 Onboarding</button>
+  <button class="filter-chip" onclick="setFilter('canton',this)">⬡ Canton</button>
+  <button class="filter-chip" onclick="setFilter('churned',this)">💀 Churned</button>
   <div class="filter-right">
     <select class="sort-sel" id="sort-sel" onchange="render()">
       <option value="risk">Risk first</option>
@@ -390,10 +392,16 @@ tbody tr.dr:hover .act-btns{opacity:1}
       </div>
       <div class="fg"><label>Last contact</label><input id="f-contact" type="date"/></div>
       <div class="fg"><label>Slack channel</label><input id="f-slack" placeholder="client-support"/></div>
-      <div class="fg full"><label>Lifecycle stage</label>
+      <div class="fg"><label>Lifecycle stage</label>
         <select id="f-support">
           <option value="no">🚀 Onboarding — not yet in support</option>
           <option value="yes">🎧 In support</option>
+        </select>
+      </div>
+      <div class="fg"><label>Canton integration</label>
+        <select id="f-canton">
+          <option value="">No Canton</option>
+          <option value="yes">⬡ Has Canton</option>
         </select>
       </div>
     </div>
@@ -575,12 +583,16 @@ function getList() {
   let list=[...clients]
   if(q) list=list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.owner||'').toLowerCase().includes(q))
   if(activeOwner) list=list.filter(c=>(c.owner||'').toLowerCase()===activeOwner.toLowerCase())
+  // Hide churned from all views except the churned filter
+  if(activeFilter!=='churned') list=list.filter(c=>!c.churned)
   if(activeFilter==='active') list=list.filter(c=>!['completed'].includes(c.status))
   else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
   else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
   else if(activeFilter==='tickets') list=list.filter(c=>cTickets(c).length>0)
   else if(activeFilter==='support') list=list.filter(c=>(c.inSupport||'').toLowerCase()==='yes')
   else if(activeFilter==='onboarding') list=list.filter(c=>(c.lifecycle||'').toLowerCase()==='onboarding')
+  else if(activeFilter==='canton') list=list.filter(c=>c.canton)
+  else if(activeFilter==='churned') list=list.filter(c=>c.churned)
   if(sort==='arr_desc') list.sort((a,b)=>Number(b.arr||0)-Number(a.arr||0))
   else if(sort==='arr_asc') list.sort((a,b)=>Number(a.arr||0)-Number(b.arr||0))
   else if(sort==='name') list.sort((a,b)=>(a.name||'').localeCompare(b.name||''))
@@ -697,7 +709,7 @@ function render() {
     return `<tr class="dr ${flagClass(c)}" onclick="openPanel('${c.id}')">
       <td>
         <div style="display:flex;align-items:center;gap:8px">
-          <div class="cn">${escHtml(c.name)}${isSupport?`<span class="sup-badge">🎧 Support</span>`:''}${(c.lifecycle||'').toLowerCase()==='onboarding'?`<span class="sup-badge" style="background:var(--blue-soft);color:var(--blue)">🚀 Onboarding</span>`:''}</div>
+          <div class="cn">${escHtml(c.name)}${isSupport?`<span class="sup-badge">🎧 Support</span>`:''}${(c.lifecycle||'').toLowerCase()==='onboarding'?`<span class="sup-badge" style="background:var(--blue-soft);color:var(--blue)">🚀 Onboarding</span>`:''}${c.canton?`<span class="sup-badge" style="background:#f5f3ff;color:#7c3aed">⬡ Canton</span>`:''}</div>
         </div>
         <div class="ca">${fARR(c.arr)}</div>
       </td>
@@ -715,9 +727,12 @@ function render() {
       <td>${tcBtn}</td>
       <td onclick="event.stopPropagation()">
         <div class="act-btns">
-          <button class="act-btn contact" onclick="event.stopPropagation();logContact('${c.id}')" title="Log contact as today">✓ Contacted</button>
+          ${!c.churned?`<button class="act-btn contact" onclick="event.stopPropagation();logContact('${c.id}')" title="Log contact as today">✓ Contacted</button>`:''}
           <button class="act-btn" onclick="event.stopPropagation();openEdit('${c.id}')">Edit</button>
-          <button class="act-btn del" onclick="event.stopPropagation();delClient('${c.id}')">Delete</button>
+          ${c.churned
+            ?`<button class="act-btn" onclick="event.stopPropagation();unchurnClient('${c.id}')" style="color:var(--green)">↩ Restore</button>`
+            :`<button class="act-btn del" onclick="event.stopPropagation();delClient('${c.id}')">Churn</button>`
+          }
         </div>
       </td>
     </tr>`
@@ -841,20 +856,21 @@ function closePanel(){document.getElementById('overlay').classList.remove('open'
 // ── CRUD ──
 function save2Storage(){
   localStorage.setItem('bw_clients',JSON.stringify(clients))
-  // Save overrides separately so sheet reloads don't wipe UI edits
+  // Save ALL editable fields as overrides keyed by client id
+  // This ensures sheet reloads never wipe UI changes
   const overrides = JSON.parse(localStorage.getItem('bw_overrides')||'{}')
-  clients.filter(c=>c.id.startsWith('s_')).forEach(c=>{
-    overrides[c.id] = {
-      lastContact: c.lastContact,
-      status: c.status,
-      inSupport: c.inSupport,
-      threshold: c.threshold,
-      owner: c.owner,
-      ownerEmail: c.ownerEmail,
-      slackChannel: c.slackChannel
-    }
+  clients.forEach(c=>{
+    if(!overrides[c.id]) overrides[c.id] = {}
+    // Only save fields that can be edited in UI
+    const editableFields = ['lastContact','status','inSupport','lifecycle','threshold','owner','ownerEmail','slackChannel','canton','notes']
+    editableFields.forEach(f=>{ if(c[f]!==undefined && c[f]!==null && c[f]!=='') overrides[c.id][f]=c[f] })
   })
   localStorage.setItem('bw_overrides', JSON.stringify(overrides))
+}
+
+function getOverride(id, field) {
+  const overrides = JSON.parse(localStorage.getItem('bw_overrides')||'{}')
+  return overrides[id]?.[field]
 }
 
 function openAdd(){
@@ -866,6 +882,7 @@ function openAdd(){
   document.getElementById('f-status').value='in_progress'
   document.getElementById('f-threshold').value='14'
   document.getElementById('f-support').value='no'
+  document.getElementById('f-canton').value=''
   document.getElementById('cmodal').classList.add('open')
 }
 
@@ -883,6 +900,7 @@ function openEdit(id){
   document.getElementById('f-contact').value=c.lastContact||''
   document.getElementById('f-slack').value=c.slackChannel||''
   document.getElementById('f-support').value=c.inSupport||'no'
+  document.getElementById('f-canton').value=c.canton?'yes':''
   document.getElementById('cmodal').classList.add('open')
 }
 
@@ -893,7 +911,7 @@ function saveClient(){
   const inSupport=document.getElementById('f-support').value
   // Lifecycle is derived from inSupport - no separate field needed
   const lifecycle = inSupport==='yes' ? 'support' : 'onboarding'
-  const client={id,name,owner:document.getElementById('f-owner').value,ownerEmail:document.getElementById('f-email').value,arr:Number(document.getElementById('f-arr').value)||0,status:document.getElementById('f-status').value,threshold:Number(document.getElementById('f-threshold').value)||14,lastContact:document.getElementById('f-contact').value,slackChannel:document.getElementById('f-slack').value,inSupport,lifecycle}
+  const client={id,name,owner:document.getElementById('f-owner').value,ownerEmail:document.getElementById('f-email').value,arr:Number(document.getElementById('f-arr').value)||0,status:document.getElementById('f-status').value,threshold:Number(document.getElementById('f-threshold').value)||14,lastContact:document.getElementById('f-contact').value,slackChannel:document.getElementById('f-slack').value,inSupport,lifecycle,canton:document.getElementById('f-canton').value==='yes'}
   const idx=clients.findIndex(c=>c.id===id)
   if(idx>=0) clients[idx]=client; else clients.push(client)
   save2Storage()
@@ -903,7 +921,18 @@ function saveClient(){
   showToast(`✓ ${client.name} saved`)
 }
 
-function delClient(id){if(!confirm('Delete this client?')) return; clients=clients.filter(c=>c.id!==id); save2Storage(); render()}
+function delClient(id){
+  const c=clients.find(x=>x.id===id)
+  if(!c) return
+  const action = confirm(`Move "${c.name}" to churned clients?\n\nClick OK to mark as churned, or Cancel to keep them.`)
+  if(!action) return
+  const idx=clients.findIndex(x=>x.id===id)
+  clients[idx].churned=true
+  clients[idx].churnDate=new Date().toISOString().slice(0,10)
+  save2Storage()
+  render()
+  showToast(`${c.name} moved to churned`)
+}
 function logContact(id) {
   const idx = clients.findIndex(c=>c.id===id)
   if(idx<0) return
@@ -928,6 +957,16 @@ function showToast(msg) {
   toast.style.opacity = '1'
   clearTimeout(toast._t)
   toast._t = setTimeout(()=>toast.style.opacity='0', 2500)
+}
+
+function unchurnClient(id){
+  const idx=clients.findIndex(c=>c.id===id)
+  if(idx<0) return
+  const name=clients[idx].name
+  delete clients[idx].churned
+  delete clients[idx].churnDate
+  save2Storage(); render()
+  showToast(`${name} restored to active clients`)
 }
 
 function closeModal(){document.getElementById('cmodal').classList.remove('open')}
