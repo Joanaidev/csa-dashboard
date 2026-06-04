@@ -1004,7 +1004,7 @@ function openAdd(){
   document.getElementById('modal-ttl').textContent='Add client'
   document.getElementById('msave').textContent='Add client'
   document.getElementById('merr').style.display='none'
-  ;['f-name','f-arr','f-owner','f-email','f-contact','f-slack'].forEach(id=>document.getElementById(id).value='')
+  ;['f-name','f-arr','f-email','f-contact','f-slack'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value='' })
   document.getElementById('f-status').value='in_progress'
   document.getElementById('f-threshold').value='14'
   document.getElementById('f-support').value='no'
