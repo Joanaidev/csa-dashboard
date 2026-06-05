@@ -220,6 +220,21 @@ tbody tr.dr:hover .acts{opacity:1}
 .import-note{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--ink2);margin-bottom:14px;line-height:1.7}
 .import-note code{background:var(--surface3);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px}
 
+/* LABELS */
+.lbl{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin:1px;white-space:nowrap;cursor:default}
+.lbl-wrap{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
+.label-search{position:relative}
+.label-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:50;max-height:200px;overflow-y:auto;display:none}
+.label-dropdown.open{display:block}
+.ld-item{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;transition:background .1s;font-size:13px}
+.ld-item:hover{background:var(--surface2)}
+.ld-item.selected{background:var(--blue-soft)}
+.ld-create{padding:8px 12px;font-size:12px;color:var(--blue);cursor:pointer;font-weight:600;border-top:1px solid var(--border)}
+.ld-create:hover{background:var(--blue-soft)}
+.selected-labels{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;min-height:28px;padding:6px;background:var(--surface2);border-radius:var(--r-sm)}
+.sl-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;cursor:pointer}
+.sl-tag:hover{filter:brightness(.9)}
+
 /* TEAM CARDS */
 .team-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;transition:all .2s;display:flex;align-items:center;gap:14px}
 .team-card:hover{box-shadow:var(--shadow-md)}
@@ -410,6 +425,14 @@ tbody tr.dr:hover .acts{opacity:1}
       <div class="fg"><label>Canton integration</label>
         <select id="f-canton"><option value="">No Canton</option><option value="yes">⬡ Has Canton</option></select>
       </div>
+      <div class="fg full"><label>Accounting partner</label><input id="f-accounting" placeholder="e.g. EY, Deloitte, KPMG"/></div>
+      <div class="fg full"><label>Labels</label>
+        <div class="label-search">
+          <input id="f-label-search" placeholder="Search or create labels..." autocomplete="off" oninput="filterLabels()" onfocus="openLabelDD()" onblur="setTimeout(closeLabelDD,150)"/>
+          <div class="label-dropdown" id="label-dd"></div>
+        </div>
+        <div class="selected-labels" id="selected-labels"><span style="font-size:11px;color:var(--ink4)">No labels added</span></div>
+      </div>
     </div>
     <div style="color:var(--red);font-size:12px;display:none" id="merr"></div>
     <div class="ma">
@@ -491,6 +514,8 @@ async function sbUpsert(client) {
     lifecycle: client.lifecycle||'onboarding',
     canton: !!client.canton,
     churned: !!client.churned,
+    labels: client.labels||[],
+    accounting_partner: client.accountingPartner||null,
     churn_date: client.churnDate||null,
     updated_at: new Date().toISOString()
   }
@@ -541,7 +566,9 @@ function rowToClient(row) {
     canton: !!row.canton,
     churned: !!row.churned,
     churnDate: row.churn_date||'',
-    updatedAt: row.updated_at
+    updatedAt: row.updated_at,
+    labels: row.labels||[],
+    accountingPartner: row.accounting_partner||''
   }
 }
 
@@ -725,7 +752,15 @@ function getList() {
   const q=document.getElementById('search').value.toLowerCase().trim()
   const sort=document.getElementById('sort-sel').value
   let list=[...clients]
-  if(q) list=list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.owner||'').toLowerCase().includes(q))
+  if(q) list=list.filter(c=>{
+    const nameMatch=(c.name||'').toLowerCase().includes(q)||(c.owner||'').toLowerCase().includes(q)||(c.cso||'').toLowerCase().includes(q)||(c.sa||'').toLowerCase().includes(q)
+    const labelMatch=(c.labels||[]).some(id=>{
+      const l=allLabels.find(x=>x.id===id)
+      return l&&l.name.toLowerCase().replace(/[^a-z0-9]/g,'').includes(q.replace(/[^a-z0-9]/g,''))
+    })
+    const partnerMatch=(c.accountingPartner||'').toLowerCase().includes(q)
+    return nameMatch||labelMatch||partnerMatch
+  })
   if(activeOwner) list=list.filter(c=>[c.cso,c.sa,c.owner].some(n=>(n||'').toLowerCase()===activeOwner.toLowerCase()))
   if(activeFilter!=='churned') list=list.filter(c=>!c.churned)
   if(activeFilter==='active') list=list.filter(c=>!['completed'].includes(c.status))
@@ -878,7 +913,9 @@ function renderTable() {
           ${c.canton?'<span class="tag tag-canton">⬡ Canton</span>':''}
           ${c.churned?'<span class="tag tag-churned">💀 Churned</span>':''}
         </div>
-        <div class="ca">${fARR(c.arr)}</div>
+        <div class="ca">${fARR(c.arr)}${c.accountingPartner?` · <span style="color:var(--ink3)">${esc(c.accountingPartner)}</span>`:''}
+        </div>
+        ${c.labels&&c.labels.length?`<div class="lbl-wrap">${renderClientLabels(c.labels)}</div>`:''}
       </td>
       <td>
         ${c.cso?`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
@@ -1010,6 +1047,9 @@ function openAdd(){
   document.getElementById('f-threshold').value='14'
   document.getElementById('f-support').value='no'
   document.getElementById('f-canton').value=''
+  document.getElementById('f-accounting').value=''
+  clientLabels = []
+  renderSelectedLabels()
   populateOwnerDropdowns()
   document.getElementById('cmodal').classList.add('open')
 }
@@ -1033,6 +1073,12 @@ function openEdit(id){
   document.getElementById('f-slack').value=c.slackChannel||''
   document.getElementById('f-support').value=c.inSupport||'no'
   document.getElementById('f-canton').value=c.canton?'yes':''
+  document.getElementById('f-accounting').value=c.accountingPartner||''
+  // Set labels
+  const clientLabelIds = c.labels || []
+  clientLabels = allLabels.filter(l=>clientLabelIds.includes(l.id))
+  renderSelectedLabels()
+  populateOwnerDropdowns()
   document.getElementById('cmodal').classList.add('open')
 }
 
@@ -1054,6 +1100,8 @@ async function saveClient(){
     cso,sa,
     csoEmail:csoMember?.email||'',
     saEmail:saMember?.email||document.getElementById('f-email').value||'',
+    accountingPartner:document.getElementById('f-accounting').value||'',
+    labels:clientLabels.map(l=>l.id),
     arr:Number(document.getElementById('f-arr').value)||0,
     status:document.getElementById('f-status').value,
     threshold:Number(document.getElementById('f-threshold').value)||14,
@@ -1210,8 +1258,9 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 async function loadAll(){
   setSyncing(true)
 
-  // 0. Load team members
+  // 0. Load team members and labels
   await loadTeam()
+  await loadLabels()
   renderTeam()
 
   // 1. Load from Supabase (primary source of truth)
@@ -1418,6 +1467,127 @@ function switchView(v, btn) {
   sb.style.display = v==='clients'&&sb.classList.contains('show')?'flex':'none'
   if(v==='jira') renderJira()
   if(v==='team') renderTeam()
+}
+
+// ── LABELS ──
+let allLabels = []
+let clientLabels = [] // labels for current editing client
+
+async function loadLabels() {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/labels?select=*&order=name.asc`, {headers:SB_HEADERS})
+    if(r.ok) allLabels = await r.json()
+  } catch(e) { console.warn('Labels load failed:', e) }
+}
+
+function openLabelDD() {
+  filterLabels()
+  document.getElementById('label-dd').classList.add('open')
+}
+
+function closeLabelDD() {
+  document.getElementById('label-dd').classList.remove('open')
+}
+
+function filterLabels() {
+  const q = (document.getElementById('f-label-search').value || '').toLowerCase().trim()
+  const dd = document.getElementById('label-dd')
+  
+  // Fuzzy match - normalize the query
+  const qNorm = q.replace(/[^a-z0-9]/g, '')
+  
+  const filtered = allLabels.filter(l => {
+    const lNorm = l.name.toLowerCase().replace(/[^a-z0-9]/g, '')
+    return lNorm.includes(qNorm) || l.name.toLowerCase().includes(q)
+  })
+
+  const alreadySelected = clientLabels.map(l=>l.id)
+  const exact = filtered.find(l=>l.name.toLowerCase().replace(/[^a-z0-9]/g,'')=== qNorm)
+
+  dd.innerHTML = filtered.map(l => `
+    <div class="ld-item${alreadySelected.includes(l.id)?' selected':''}" onclick="toggleLabel('${l.id}')">
+      <span>${l.emoji}</span>
+      <span style="flex:1">${esc(l.name)}</span>
+      ${alreadySelected.includes(l.id)?'<span style="color:var(--blue);font-size:11px">✓ Added</span>':''}
+    </div>`).join('')
+
+  // Show create option if no exact match and query is not empty
+  if(q && !exact) {
+    const emoji = '🏷️'
+    dd.innerHTML += `<div class="ld-create" onclick="createLabel('${q.trim()}')">+ Create label "${q.trim()}"</div>`
+  }
+
+  if(!filtered.length && !q) {
+    dd.innerHTML = '<div style="padding:10px 12px;font-size:12px;color:var(--ink3)">Type to search or create labels</div>'
+  }
+
+  dd.classList.add('open')
+}
+
+function toggleLabel(id) {
+  const label = allLabels.find(l=>l.id===id)
+  if(!label) return
+  const idx = clientLabels.findIndex(l=>l.id===id)
+  if(idx>=0) clientLabels.splice(idx,1)
+  else clientLabels.push(label)
+  renderSelectedLabels()
+  filterLabels()
+}
+
+async function createLabel(name) {
+  // Check for fuzzy duplicate
+  const norm = name.toLowerCase().replace(/[^a-z0-9]/g,'')
+  const existing = allLabels.find(l=>l.name.toLowerCase().replace(/[^a-z0-9]/g,'')=== norm)
+  if(existing) {
+    showToast(`Label "${existing.name}" already exists`)
+    toggleLabel(existing.id)
+    document.getElementById('f-label-search').value = ''
+    return
+  }
+  // Pick color from palette
+  const colors=['#1a56db','#0e9f6e','#d97706','#7c3aed','#e02424','#0891b2','#be185d','#059669']
+  const color = colors[allLabels.length % colors.length]
+  const newLabel = {
+    id: 'lb_'+name.toLowerCase().replace(/[^a-z0-9]/g,'_')+'_'+Date.now(),
+    name: name.charAt(0).toUpperCase()+name.slice(1).toLowerCase(),
+    emoji: '🏷️',
+    color
+  }
+  allLabels.push(newLabel)
+  clientLabels.push(newLabel)
+  renderSelectedLabels()
+  document.getElementById('f-label-search').value = ''
+  filterLabels()
+  // Save to Supabase
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/labels`, {
+      method:'POST',
+      headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates'},
+      body: JSON.stringify(newLabel)
+    })
+    showToast(`✓ Label "${newLabel.name}" created`)
+  } catch(e) { console.warn('Label save failed:', e) }
+}
+
+function renderSelectedLabels() {
+  const wrap = document.getElementById('selected-labels')
+  if(!clientLabels.length) {
+    wrap.innerHTML = '<span style="font-size:11px;color:var(--ink4)">No labels added</span>'
+    return
+  }
+  wrap.innerHTML = clientLabels.map(l=>`
+    <span class="sl-tag" style="background:${l.color}18;color:${l.color}" onclick="toggleLabel('${l.id}')" title="Click to remove">
+      ${l.emoji} ${esc(l.name)} ×
+    </span>`).join('')
+}
+
+function renderClientLabels(labelIds) {
+  if(!labelIds||!labelIds.length) return ''
+  return labelIds.map(id=>{
+    const l = allLabels.find(x=>x.id===id)
+    if(!l) return ''
+    return `<span class="lbl" style="background:${l.color}18;color:${l.color}">${l.emoji} ${esc(l.name)}</span>`
+  }).join('')
 }
 
 loadAll()
