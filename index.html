@@ -445,7 +445,7 @@ tbody tr.dr:hover .acts{opacity:1}
       </div>
       <div class="fg full"><label>Labels</label>
         <div class="label-search">
-          <input id="f-label-search" placeholder="Search or create labels..." autocomplete="off" oninput="filterLabels()" onfocus="openLabelDD()" onblur="setTimeout(closeLabelDD,150)"/>
+          <input id="f-label-search" placeholder="Search or create labels..." autocomplete="off" oninput="filterLabels()" onfocus="openLabelDD()" onblur="setTimeout(()=>closeLabelDD(),200)"/>
           <div class="label-dropdown" id="label-dd"></div>
         </div>
         <div class="selected-labels" id="selected-labels"><span style="font-size:11px;color:var(--ink4)">No labels added</span></div>
@@ -531,7 +531,7 @@ async function sbUpsert(client) {
     lifecycle: client.lifecycle||'onboarding',
     canton: !!client.canton,
     churned: !!client.churned,
-    labels: client.labels||[],
+    labels: client.labels && client.labels.length ? `{${client.labels.join(',')}}` : '{}',
     accounting_partner: client.accountingPartner||null,
     churn_date: client.churnDate||null,
     updated_at: new Date().toISOString()
@@ -584,7 +584,7 @@ function rowToClient(row) {
     churned: !!row.churned,
     churnDate: row.churn_date||'',
     updatedAt: row.updated_at,
-    labels: row.labels||[],
+    labels: Array.isArray(row.labels) ? row.labels : [],
     accountingPartner: row.accounting_partner||''
   }
 }
