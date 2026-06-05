@@ -21,7 +21,18 @@
   --shadow-md:0 4px 16px rgba(0,0,0,.08);
   --r:10px;--r-lg:14px;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;min-height:100vh;transition:background .2s,color .2s}
+body.dark{
+  --ink:#f1f3f5;--ink2:#c9cdd4;--ink3:#6e7681;--ink4:#484f58;
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--surface3:#30363d;
+  --blue:#58a6ff;--blue-soft:#1f3a5f;--blue-mid:#1f4a7a;
+  --green:#3fb950;--green-soft:#1a3a2a;--green-mid:#2ea043;
+  --red:#f85149;--red-soft:#3d1a1a;--red-mid:#6e2626;
+  --amber:#d29922;--amber-soft:#3d2e0a;--amber-mid:#6e5210;
+  --purple:#bc8cff;--purple-soft:#2d1f47;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
+  --shadow:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.4);
+}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:10px}
 
@@ -139,6 +150,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
       <option value="all">👥 All team</option>
     </select>
     <div class="live-badge"><span class="live-dot"></span><span id="live-label">Loading</span></div>
+    <button class="back-btn" onclick="toggleDark()" id="dark-btn">🌙</button>
     <a href="/" class="back-btn">← Dashboard</a>
   </div>
 </div>
@@ -459,6 +471,16 @@ async function loadAll() {
     document.getElementById('live-label').textContent='Error'
     console.error(e)
   }
+}
+
+function toggleDark(){
+  const isDark=document.body.classList.toggle('dark')
+  localStorage.setItem('bw_dark',isDark?'1':'0')
+  document.getElementById('dark-btn').textContent=isDark?'☀️':'🌙'
+}
+if(localStorage.getItem('bw_dark')==='1'){
+  document.body.classList.add('dark')
+  document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('dark-btn');if(b)b.textContent='☀️'})
 }
 
 loadAll()
