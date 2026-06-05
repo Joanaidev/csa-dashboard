@@ -307,13 +307,9 @@ tbody tr.dr:hover .acts{opacity:1}
   <button class="fchip" onclick="setF('stuck_tickets',this)">⚠ Stuck tickets</button>
   <select class="sort-sel" id="partner-filter" onchange="renderTable()" style="border-radius:20px;font-size:12px;padding:5px 12px">
     <option value="">All partners</option>
-    <option value="Attivo">Attivo</option>
-    <option value="Propeller">Propeller</option>
-    <option value="Fuel3">Fuel3</option>
-    <option value="EY">EY</option>
-    <option value="Deloitte">Deloitte</option>
-    <option value="KPMG">KPMG</option>
-    <option value="PwC">PwC</option>
+  </select>
+  <select class="sort-sel" id="label-filter" onchange="renderTable()" style="border-radius:20px;font-size:12px;padding:5px 12px">
+    <option value="">All labels</option>
   </select>
   <div class="filter-right">
     <select class="sort-sel" id="sort-sel" onchange="renderTable()">
@@ -436,17 +432,16 @@ tbody tr.dr:hover .acts{opacity:1}
         <select id="f-canton"><option value="">No Canton</option><option value="yes">⬡ Has Canton</option></select>
       </div>
       <div class="fg full"><label>Accounting partner</label>
-        <select id="f-accounting">
-          <option value="">— None —</option>
-          <option value="Attivo">Attivo</option>
-          <option value="Propeller">Propeller</option>
-          <option value="Fuel3">Fuel3</option>
-          <option value="EY">EY</option>
-          <option value="Deloitte">Deloitte</option>
-          <option value="KPMG">KPMG</option>
-          <option value="PwC">PwC</option>
-          <option value="Other">Other</option>
-        </select>
+        <input id="f-accounting" placeholder="e.g. Attivo, Propeller, Fuel3" list="partner-list" autocomplete="off"/>
+        <datalist id="partner-list">
+          <option value="Attivo"/>
+          <option value="Propeller"/>
+          <option value="Fuel3"/>
+          <option value="EY"/>
+          <option value="Deloitte"/>
+          <option value="KPMG"/>
+          <option value="PwC"/>
+        </datalist>
       </div>
       <div class="fg full"><label>Labels</label>
         <div class="label-search">
@@ -787,6 +782,8 @@ function getList() {
   if(activeFilter!=='churned') list=list.filter(c=>!c.churned)
   const partnerF = document.getElementById('partner-filter')?.value||''
   if(partnerF) list=list.filter(c=>(c.accountingPartner||'')=== partnerF)
+  const labelF = document.getElementById('label-filter')?.value||''
+  if(labelF) list=list.filter(c=>(c.labels||[]).includes(labelF))
   if(activeFilter==='active') list=list.filter(c=>!['completed'].includes(c.status))
   else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
   else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
@@ -911,8 +908,27 @@ function renderStuck() {
 }
 
 // ── TABLE ──
+function updateFilterDropdowns() {
+  // Update partner dropdown with all unique partners from clients
+  const partners = [...new Set(clients.filter(c=>c.accountingPartner).map(c=>c.accountingPartner))].sort()
+  const partnerSel = document.getElementById('partner-filter')
+  if(partnerSel) {
+    const cur = partnerSel.value
+    partnerSel.innerHTML = '<option value="">All partners</option>' + partners.map(p=>`<option value="${esc(p)}"${p===cur?' selected':''}>${esc(p)}</option>`).join('')
+  }
+  // Update label dropdown with all labels that are actually used
+  const usedLabelIds = [...new Set(clients.flatMap(c=>c.labels||[]))]
+  const usedLabels = allLabels.filter(l=>usedLabelIds.includes(l.id))
+  const labelSel = document.getElementById('label-filter')
+  if(labelSel) {
+    const cur = labelSel.value
+    labelSel.innerHTML = '<option value="">All labels</option>' + usedLabels.map(l=>`<option value="${l.id}"${l.id===cur?' selected':''}>${l.emoji} ${esc(l.name)}</option>`).join('')
+  }
+}
+
 function renderTable() {
   renderHero(); renderOwners()
+  updateFilterDropdowns()
   const list=getList()
   document.getElementById('tbl').style.display=list.length?'':'none'
   document.getElementById('empty').style.display=list.length?'none':''
@@ -1073,7 +1089,7 @@ function openAdd(){
   document.getElementById('f-threshold').value='14'
   document.getElementById('f-support').value='no'
   document.getElementById('f-canton').value=''
-  document.getElementById('f-accounting').value=''
+  const facct = document.getElementById('f-accounting'); if(facct) facct.value=''
   clientLabels = []
   renderSelectedLabels()
   populateOwnerDropdowns()
