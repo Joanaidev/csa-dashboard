@@ -305,6 +305,16 @@ tbody tr.dr:hover .acts{opacity:1}
   <button class="fchip" onclick="setF('churned',this)">💀 Churned</button>
   <button class="fchip" onclick="setF('no_contact',this)">📵 30+ days silent</button>
   <button class="fchip" onclick="setF('stuck_tickets',this)">⚠ Stuck tickets</button>
+  <select class="sort-sel" id="partner-filter" onchange="renderTable()" style="border-radius:20px;font-size:12px;padding:5px 12px">
+    <option value="">All partners</option>
+    <option value="Attivo">Attivo</option>
+    <option value="Propeller">Propeller</option>
+    <option value="Fuel3">Fuel3</option>
+    <option value="EY">EY</option>
+    <option value="Deloitte">Deloitte</option>
+    <option value="KPMG">KPMG</option>
+    <option value="PwC">PwC</option>
+  </select>
   <div class="filter-right">
     <select class="sort-sel" id="sort-sel" onchange="renderTable()">
       <option value="risk">Risk first</option>
@@ -425,7 +435,19 @@ tbody tr.dr:hover .acts{opacity:1}
       <div class="fg"><label>Canton integration</label>
         <select id="f-canton"><option value="">No Canton</option><option value="yes">⬡ Has Canton</option></select>
       </div>
-      <div class="fg full"><label>Accounting partner</label><input id="f-accounting" placeholder="e.g. EY, Deloitte, KPMG"/></div>
+      <div class="fg full"><label>Accounting partner</label>
+        <select id="f-accounting">
+          <option value="">— None —</option>
+          <option value="Attivo">Attivo</option>
+          <option value="Propeller">Propeller</option>
+          <option value="Fuel3">Fuel3</option>
+          <option value="EY">EY</option>
+          <option value="Deloitte">Deloitte</option>
+          <option value="KPMG">KPMG</option>
+          <option value="PwC">PwC</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
       <div class="fg full"><label>Labels</label>
         <div class="label-search">
           <input id="f-label-search" placeholder="Search or create labels..." autocomplete="off" oninput="filterLabels()" onfocus="openLabelDD()" onblur="setTimeout(closeLabelDD,150)"/>
@@ -763,6 +785,8 @@ function getList() {
   })
   if(activeOwner) list=list.filter(c=>[c.cso,c.sa,c.owner].some(n=>(n||'').toLowerCase()===activeOwner.toLowerCase()))
   if(activeFilter!=='churned') list=list.filter(c=>!c.churned)
+  const partnerF = document.getElementById('partner-filter')?.value||''
+  if(partnerF) list=list.filter(c=>(c.accountingPartner||'')=== partnerF)
   if(activeFilter==='active') list=list.filter(c=>!['completed'].includes(c.status))
   else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
   else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
@@ -913,7 +937,9 @@ function renderTable() {
           ${c.canton?'<span class="tag tag-canton">⬡ Canton</span>':''}
           ${c.churned?'<span class="tag tag-churned">💀 Churned</span>':''}
         </div>
-        <div class="ca">${fARR(c.arr)}${c.accountingPartner?` · <span style="color:var(--ink3)">${esc(c.accountingPartner)}</span>`:''}
+        <div class="ca" style="display:flex;align-items:center;gap:6px">
+          ${fARR(c.arr)}
+          ${c.accountingPartner?`<span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:5px;background:var(--amber-soft);color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}
         </div>
         ${c.labels&&c.labels.length?`<div class="lbl-wrap">${renderClientLabels(c.labels)}</div>`:''}
       </td>
