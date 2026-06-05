@@ -86,25 +86,32 @@ body.dark .modal{border-color:var(--border2)}
 .op-name{font-size:12px;font-weight:600;color:var(--ink)}
 .op-meta{font-size:10px;color:var(--ink3)}
 
-.stuck-bar{margin:0 28px;background:#fff5f5;border:1px solid #fecaca;border-radius:var(--r);padding:12px 16px;display:none}
-.stuck-bar.show{display:flex;gap:10px;align-items:flex-start}
-.stuck-list{flex:1;display:flex;flex-direction:column;gap:4px;max-height:150px;overflow-y:auto}
-.stuck-item{display:flex;align-items:center;gap:8px;font-size:12px}
-.stuck-key{font-family:'DM Mono',monospace;color:var(--blue);font-weight:600;font-size:11px;text-decoration:none;flex-shrink:0}
+.stuck-bar{margin:0 28px 4px;background:linear-gradient(135deg,#fff5f5,#fff8f8);border:1px solid #fecaca;border-left:3px solid var(--red);border-radius:var(--r-lg);padding:14px 18px;display:none;animation:slideDown .2s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.stuck-bar.show{display:flex;gap:12px;align-items:flex-start}
+.stuck-list{flex:1;display:flex;flex-direction:column;gap:5px;max-height:140px;overflow-y:auto}
+.stuck-item{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 8px;background:rgba(255,255,255,.6);border-radius:6px}
+.stuck-key{font-family:'DM Mono',monospace;color:var(--blue);font-weight:700;font-size:11px;text-decoration:none;flex-shrink:0;min-width:72px}
 .stuck-key:hover{text-decoration:underline}
 .stuck-sum{color:var(--ink2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.stuck-cl{font-size:10px;font-weight:600;color:var(--blue);background:var(--blue-soft);padding:1px 6px;border-radius:5px;flex-shrink:0}
-.stuck-age{font-size:10px;font-weight:700;color:var(--red);flex-shrink:0}
+.stuck-cl{font-size:10px;font-weight:600;color:var(--blue);background:var(--blue-soft);padding:2px 7px;border-radius:5px;flex-shrink:0}
+.stuck-age{font-size:10px;font-weight:700;color:var(--red);flex-shrink:0;font-family:'DM Mono',monospace}
 
-.filters{padding:12px 28px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.fchip{background:var(--surface);border:1px solid var(--border);color:var(--ink2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;letter-spacing:.01em}
-.fchip:hover{border-color:var(--blue-mid);color:var(--blue);background:var(--blue-soft)}
-.fchip.active{background:var(--blue-soft);border-color:var(--blue);color:var(--blue);font-weight:600;box-shadow:0 0 0 3px rgba(26,86,219,.08)}
-.filter-right{margin-left:auto;display:flex;gap:8px}
-.sort-sel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 12px;font-size:12px;font-weight:500;color:var(--ink2);outline:none;font-family:inherit;cursor:pointer}
-.search-wrap{position:relative}
-.search-wrap input{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:7px 16px 7px 34px;font-size:13px;color:var(--ink);outline:none;width:220px;font-family:inherit;transition:all .2s;box-shadow:var(--shadow)}
-.search-wrap input:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(26,86,219,.1),var(--shadow);background:#fff}
+.filter-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px}
+.filter-top{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.filter-bottom{display:flex;align-items:center;gap:6px;padding:10px 0;overflow-x:auto}
+.filter-bottom::-webkit-scrollbar{height:0}
+.fchip{background:transparent;border:none;color:var(--ink3);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;letter-spacing:.01em}
+.fchip:hover{background:var(--surface2);color:var(--ink)}
+.fchip.active{background:var(--blue-soft);color:var(--blue);font-weight:600}
+.filter-divider{width:1px;height:18px;background:var(--border2);flex-shrink:0;margin:0 2px}
+.sort-sel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:500;color:var(--ink2);outline:none;font-family:inherit;cursor:pointer;transition:all .15s}
+.sort-sel:hover{border-color:var(--border2)}
+.search-wrap{position:relative;flex:1;max-width:340px}
+.search-wrap input{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 16px 8px 36px;font-size:13px;color:var(--ink);outline:none;width:100%;font-family:inherit;transition:all .2s}
+.search-wrap input:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(26,86,219,.08);background:var(--surface)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none;font-size:14px}
+.filter-label{font-size:10px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;flex-shrink:0}
 .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none}
 
 .table-wrap{padding:0 28px 28px}
@@ -308,37 +315,42 @@ tbody tr.dr:hover .acts{opacity:1}
     <div class="stuck-list" id="stuck-list"></div>
   </div>
 </div>
-<div class="filters">
-  <button class="fchip active" onclick="setF('all',this)">All</button>
-  <button class="fchip" onclick="setF('active',this)">Active</button>
-  <button class="fchip" onclick="setF('at_risk',this)">At risk</button>
-  <button class="fchip" onclick="setF('overdue',this)">Overdue</button>
-  <button class="fchip" onclick="setF('tickets',this)">Has tickets</button>
-  <button class="fchip" onclick="setF('support',this)">🎧 Support</button>
-  <button class="fchip" onclick="setF('onboarding',this)">🚀 Onboarding</button>
-  <button class="fchip" onclick="setF('canton',this)">⬡ Canton</button>
-  <button class="fchip" onclick="setF('churned',this)">💀 Churned</button>
-  <button class="fchip" onclick="setF('no_contact',this)">📵 30+ days silent</button>
-  <button class="fchip" onclick="setF('stuck_tickets',this)">⚠ Stuck tickets</button>
-  <select class="sort-sel" id="partner-filter" onchange="renderTable()" style="border-radius:20px;font-size:12px;padding:5px 12px">
-    <option value="">All partners</option>
-  </select>
-  <select class="sort-sel" id="label-filter" onchange="renderTable()" style="border-radius:20px;font-size:12px;padding:5px 12px">
-    <option value="">All labels</option>
-  </select>
-  <div class="filter-right">
-    <select class="sort-sel" id="sort-sel" onchange="renderTable()">
-      <option value="risk">Risk first</option>
-      <option value="arr_desc">ARR ↓</option>
-      <option value="arr_asc">ARR ↑</option>
-      <option value="name">Name A–Z</option>
-      <option value="tickets">Most tickets</option>
-      <option value="contact">Last contact</option>
-    </select>
+<div class="filter-bar">
+  <div class="filter-top">
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
-      <input id="search" placeholder="Search clients or owners..." oninput="renderTable()"/>
+      <input id="search" placeholder="Search clients, owners, labels..." oninput="renderTable()"/>
     </div>
+    <select class="sort-sel" id="sort-sel" onchange="renderTable()">
+      <option value="risk">Sort: Risk first</option>
+      <option value="arr_desc">Sort: ARR ↓</option>
+      <option value="arr_asc">Sort: ARR ↑</option>
+      <option value="name">Sort: Name A–Z</option>
+      <option value="tickets">Sort: Most tickets</option>
+      <option value="contact">Sort: Last contact</option>
+    </select>
+    <select class="sort-sel" id="partner-filter" onchange="renderTable()">
+      <option value="">All partners</option>
+    </select>
+    <select class="sort-sel" id="label-filter" onchange="renderTable()">
+      <option value="">All labels</option>
+    </select>
+  </div>
+  <div class="filter-bottom">
+    <span class="filter-label">Filter</span>
+    <button class="fchip active" onclick="setF('all',this)">All clients</button>
+    <button class="fchip" onclick="setF('active',this)">Active</button>
+    <button class="fchip" onclick="setF('at_risk',this)">At risk</button>
+    <button class="fchip" onclick="setF('overdue',this)">Overdue</button>
+    <button class="fchip" onclick="setF('tickets',this)">Has tickets</button>
+    <div class="filter-divider"></div>
+    <button class="fchip" onclick="setF('support',this)">🎧 Support</button>
+    <button class="fchip" onclick="setF('onboarding',this)">🚀 Onboarding</button>
+    <button class="fchip" onclick="setF('canton',this)">⬡ Canton</button>
+    <div class="filter-divider"></div>
+    <button class="fchip" onclick="setF('churned',this)">💀 Churned</button>
+    <button class="fchip" onclick="setF('no_contact',this)">📵 30d silent</button>
+    <button class="fchip" onclick="setF('stuck_tickets',this)">⚠ Stuck</button>
   </div>
 </div>
 
@@ -1519,7 +1531,7 @@ function switchView(v, btn) {
   document.getElementById('team-view').style.display = v==='team'?'':'none'
   document.querySelector('.hero').style.display = v==='clients'?'':'none'
   document.getElementById('owner-strip').style.display = v==='clients'?'':'none'
-  document.querySelector('.filters').style.display = v==='clients'?'':'none'
+  document.querySelector('.filter-bar').style.display = v==='clients'?'':'none'
   const sb = document.getElementById('stuck-bar')
   sb.style.display = v==='clients'&&sb.classList.contains('show')?'flex':'none'
   if(v==='jira') renderJira()
