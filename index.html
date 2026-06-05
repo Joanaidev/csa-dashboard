@@ -671,19 +671,6 @@ function stClass(s){
 }
 
 // ── VIEWS ──
-function switchView(v,btn) {
-  activeView=v
-  document.querySelectorAll('.view-tab').forEach(b=>b.classList.remove('active'))
-  btn.classList.add('active')
-  document.getElementById('clients-view').style.display=v==='clients'?'':'none'
-  document.getElementById('jira-view').style.display=v==='jira'?'':'none'
-  document.querySelector('.hero').style.display=v==='clients'?'':'none'
-  document.getElementById('owner-strip').style.display=v==='clients'?'':'none'
-  document.querySelector('.filters').style.display=v==='clients'?'':'none'
-  document.getElementById('stuck-bar').style.display=v==='clients'&&document.getElementById('stuck-bar').classList.contains('show')?'flex':'none'
-  if(v==='jira') renderJira()
-}
-
 // ── FILTER ──
 function setF(f,btn) {
   activeFilter=f
