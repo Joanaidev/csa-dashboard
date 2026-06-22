@@ -241,6 +241,20 @@ tbody tr.dr:hover .acts{opacity:1}
 .import-note{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--ink2);margin-bottom:14px;line-height:1.7}
 .import-note code{background:var(--surface3);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px}
 
+/* STRIKES */
+.strikes-wrap{display:flex;align-items:center;gap:6px;margin-top:4px}
+.strike-pip{font-size:13px;line-height:1}
+.strike-pip.empty{opacity:.2}
+.strike-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.03em}
+.s0{background:var(--surface2);color:var(--ink3)}
+.s1{background:#fff7ed;color:#c2410c}
+.s2{background:#fff0f0;color:#b91c1c}
+.s3{background:var(--red-soft);color:var(--red);animation:pulse-red 2s infinite}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(224,36,36,.3)}60%{box-shadow:0 0 0 5px rgba(224,36,36,0)}}
+.strike-log-item{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:var(--surface2);border-radius:7px;margin-bottom:5px}
+.sl-date{font-size:10px;color:var(--ink3);font-family:'DM Mono',monospace;flex-shrink:0;margin-top:1px}
+.sl-reason{font-size:12px;color:var(--ink2);flex:1}
+
 /* LABELS */
 .lbl{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin:1px;white-space:nowrap;cursor:default}
 .lbl-wrap{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
@@ -560,6 +574,8 @@ async function sbUpsert(client) {
     churned: !!client.churned,
     labels: client.labels && client.labels.length ? `{${client.labels.join(',')}}` : '{}',
     accounting_partner: client.accountingPartner||null,
+    strikes: client.strikes||0,
+    strike_log: client.strikeLog||[],
     churn_date: client.churnDate||null,
     updated_at: new Date().toISOString()
   }
@@ -612,7 +628,9 @@ function rowToClient(row) {
     churnDate: row.churn_date||'',
     updatedAt: row.updated_at,
     labels: Array.isArray(row.labels) ? row.labels : [],
-    accountingPartner: row.accounting_partner||''
+    accountingPartner: row.accounting_partner||'',
+    strikes: row.strikes||0,
+    strikeLog: Array.isArray(row.strike_log) ? row.strike_log : []
   }
 }
 
@@ -972,6 +990,7 @@ function renderTable() {
           ${c.accountingPartner?`<span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:5px;background:var(--amber-soft);color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}
         </div>
         ${c.labels&&c.labels.length?`<div class="lbl-wrap">${renderClientLabels(c.labels)}</div>`:''}
+        ${(c.strikes||0)>0?`<div class="strikes-wrap">${renderStrikePips(c.strikes)}<span class="strike-badge s${Math.min(c.strikes,3)}">${c.strikes>=3?'⚡⚡⚡ At Risk':c.strikes===2?'⚡⚡ 2 Strikes':'⚡ 1 Strike'}</span></div>`:''}
       </td>
       <td>
         ${c.cso?`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
@@ -1104,6 +1123,7 @@ function openAdd(){
   document.getElementById('f-support').value='no'
   document.getElementById('f-canton').value=''
   const facct = document.getElementById('f-accounting'); if(facct) facct.value=''
+  document.getElementById('strike-section').style.display='none'
   clientLabels = []
   renderSelectedLabels()
   populateOwnerDropdowns()
@@ -1142,6 +1162,11 @@ async function saveClient(){
   const name=document.getElementById('f-name').value.trim()
   if(!name){document.getElementById('merr').textContent='Client name is required';document.getElementById('merr').style.display='block';return}
   const inSupport=document.getElementById('f-support').value
+  // Auto-set at_risk status at 3 strikes
+  const currentStatus = document.getElementById('f-status').value
+  if(_editingStrikes>=3 && !['at_risk','blocked'].includes(currentStatus)) {
+    document.getElementById('f-status').value='at_risk'
+  }
   const csoSel=document.getElementById('f-cso')
   const saSel=document.getElementById('f-sa')
   const cso=csoSel?.value||''
@@ -1158,6 +1183,8 @@ async function saveClient(){
     saEmail:saMember?.email||document.getElementById('f-email').value||'',
     accountingPartner:document.getElementById('f-accounting').value||'',
     labels:clientLabels.map(l=>l.id),
+    strikes: _editingStrikes||0,
+    strikeLog: _editingStrikeLog||[],
     arr:Number(document.getElementById('f-arr').value)||0,
     status:document.getElementById('f-status').value,
     threshold:Number(document.getElementById('f-threshold').value)||14,
@@ -1644,6 +1671,66 @@ function renderClientLabels(labelIds) {
     if(!l) return ''
     return `<span class="lbl" style="background:${l.color}18;color:${l.color}">${l.emoji} ${esc(l.name)}</span>`
   }).join('')
+}
+
+// ── STRIKES ──
+let _editingStrikes = 0
+let _editingStrikeLog = []
+
+function renderStrikePips(count) {
+  return [1,2,3].map(i=>`<span class="strike-pip${i<=count?'':' empty'}">⚡</span>`).join('')
+}
+
+function renderStrikeModal(count, log) {
+  _editingStrikes = count
+  _editingStrikeLog = log || []
+  document.getElementById('strike-pips').innerHTML = renderStrikePips(count)
+  const removeBtn = document.getElementById('remove-strike-btn')
+  if(removeBtn) removeBtn.style.display = count>0?'':'none'
+  // Show log
+  const logWrap = document.getElementById('strike-log-wrap')
+  if(log&&log.length) {
+    logWrap.innerHTML = `<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Strike history</div>`+
+    [...log].reverse().map(s=>`<div class="strike-log-item">
+      <span class="sl-date">${s.date||''}</span>
+      <span class="sl-reason">${esc(s.reason||'No reason given')}</span>
+    </div>`).join('')
+  } else {
+    logWrap.innerHTML = ''
+  }
+}
+
+function addStrike() {
+  if(_editingStrikes>=3) { showToast('Maximum 3 strikes'); return }
+  document.getElementById('strike-reason-wrap').style.display='block'
+  document.getElementById('strike-reason').focus()
+}
+
+function cancelStrike() {
+  document.getElementById('strike-reason-wrap').style.display='none'
+  document.getElementById('strike-reason').value=''
+}
+
+function confirmStrike() {
+  const reason = document.getElementById('strike-reason').value.trim()
+  _editingStrikes = Math.min(_editingStrikes+1, 3)
+  _editingStrikeLog.push({
+    date: new Date().toISOString().slice(0,10),
+    reason: reason||'No reason given',
+    strike: _editingStrikes
+  })
+  document.getElementById('strike-reason-wrap').style.display='none'
+  document.getElementById('strike-reason').value=''
+  renderStrikeModal(_editingStrikes, _editingStrikeLog)
+  showToast(`Strike ${_editingStrikes} added`)
+}
+
+function removeStrike() {
+  if(_editingStrikes<=0) return
+  _editingStrikes = Math.max(_editingStrikes-1, 0)
+  // Remove last log entry
+  _editingStrikeLog.pop()
+  renderStrikeModal(_editingStrikes, _editingStrikeLog)
 }
 
 // ── DARK MODE ──
