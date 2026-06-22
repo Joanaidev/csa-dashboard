@@ -1171,6 +1171,12 @@ function openEdit(id){
   const clientLabelIds = c.labels || []
   clientLabels = allLabels.filter(l=>clientLabelIds.includes(l.id))
   renderSelectedLabels()
+  // Show and initialize strikes
+  document.getElementById('strike-section').style.display='block'
+  document.getElementById('strike-reason-wrap').style.display='none'
+  _editingStrikes = c.strikes||0
+  _editingStrikeLog = c.strikeLog||[]
+  renderStrikeModal(_editingStrikes, _editingStrikeLog)
   populateOwnerDropdowns()
   document.getElementById('cmodal').classList.add('open')
 }
