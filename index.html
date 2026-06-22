@@ -491,6 +491,23 @@ tbody tr.dr:hover .acts{opacity:1}
         </div>
         <div class="selected-labels" id="selected-labels"><span style="font-size:11px;color:var(--ink4)">No labels added</span></div>
       </div>
+      <!-- STRIKES -->
+      <div class="fg full" id="strike-section" style="display:none">
+        <label>Strikes <span style="font-weight:400;color:var(--ink3);text-transform:none;letter-spacing:0">— 1 warning · 2 serious · 3 = At Risk</span></label>
+        <div style="display:flex;align-items:center;gap:10px;margin:6px 0 10px">
+          <div id="strike-pips" style="display:flex;gap:4px;font-size:16px"></div>
+          <button type="button" class="btn" onclick="addStrike()" style="font-size:11px;padding:4px 12px;color:var(--red);border-color:#fecaca">+ Add strike</button>
+          <button type="button" class="btn" onclick="removeStrike()" id="remove-strike-btn" style="font-size:11px;padding:4px 12px;display:none">Remove last</button>
+        </div>
+        <div id="strike-reason-wrap" style="display:none;margin-bottom:12px">
+          <input id="strike-reason" placeholder="Reason — e.g. missed QBR, no response 3 weeks..." style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 12px;font-size:13px;outline:none;font-family:inherit;margin-bottom:8px"/>
+          <div style="display:flex;gap:6px">
+            <button type="button" class="btn-save" onclick="confirmStrike()" style="font-size:12px;padding:6px 16px">Confirm strike</button>
+            <button type="button" class="btn-cancel" onclick="cancelStrike()" style="font-size:12px;padding:6px 14px">Cancel</button>
+          </div>
+        </div>
+        <div id="strike-log-wrap"></div>
+      </div>
     </div>
     <div style="color:var(--red);font-size:12px;display:none" id="merr"></div>
     <div class="ma">
