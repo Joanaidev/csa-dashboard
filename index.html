@@ -306,11 +306,13 @@ tbody tr.dr:hover .acts{opacity:1}
     <div class="live-badge"><span class="live-dot" id="live-dot"></span><span id="live-label">Loading</span></div>
     <a href="/overview" class="btn" style="text-decoration:none">📊 Overview</a>
     <button class="btn" onclick="toggleDark()" id="dark-btn" title="Toggle dark mode">🌙</button>
-    <button class="btn" onclick="loadAll()">↻ Refresh</button>
-    <button class="btn" onclick="exportCSV()">↓ Export</button>
-    <button class="btn" onclick="openDigest()">📋 Digest</button>
+    <button class="btn" onclick="loadAll()" title="Refresh">↻</button>
+    <div style="display:flex;gap:0;border:1px solid var(--border2);border-radius:var(--r-sm);overflow:hidden">
+      <button class="btn" onclick="exportCSV()" style="border:none;border-radius:0;border-right:1px solid var(--border2)">↓ Export</button>
+      <button class="btn" onclick="openDigest()" style="border:none;border-radius:0;border-right:1px solid var(--border2)">📋 Digest</button>
+      <button class="btn" onclick="openImport()" style="border:none;border-radius:0">↑ CSV</button>
+    </div>
     <button class="btn-primary" onclick="openAdd()">+ Add client</button>
-    <button class="btn" onclick="openImport()">↑ CSV</button>
   </div>
 </div>
 
@@ -325,8 +327,11 @@ tbody tr.dr:hover .acts{opacity:1}
 <div class="stuck-bar" id="stuck-bar">
   <span style="font-size:16px;flex-shrink:0">🚨</span>
   <div style="flex:1">
-    <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px" id="stuck-title">Stuck tickets</div>
-    <div class="stuck-list" id="stuck-list"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em" id="stuck-title">Stuck tickets</div>
+      <button onclick="toggleStuckExpand()" id="stuck-toggle" style="background:none;border:none;font-size:11px;color:var(--red);cursor:pointer;font-weight:600">Show all ▼</button>
+    </div>
+    <div class="stuck-list" id="stuck-list" style="max-height:80px;overflow:hidden"></div>
   </div>
 </div>
 <div class="filter-bar">
@@ -1818,6 +1823,17 @@ function removeStrike() {
   // Remove last log entry
   _editingStrikeLog.pop()
   renderStrikeModal(_editingStrikes, _editingStrikeLog)
+}
+
+// ── STUCK EXPAND ──
+let _stuckExpanded = false
+function toggleStuckExpand() {
+  _stuckExpanded = !_stuckExpanded
+  const list = document.getElementById('stuck-list')
+  const btn = document.getElementById('stuck-toggle')
+  list.style.maxHeight = _stuckExpanded ? 'none' : '80px'
+  list.style.overflow = _stuckExpanded ? 'visible' : 'hidden'
+  btn.textContent = _stuckExpanded ? 'Collapse ▲' : 'Show all ▼'
 }
 
 // ── SLACK NOTIFICATIONS ──
