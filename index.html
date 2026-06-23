@@ -1015,71 +1015,76 @@ function updateFilterDropdowns() {
 function renderTable() {
   renderHero(); renderOwners()
   updateFilterDropdowns()
-  const list=getList()
-  document.getElementById('tbl').style.display=list.length?'':'none'
-  document.getElementById('empty').style.display=list.length?'none':''
-  if(!list.length) return
-  document.getElementById('tbody').innerHTML=list.map(c=>{
-    const open=cTickets(c)
-    const poss=cPossible(c)
-    const days=dSince(c.lastContact)
-    const t=Number(c.threshold)||14
-    const col=ownerColor(c.owner||'?')
-    const isSupport=c.inSupport==='yes'
-    const label=open.length+(poss.length?` +${poss.length}?`:'')
-    const tcBtn=open.length===0&&poss.length===0
-      ?`<span class="tc-btn tc-none">✓ None</span>`
-      :`<button class="tc-btn ${open.length>2?'tc-many':open.length>0?'tc-few':'tc-none'}" onclick="event.stopPropagation();openPanel('${c.id}')">${label} open →</button>`
+  const list = getList()
+  document.getElementById('empty').style.display = list.length ? 'none' : ''
+  const cl = document.getElementById('client-list')
+  if(!list.length) { cl.innerHTML = ''; return }
 
-    return `<tr class="dr ${flagClass(c)}" onclick="openPanel('${c.id}')">
-      <td>
-        <div class="cn">${esc(c.name)}
+  function statusDot(s) {
+    const m = {in_progress:'sd-progress',at_risk:'sd-risk',blocked:'sd-blocked',completed:'sd-completed',Red:'sd-risk',Yellow:'sd-progress',Green:'sd-completed'}
+    return `<span class="status-dot ${m[s]||'sd-default'}"></span>`
+  }
+  function statusText(s) {
+    const m = {in_progress:'In Progress',at_risk:'At Risk',blocked:'Blocked',completed:'Completed',not_started:'Not Started',Red:'At Risk',Yellow:'Needs Attention',Green:'Active'}
+    return m[s]||s||'—'
+  }
+
+  cl.innerHTML = list.map(c => {
+    const open = cTickets(c), poss = cPossible(c)
+    const days = dSince(c.lastContact||c.last_contact)
+    const t = Number(c.threshold)||14
+    const isSupport = c.inSupport==='yes'||c.in_support
+    const ownerName = c.cso||c.sa||c.owner||'—'
+    const ownerRole = c.cso ? 'CSO' : c.sa ? 'SA' : '—'
+    const col = ownerColor(ownerName)
+    const ticketCls = open.length===0?'cc-ticket-none':open.length<=3?'cc-ticket-few':'cc-ticket-many'
+    const ctCls = days>=t*2?'cc-contact-over':days>=t?'cc-contact-warn':'cc-contact-ok'
+    const strikes = c.strikes||0
+
+    return `<div class="client-card ${flagClass(c)}" onclick="openPanel('${c.id}')">
+      <div>
+        <div class="cc-name">${esc(c.name)}</div>
+        <div class="cc-sub">${fARR(c.arr)}${c.accountingPartner?` · <span style="color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}</div>
+        ${c.quickNote?`<div class="cc-note">💬 ${esc(c.quickNote)}</div>`:''}
+        <div class="cc-tags">
           ${isSupport?'<span class="tag tag-support">🎧 Support</span>':''}
           ${!isSupport&&c.lifecycle==='onboarding'?'<span class="tag tag-onboard">🚀 Onboarding</span>':''}
           ${c.canton?'<span class="tag tag-canton">⬡ Canton</span>':''}
           ${c.churned?'<span class="tag tag-churned">💀 Churned</span>':''}
+          ${c.labels&&c.labels.length?renderClientLabels(c.labels):''}
+          ${strikes>0?`<span class="strike-badge s${Math.min(strikes,3)}">${'⚡'.repeat(strikes)} ${strikes>=3?'At Risk':strikes+' Strike'+(strikes>1?'s':'')}</span>`:''}
         </div>
-        <div class="ca" style="display:flex;align-items:center;gap:6px">
-          ${fARR(c.arr)}
-          ${c.accountingPartner?`<span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:5px;background:var(--amber-soft);color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}
+      </div>
+      <div class="cc-owner">
+        <div class="cc-av" style="background:${col}18;color:${col}">${ini(ownerName)}</div>
+        <div class="cc-owner-info">
+          <div class="cc-owner-name">${esc(ownerName)}</div>
+          <div class="cc-owner-role">${ownerRole}${c.sa&&c.cso?` · SA: ${esc(c.sa)}`:''}</div>
         </div>
-        ${c.quickNote?`<div style="font-size:11px;color:var(--ink3);margin-top:3px;font-style:italic">💬 ${esc(c.quickNote)}</div>`:''}
-        ${c.labels&&c.labels.length?`<div class="lbl-wrap">${renderClientLabels(c.labels)}</div>`:''}
-        ${(c.strikes||0)>0?`<div class="strikes-wrap">${renderStrikePips(c.strikes)}<span class="strike-badge s${Math.min(c.strikes,3)}">${c.strikes>=3?'⚡⚡⚡ At Risk':c.strikes===2?'⚡⚡ 2 Strikes':'⚡ 1 Strike'}</span></div>`:''}
-      </td>
-      <td>
-        ${c.cso?`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
-          <div class="av" style="width:20px;height:20px;font-size:7px;background:${ownerColor(c.cso)}18;color:${ownerColor(c.cso)}">${ini(c.cso)}</div>
-          <span style="font-size:11px;color:var(--ink2);font-weight:500">${esc(c.cso)}</span>
-          <span class="role-badge role-cso" style="font-size:8px;padding:1px 5px">CSO</span>
-        </div>`:''}
-        ${c.sa?`<div style="display:flex;align-items:center;gap:5px">
-          <div class="av" style="width:20px;height:20px;font-size:7px;background:${ownerColor(c.sa)}18;color:${ownerColor(c.sa)}">${ini(c.sa)}</div>
-          <span style="font-size:11px;color:var(--ink2);font-weight:500">${esc(c.sa)}</span>
-          <span class="role-badge role-sa" style="font-size:8px;padding:1px 5px">SA</span>
-        </div>`:''}
-        ${!c.cso&&!c.sa?`<span style="font-size:12px;color:var(--ink3)">${esc(c.owner||'—')}</span>`:''}
-      </td>
-      <td>${statusBadge(c.status)}</td>
-      <td>
-        <div class="${ctClass(c)}">${c.lastContact?days+'d ago':'Never'}</div>
-        ${days>=t?`<div style="font-size:10px;color:${days>=t*2?'var(--red)':'var(--amber)'};font-weight:500;margin-top:1px">⚠ Follow up</div>`:''}
-      </td>
-      <td>${tcBtn}</td>
-      <td onclick="event.stopPropagation()">
-        <div class="acts">
-          ${!c.churned?`<button class="act green" onclick="logContact('${c.id}')">✓ Contacted</button>`:''}
-          ${!c.churned?`<button class="act" onclick="flagChurnRisk('${c.id}')" title="Flag as potential churn in Slack" style="color:var(--red)">🔴</button>`:''}
-          <button class="act" onclick="openEdit('${c.id}')">Edit</button>
-          ${c.churned
-            ?`<button class="act amber" onclick="unchurn('${c.id}')">↩ Restore</button>`
-            :`<button class="act red" onclick="churnClient('${c.id}')">Churn</button>`}
-        </div>
-      </td>
-    </tr>`
+      </div>
+      <div class="cc-status">
+        ${statusDot(c.status)}
+        <span class="cc-status-text">${statusText(c.status)}</span>
+      </div>
+      <div class="cc-contact">
+        <div class="cc-contact-days ${ctCls}">${c.lastContact||c.last_contact?days+'d ago':'Never'}</div>
+        <div class="cc-contact-label">${days>=t?'⚠ Follow up':'Last contact'}</div>
+      </div>
+      <div class="cc-tickets" onclick="event.stopPropagation();openPanel('${c.id}')">
+        <div class="cc-ticket-num ${ticketCls}">${open.length}${poss.length?`<span style="font-size:11px;font-weight:400;opacity:.5"> +${poss.length}</span>`:''}</div>
+        <div class="cc-ticket-label">${open.length===0?'no tickets':'open tickets'}</div>
+      </div>
+      <div class="cc-acts" onclick="event.stopPropagation()">
+        ${!c.churned?`<button class="cc-btn green" onclick="logContact('${c.id}')">✓ Contacted</button>`:''}
+        <button class="cc-btn" onclick="openEdit('${c.id}')">Edit</button>
+        ${c.churned
+          ?`<button class="cc-btn" onclick="unchurn('${c.id}')" style="color:var(--green)">↩ Restore</button>`
+          :`<button class="cc-btn red" onclick="churnClient('${c.id}')">Churn</button>`}
+        ${!c.churned?`<button class="cc-btn red" onclick="flagChurnRisk('${c.id}')">🔴 Flag</button>`:''}
+      </div>
+    </div>`
   }).join('')
 }
-
 // ── JIRA VIEW ──
 function renderJira() {
   const f=document.getElementById('jira-f')?.value||'all'
