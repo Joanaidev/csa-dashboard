@@ -1488,7 +1488,6 @@ async function loadAll(){
   } catch(e){ console.warn('Jira:',e.message) }
 
   document.getElementById('loading').style.display='none'
-  document.getElementById('tbl').style.display=''
   // Always re-render after everything is loaded
   renderTable()
   renderStuck()
