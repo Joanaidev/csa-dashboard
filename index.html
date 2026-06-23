@@ -363,6 +363,35 @@ tbody tr.dr:hover .acts{opacity:1}
   </div>
 </div>
 
+<div style="display:flex;min-height:calc(100vh - 58px)">
+<!-- SIDEBAR -->
+<div id="sidebar" style="width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:16px 0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto">
+  <div style="padding:0 12px;margin-bottom:4px">
+    <div class="sb-label">Views</div>
+    <button class="sb-item active" onclick="setF('all',this)"><div class="sb-item-left">👥 All clients</div><span class="sb-count" id="sb-count-all">—</span></button>
+    <button class="sb-item" onclick="setF('active',this)"><div class="sb-item-left">✓ Active</div><span class="sb-count" id="sb-count-active">—</span></button>
+    <button class="sb-item" onclick="setF('at_risk',this)"><div class="sb-item-left">⚠ At risk</div><span class="sb-count red" id="sb-count-risk">—</span></button>
+    <button class="sb-item" onclick="setF('overdue',this)"><div class="sb-item-left">🕐 Overdue</div><span class="sb-count amber" id="sb-count-overdue">—</span></button>
+    <button class="sb-item" onclick="setF('tickets',this)"><div class="sb-item-left">🎫 Has tickets</div><span class="sb-count red" id="sb-count-tickets">—</span></button>
+    <button class="sb-item" onclick="setF('stuck_tickets',this)"><div class="sb-item-left">🚨 Stuck</div><span class="sb-count red" id="sb-count-stuck">—</span></button>
+  </div>
+  <div style="height:1px;background:var(--border);margin:8px 12px"></div>
+  <div style="padding:0 12px;margin-bottom:4px">
+    <div class="sb-label">Lifecycle</div>
+    <button class="sb-item" onclick="setF('support',this)"><div class="sb-item-left">🎧 Support</div><span class="sb-count" id="sb-count-support">—</span></button>
+    <button class="sb-item" onclick="setF('onboarding',this)"><div class="sb-item-left">🚀 Onboarding</div><span class="sb-count" id="sb-count-onboard">—</span></button>
+    <button class="sb-item" onclick="setF('canton',this)"><div class="sb-item-left">⬡ Canton</div><span class="sb-count" id="sb-count-canton">—</span></button>
+  </div>
+  <div style="height:1px;background:var(--border);margin:8px 12px"></div>
+  <div style="padding:0 12px">
+    <div class="sb-label">More</div>
+    <button class="sb-item" onclick="setF('no_contact',this)"><div class="sb-item-left">📵 30d silent</div><span class="sb-count amber" id="sb-count-silent">—</span></button>
+    <button class="sb-item" onclick="setF('churned',this)"><div class="sb-item-left">💀 Churned</div><span class="sb-count" id="sb-count-churned">—</span></button>
+  </div>
+</div>
+<!-- MAIN CONTENT -->
+<div style="flex:1;min-width:0;overflow-x:hidden">
+
 <div class="hero"><div class="hero-grid" id="hero"></div></div>
 <div style="display:flex;align-items:center;gap:0">
   <div class="owner-strip" id="owner-strip" style="flex:1"></div>
