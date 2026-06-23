@@ -115,19 +115,50 @@ body.dark .modal{border-color:var(--border2)}
 .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none}
 
 .table-wrap{padding:0 28px 28px}
-.table-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow)}
-table{width:100%;border-collapse:collapse}
-thead tr{background:var(--surface2);border-bottom:1px solid var(--border)}
-th{padding:11px 18px;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.1em;text-align:left;white-space:nowrap}
-tbody tr.dr{border-bottom:1px solid var(--bg);transition:all .12s;cursor:pointer}
-tbody tr.dr:last-child{border-bottom:none}
-tbody tr.dr:hover{background:linear-gradient(90deg,var(--blue-soft),transparent 60%)}
-tbody tr.dr.fl-red{box-shadow:inset 3px 0 0 var(--red)}
-tbody tr.dr.fl-amber{box-shadow:inset 3px 0 0 var(--amber)}
-tbody tr.dr.fl-purple{box-shadow:inset 3px 0 0 var(--purple)}
-td{padding:14px 18px;vertical-align:middle}
-.cn{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
-.ca{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;margin-top:2px}
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 22px;margin-bottom:8px;display:grid;grid-template-columns:2fr 1.2fr 120px 120px 140px auto;gap:16px;align-items:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.client-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);border-color:var(--border2)}
+.client-card.fl-red{border-left:3px solid var(--red)}
+.client-card.fl-amber{border-left:3px solid var(--amber)}
+.client-card.fl-purple{border-left:3px solid var(--purple)}
+.cc-name{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.3}
+.cc-sub{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;margin-top:3px}
+.cc-note{font-size:11px;color:var(--ink3);font-style:italic;margin-top:3px}
+.cc-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}
+.cc-owner{display:flex;align-items:center;gap:8px}
+.cc-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.cc-owner-info{min-width:0}
+.cc-owner-name{font-size:13px;font-weight:500;color:var(--ink)}
+.cc-owner-role{font-size:10px;color:var(--ink3);margin-top:1px}
+.cc-status{display:flex;align-items:center;gap:7px}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sd-progress{background:var(--blue)}
+.sd-risk{background:var(--red);box-shadow:0 0 0 3px rgba(224,36,36,.15)}
+.sd-blocked{background:var(--red);box-shadow:0 0 0 3px rgba(224,36,36,.2);animation:pulse-red 2s infinite}
+.sd-completed{background:var(--green)}
+.sd-default{background:var(--ink4)}
+.cc-status-text{font-size:12px;font-weight:500;color:var(--ink2)}
+.cc-contact{text-align:right}
+.cc-contact-days{font-size:13px;font-weight:600;font-family:'DM Mono',monospace}
+.cc-contact-warn{color:var(--amber)}
+.cc-contact-over{color:var(--red)}
+.cc-contact-ok{color:var(--ink3)}
+.cc-contact-label{font-size:10px;color:var(--ink4);margin-top:2px}
+.cc-tickets{text-align:right}
+.cc-ticket-num{font-size:20px;font-weight:700;font-family:'DM Mono',monospace;line-height:1;cursor:pointer;transition:all .15s}
+.cc-ticket-num:hover{transform:scale(1.1)}
+.cc-ticket-none{color:var(--green)}
+.cc-ticket-few{color:var(--amber)}
+.cc-ticket-many{color:var(--red)}
+.cc-ticket-label{font-size:10px;color:var(--ink4);margin-top:2px}
+.cc-acts{display:flex;flex-direction:column;gap:4px;opacity:0;transition:opacity .15s}
+.client-card:hover .cc-acts{opacity:1}
+.cc-btn{background:var(--surface2);border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:500;color:var(--ink2);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.cc-btn:hover{background:var(--surface3)}
+.cc-btn.green{color:var(--green);background:var(--green-soft)}
+.cc-btn.red{color:var(--red)}
+.cc-btn.red:hover{background:var(--red-soft)}
+.cn{font-size:15px;font-weight:700;color:var(--ink)}
+.ca{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace}
 .av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
 .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.03em;white-space:nowrap;display:inline-block}
 .b-blue{background:var(--blue-soft);color:var(--blue)}
@@ -374,16 +405,9 @@ tbody tr.dr:hover .acts{opacity:1}
 </div>
 
 <div class="table-wrap" id="clients-view">
-  <div class="table-box">
-    <div class="loading-state" id="loading"><div class="spinner"></div>Loading from database...</div>
-    <table id="tbl" style="display:none">
-      <thead><tr>
-        <th>Client</th><th>Owner</th><th>Status</th><th>Last contact</th><th>Open tickets</th><th style="width:1%"></th>
-      </tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <div class="empty-state" id="empty" style="display:none"><div class="es-icon">◈</div><p>No clients match this filter</p></div>
-  </div>
+  <div class="loading-state" id="loading"><div class="spinner"></div>Loading from database...</div>
+  <div id="client-list"></div>
+  <div class="empty-state" id="empty" style="display:none"><div class="es-icon">◈</div><p>No clients match this filter</p></div>
 </div>
 
 <div class="jira-wrap" id="jira-view">
