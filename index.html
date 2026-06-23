@@ -472,6 +472,9 @@ tbody tr.dr:hover .acts{opacity:1}
       <div class="fg"><label>Canton integration</label>
         <select id="f-canton"><option value="">No Canton</option><option value="yes">⬡ Has Canton</option></select>
       </div>
+      <div class="fg full"><label>Quick note <span style="font-weight:400;color:var(--ink3);text-transform:none;letter-spacing:0">— shows on the client row</span></label>
+        <input id="f-quicknote" placeholder="e.g. Closing 2024 books, waiting on EY sign-off..."/>
+      </div>
       <div class="fg full"><label>Accounting partner</label>
         <input id="f-accounting" placeholder="e.g. Attivo, Propeller, Fuel3" list="partner-list" autocomplete="off"/>
         <datalist id="partner-list">
@@ -592,6 +595,7 @@ async function sbUpsert(client) {
     churned: !!client.churned,
     labels: client.labels && client.labels.length ? `{${client.labels.join(',')}}` : '{}',
     accounting_partner: client.accountingPartner||null,
+    quick_note: client.quickNote||null,
     strikes: client.strikes||0,
     strike_log: client.strikeLog||[],
     churn_date: client.churnDate||null,
@@ -647,6 +651,7 @@ function rowToClient(row) {
     updatedAt: row.updated_at,
     labels: Array.isArray(row.labels) ? row.labels : [],
     accountingPartner: row.accounting_partner||'',
+    quickNote: row.quick_note||'',
     strikes: row.strikes||0,
     strikeLog: Array.isArray(row.strike_log) ? row.strike_log : []
   }
@@ -1007,6 +1012,7 @@ function renderTable() {
           ${fARR(c.arr)}
           ${c.accountingPartner?`<span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:5px;background:var(--amber-soft);color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}
         </div>
+        ${c.quickNote?`<div style="font-size:11px;color:var(--ink3);margin-top:3px;font-style:italic">💬 ${esc(c.quickNote)}</div>`:''}
         ${c.labels&&c.labels.length?`<div class="lbl-wrap">${renderClientLabels(c.labels)}</div>`:''}
         ${(c.strikes||0)>0?`<div class="strikes-wrap">${renderStrikePips(c.strikes)}<span class="strike-badge s${Math.min(c.strikes,3)}">${c.strikes>=3?'⚡⚡⚡ At Risk':c.strikes===2?'⚡⚡ 2 Strikes':'⚡ 1 Strike'}</span></div>`:''}
       </td>
@@ -1151,6 +1157,7 @@ function openAdd(){
   document.getElementById('f-support').value='no'
   document.getElementById('f-canton').value=''
   const facct = document.getElementById('f-accounting'); if(facct) facct.value=''
+  const fqn = document.getElementById('f-quicknote'); if(fqn) fqn.value=''
   document.getElementById('strike-section').style.display='none'
   clientLabels = []
   renderSelectedLabels()
@@ -1178,6 +1185,7 @@ function openEdit(id){
   document.getElementById('f-support').value=c.inSupport||'no'
   document.getElementById('f-canton').value=c.canton?'yes':''
   document.getElementById('f-accounting').value=c.accountingPartner||''
+  document.getElementById('f-quicknote').value=c.quickNote||''
   // Set labels
   const clientLabelIds = c.labels || []
   clientLabels = allLabels.filter(l=>clientLabelIds.includes(l.id))
@@ -1216,6 +1224,7 @@ async function saveClient(){
     csoEmail:csoMember?.email||'',
     saEmail:saMember?.email||document.getElementById('f-email').value||'',
     accountingPartner:document.getElementById('f-accounting').value||'',
+    quickNote:document.getElementById('f-quicknote').value||'',
     labels:clientLabels.map(l=>l.id),
     strikes: _editingStrikes||0,
     strikeLog: _editingStrikeLog||[],
@@ -1453,6 +1462,21 @@ async function loadAll(){
   renderTable()
   renderStuck()
   if(activeView==='jira') renderJira()
+  // Send stuck ticket alerts to Slack (only on first load, not every refresh)
+  if(!window._stuckAlertSent) {
+    window._stuckAlertSent = true
+    const stuckNow = tickets.filter(t=>{
+      if(isDone(t)) return false
+      return Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>=7
+    })
+    if(stuckNow.length > 0) {
+      stuckNow.slice(0,5).forEach(t=>{
+        const cl = matchClient(t)
+        const days = Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
+        notifySlack('stuck', { client:{ name:cl?.name||'Unknown', arr:cl?fARR(cl.arr):'—', ticketKey:t.key, summary:t.summary, days } })
+      })
+    }
+  }
   setSyncing(false,`Synced ${new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'})}`)
 }
 

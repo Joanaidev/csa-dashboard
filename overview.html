@@ -203,6 +203,17 @@ body.dark{
       </div>
     </div>
 
+    <!-- ROW 2B: ARR by partner -->
+    <div class="sections wide" style="margin-bottom:20px">
+      <div class="section">
+        <div class="sec-hdr"><span class="sec-title">🤝 ARR by accounting partner</span></div>
+        <div class="sec-body" id="partner-arr"></div>
+      </div>
+    </div>
+
+    <div class="sections" style="display:none">
+    </div>
+
     <!-- ROW 3: Charts -->
     <div class="sections" id="row3">
       <div class="section">
@@ -403,6 +414,9 @@ function render() {
       </div>
     </div>`
 
+  // Partner ARR
+  renderPartnerARR(src)
+
   // Charts
   renderCharts(src, person)
 }
@@ -439,6 +453,27 @@ function renderCharts(src, person) {
     },
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.raw} clients`}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:11}}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{family:'DM Sans',size:11},stepSize:1}}}}
   })
+}
+
+function renderPartnerARR(src) {
+  const wrap = document.getElementById('partner-arr')
+  if(!wrap) return
+  const partners = [...new Set(src.filter(c=>c.accounting_partner||c.accountingPartner).map(c=>c.accounting_partner||c.accountingPartner))].sort()
+  if(!partners.length) { wrap.innerHTML='<div class="empty">No accounting partners assigned yet</div>'; return }
+  const maxArr = Math.max(...partners.map(p=>src.filter(c=>(c.accounting_partner||c.accountingPartner)===p).reduce((s,c)=>s+Number(c.arr||0),0)))
+  wrap.innerHTML = partners.map(p => {
+    const pc = src.filter(c=>(c.accounting_partner||c.accountingPartner)===p)
+    const pArr = pc.reduce((s,c)=>s+Number(c.arr||0),0)
+    const pct = Math.round((pArr/maxArr)*100)
+    const atRisk = pc.filter(c=>['at_risk','blocked','Red'].includes(c.status)).length
+    return `<div class="tp-row">
+      <div class="tp-name" style="min-width:100px">${esc(p)}</div>
+      <div style="font-size:11px;color:var(--ink3);min-width:60px">${pc.length} client${pc.length!==1?'s':''}</div>
+      <div class="tp-bar-wrap" style="flex:1"><div class="tp-bar" style="width:${pct}%;background:var(--blue)"></div></div>
+      <div class="tp-count" style="color:var(--blue);min-width:60px;text-align:right">${fARR(pArr)}</div>
+      ${atRisk?`<div style="font-size:10px;color:var(--red);font-weight:600;min-width:60px;text-align:right">${atRisk} at risk</div>`:'<div style="min-width:60px"></div>'}
+    </div>`
+  }).join('')
 }
 
 async function loadAll() {
