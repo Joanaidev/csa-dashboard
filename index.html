@@ -780,6 +780,7 @@ function stClass(s){
 // ── FILTER ──
 function setF(f,btn) {
   activeFilter=f
+  console.log('Filter set to:', f, 'clients:', clients.length)
   if(f==='all'){
     activeOwner=''
     document.querySelectorAll('.op').forEach(p=>p.classList.remove('active'))
