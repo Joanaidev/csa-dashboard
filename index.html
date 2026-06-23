@@ -496,6 +496,7 @@ tbody tr.dr:hover .acts{opacity:1}
       </div>
       <div class="fg"><label>Last contact date</label><input id="f-contact" type="date"/></div>
       <div class="fg"><label>Slack channel</label><input id="f-slack" placeholder="client-support"/></div>
+      <div class="fg"><label>Slack channel ID <span style="font-weight:400;color:var(--ink3);text-transform:none;letter-spacing:0">— for auto last contact</span></label><input id="f-slack-id" placeholder="C0XXXXXXXX"/></div>
       <div class="fg"><label>Lifecycle</label>
         <select id="f-support">
           <option value="no">🚀 Onboarding</option>
@@ -629,6 +630,7 @@ async function sbUpsert(client) {
     labels: client.labels && client.labels.length ? `{${client.labels.join(',')}}` : '{}',
     accounting_partner: client.accountingPartner||null,
     quick_note: client.quickNote||null,
+    slack_channel_id: client.slackChannelId||null,
     strikes: client.strikes||0,
     strike_log: client.strikeLog||[],
     churn_date: client.churnDate||null,
@@ -685,6 +687,7 @@ function rowToClient(row) {
     labels: Array.isArray(row.labels) ? row.labels : [],
     accountingPartner: row.accounting_partner||'',
     quickNote: row.quick_note||'',
+    slackChannelId: row.slack_channel_id||'',
     strikes: row.strikes||0,
     strikeLog: Array.isArray(row.strike_log) ? row.strike_log : []
   }
@@ -1197,6 +1200,7 @@ function openAdd(){
   document.getElementById('f-support').value='no'
   document.getElementById('f-canton').value=''
   const facct = document.getElementById('f-accounting'); if(facct) facct.value=''
+  const fslackid = document.getElementById('f-slack-id'); if(fslackid) fslackid.value=''
   const fqn = document.getElementById('f-quicknote'); if(fqn) fqn.value=''
   document.getElementById('strike-section').style.display='none'
   clientLabels = []
@@ -1225,6 +1229,7 @@ function openEdit(id){
   document.getElementById('f-support').value=c.inSupport||'no'
   document.getElementById('f-canton').value=c.canton?'yes':''
   document.getElementById('f-accounting').value=c.accountingPartner||''
+  document.getElementById('f-slack-id').value=c.slackChannelId||''
   document.getElementById('f-quicknote').value=c.quickNote||''
   // Set labels
   const clientLabelIds = c.labels || []
@@ -1273,6 +1278,7 @@ async function saveClient(){
     threshold:Number(document.getElementById('f-threshold').value)||14,
     lastContact:document.getElementById('f-contact').value,
     slackChannel:document.getElementById('f-slack').value,
+    slackChannelId:document.getElementById('f-slack-id').value||'',
     inSupport,lifecycle:inSupport==='yes'?'support':'onboarding',
     canton:document.getElementById('f-canton').value==='yes',
     churned:false
