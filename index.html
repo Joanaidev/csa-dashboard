@@ -272,6 +272,14 @@ tbody tr.dr:hover .acts{opacity:1}
 .import-note{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--ink2);margin-bottom:14px;line-height:1.7}
 .import-note code{background:var(--surface3);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px}
 
+/* SIDEBAR COLLAPSIBLE */
+.sb-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;cursor:pointer;border-radius:6px;transition:background .15s;user-select:none}
+.sb-section-hdr:hover{background:var(--surface2)}
+.sb-section-hdr .sb-label{margin:0;padding:0}
+.sb-chevron{font-size:10px;color:var(--ink4);transition:transform .2s}
+.sb-section-body{overflow:hidden;transition:max-height .25s ease}
+.sb-section-body.collapsed{max-height:0!important}
+
 /* SIDEBAR LAYOUT */
 .app-body{display:flex;min-height:calc(100vh - 58px)}
 .sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:16px 0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;display:flex;flex-direction:column;gap:4px}
@@ -365,9 +373,10 @@ tbody tr.dr:hover .acts{opacity:1}
 
 <div style="display:flex;min-height:calc(100vh - 58px)">
 <!-- SIDEBAR -->
-<div id="sidebar" style="width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:16px 0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto">
-  <div style="padding:0 12px 4px">
-    <div class="sb-label">Views</div>
+<div id="sidebar" style="width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:12px 0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto">
+
+  <!-- VIEWS - always open -->
+  <div style="padding:0 8px 4px">
     <button class="sb-item active" onclick="setF('all',this)"><div class="sb-item-left">👥 All clients</div><span class="sb-count" id="sb-count-all">—</span></button>
     <button class="sb-item" onclick="setF('active',this)"><div class="sb-item-left">✓ Active</div><span class="sb-count" id="sb-count-active">—</span></button>
     <button class="sb-item" onclick="setF('at_risk',this)"><div class="sb-item-left">⚠ At risk</div><span class="sb-count red" id="sb-count-risk">—</span></button>
@@ -376,36 +385,77 @@ tbody tr.dr:hover .acts{opacity:1}
     <button class="sb-item" onclick="setF('stuck_tickets',this)"><div class="sb-item-left">🚨 Stuck</div><span class="sb-count red" id="sb-count-stuck">—</span></button>
     <button class="sb-item" onclick="setF('has_notes',this)"><div class="sb-item-left">💬 Has notes</div><span class="sb-count" id="sb-count-notes">—</span></button>
   </div>
-  <div style="height:1px;background:var(--border);margin:8px 12px"></div>
-  <div style="padding:0 12px 4px">
-    <div class="sb-label">Lifecycle</div>
-    <button class="sb-item" onclick="setF('support',this)"><div class="sb-item-left">🎧 Support</div><span class="sb-count" id="sb-count-support">—</span></button>
-    <button class="sb-item" onclick="setF('onboarding',this)"><div class="sb-item-left">🚀 Onboarding</div><span class="sb-count" id="sb-count-onboard">—</span></button>
-    <button class="sb-item" onclick="setF('canton',this)"><div class="sb-item-left">⬡ Canton</div><span class="sb-count" id="sb-count-canton">—</span></button>
+
+  <div style="height:1px;background:var(--border);margin:8px 8px"></div>
+
+  <!-- LIFECYCLE - collapsible -->
+  <div style="padding:0 4px">
+    <div class="sb-section-hdr" onclick="toggleSB('sb-lifecycle')">
+      <span class="sb-label">Lifecycle</span>
+      <span class="sb-chevron" id="ch-lifecycle">▾</span>
+    </div>
+    <div class="sb-section-body" id="sb-lifecycle" style="max-height:200px;padding:0 4px">
+      <button class="sb-item" onclick="setF('support',this)"><div class="sb-item-left">🎧 Support</div><span class="sb-count" id="sb-count-support">—</span></button>
+      <button class="sb-item" onclick="setF('onboarding',this)"><div class="sb-item-left">🚀 Onboarding</div><span class="sb-count" id="sb-count-onboard">—</span></button>
+      <button class="sb-item" onclick="setF('canton',this)"><div class="sb-item-left">⬡ Canton</div><span class="sb-count" id="sb-count-canton">—</span></button>
+    </div>
   </div>
-  <div style="height:1px;background:var(--border);margin:8px 12px"></div>
-  <div style="padding:0 12px 4px">
-    <div class="sb-label">Strikes</div>
-    <button class="sb-item" onclick="setF('strikes1',this)"><div class="sb-item-left">⚡ 1+ strike</div><span class="sb-count amber" id="sb-count-s1">—</span></button>
-    <button class="sb-item" onclick="setF('strikes2',this)"><div class="sb-item-left">⚡⚡ 2+ strikes</div><span class="sb-count amber" id="sb-count-s2">—</span></button>
-    <button class="sb-item" onclick="setF('strikes3',this)"><div class="sb-item-left">⚡⚡⚡ 3 strikes</div><span class="sb-count red" id="sb-count-s3">—</span></button>
+
+  <div style="height:1px;background:var(--border);margin:8px 8px"></div>
+
+  <!-- STRIKES - collapsible -->
+  <div style="padding:0 4px">
+    <div class="sb-section-hdr" onclick="toggleSB('sb-strikes')">
+      <span class="sb-label">Strikes</span>
+      <span class="sb-chevron" id="ch-strikes">▾</span>
+    </div>
+    <div class="sb-section-body" id="sb-strikes" style="max-height:200px;padding:0 4px">
+      <button class="sb-item" onclick="setF('strikes1',this)"><div class="sb-item-left">⚡ 1+ strike</div><span class="sb-count amber" id="sb-count-s1">—</span></button>
+      <button class="sb-item" onclick="setF('strikes2',this)"><div class="sb-item-left">⚡⚡ 2+ strikes</div><span class="sb-count amber" id="sb-count-s2">—</span></button>
+      <button class="sb-item" onclick="setF('strikes3',this)"><div class="sb-item-left">⚡⚡⚡ 3 strikes</div><span class="sb-count red" id="sb-count-s3">—</span></button>
+    </div>
   </div>
-  <div style="height:1px;background:var(--border);margin:8px 12px"></div>
-  <div style="padding:0 12px 4px">
-    <div class="sb-label">More</div>
-    <button class="sb-item" onclick="setF('no_contact',this)"><div class="sb-item-left">📵 30d silent</div><span class="sb-count amber" id="sb-count-silent">—</span></button>
-    <button class="sb-item" onclick="setF('churned',this)"><div class="sb-item-left">💀 Churned</div><span class="sb-count" id="sb-count-churned">—</span></button>
+
+  <div style="height:1px;background:var(--border);margin:8px 8px"></div>
+
+  <!-- MORE - collapsible -->
+  <div style="padding:0 4px">
+    <div class="sb-section-hdr" onclick="toggleSB('sb-more')">
+      <span class="sb-label">More</span>
+      <span class="sb-chevron" id="ch-more">▾</span>
+    </div>
+    <div class="sb-section-body" id="sb-more" style="max-height:200px;padding:0 4px">
+      <button class="sb-item" onclick="setF('no_contact',this)"><div class="sb-item-left">📵 30d silent</div><span class="sb-count amber" id="sb-count-silent">—</span></button>
+      <button class="sb-item" onclick="setF('churned',this)"><div class="sb-item-left">💀 Churned</div><span class="sb-count" id="sb-count-churned">—</span></button>
+    </div>
   </div>
-  <div style="height:1px;background:var(--border);margin:8px 12px"></div>
-  <div style="padding:0 12px 4px" id="sb-partners-section" style="display:none">
-    <div class="sb-label">Partners</div>
-    <div id="sb-partners"></div>
+
+  <div style="height:1px;background:var(--border);margin:8px 8px"></div>
+
+  <!-- PARTNERS - collapsible, dynamic -->
+  <div style="padding:0 4px" id="sb-partners-section">
+    <div class="sb-section-hdr" onclick="toggleSB('sb-partners-body')">
+      <span class="sb-label">Partners</span>
+      <span class="sb-chevron" id="ch-partners">▾</span>
+    </div>
+    <div class="sb-section-body collapsed" id="sb-partners-body" style="max-height:300px;padding:0 4px">
+      <div id="sb-partners"></div>
+    </div>
   </div>
-  <div style="height:1px;background:var(--border);margin:8px 12px" id="sb-labels-div"></div>
-  <div style="padding:0 12px 4px">
-    <div class="sb-label">Labels</div>
-    <div id="sb-labels"></div>
+
+  <div style="height:1px;background:var(--border);margin:8px 8px"></div>
+
+  <!-- LABELS - collapsible, dynamic -->
+  <div style="padding:0 4px">
+    <div class="sb-section-hdr" onclick="toggleSB('sb-labels-body')">
+      <span class="sb-label">Labels</span>
+      <span class="sb-chevron" id="ch-labels">▾</span>
+    </div>
+    <div class="sb-section-body collapsed" id="sb-labels-body" style="max-height:300px;padding:0 4px">
+      <div id="sb-labels"></div>
+    </div>
   </div>
+
 </div>
 <!-- MAIN CONTENT -->
 <div style="flex:1;min-width:0;overflow-x:hidden">
@@ -1956,6 +2006,17 @@ function removeStrike() {
   // Remove last log entry
   _editingStrikeLog.pop()
   renderStrikeModal(_editingStrikes, _editingStrikeLog)
+}
+
+// ── SIDEBAR COLLAPSE ──
+function toggleSB(id) {
+  const body = document.getElementById(id)
+  const chId = id.replace('sb-','ch-').replace('-body','').replace('-lifecycle','lifecycle').replace('-strikes','strikes').replace('-more','more').replace('partners-body','partners').replace('labels-body','labels')
+  const ch = document.getElementById(chId) || document.getElementById('ch-'+id.replace('sb-','').replace('-body',''))
+  if(!body) return
+  const isCollapsed = body.classList.contains('collapsed')
+  body.classList.toggle('collapsed')
+  if(ch) ch.textContent = isCollapsed ? '▾' : '▸'
 }
 
 // ── STUCK EXPAND ──
