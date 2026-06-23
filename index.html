@@ -1236,6 +1236,19 @@ async function saveClient(){
   try {
     await sbUpsert(client)
     showToast(`✓ ${client.name} saved`)
+    // Fire Slack after successful save
+    if(client.strikes > 0) {
+      const lastLog = client.strikeLog?.[client.strikeLog.length-1]
+      notifySlack(client.strikes >= 3 ? 'at_risk' : 'strike', {
+        client: { name:client.name, arr:fARR(client.arr), cso:client.cso||client.owner, owner:client.owner, strikes:client.strikes, lastContact:client.lastContact },
+        reason: lastLog?.reason||'No reason given'
+      })
+    } else if(['at_risk','blocked'].includes(client.status)) {
+      notifySlack('at_risk', {
+        client: { name:client.name, arr:fARR(client.arr), cso:client.cso||client.owner, owner:client.owner, lastContact:client.lastContact },
+        reason: `Status set to ${client.status}`
+      })
+    }
   } catch(e) {
     showToast(`⚠ Saved locally but Supabase error: ${e.message}`)
   }
