@@ -101,10 +101,12 @@ module.exports = async function handler(req, res) {
         [
           {
             type: 'section',
-            text: { type: 'mrkdwn', text: `*🚨 Stuck Ticket — ${client.ticketKey}*\n${client.summary}\n_No update in ${client.days} days_` },
+            text: { type: 'mrkdwn', text: `*🚨 Stuck Ticket — ${client.ticketKey}*\n${client.summary}\n_No update in ${client.days} days · Status: ${client.status||'Unknown'}_` },
             fields: [
               { type: 'mrkdwn', text: `*Client*\n${client.name||'Unknown'}` },
-              { type: 'mrkdwn', text: `*ARR*\n${client.arr||'—'}` }
+              { type: 'mrkdwn', text: `*ARR*\n${client.arr||'—'}` },
+              { type: 'mrkdwn', text: `*Status*\n${client.status||'Unknown'}` },
+              { type: 'mrkdwn', text: `*Days stuck*\n${client.days} days` }
             ]
           },
           {

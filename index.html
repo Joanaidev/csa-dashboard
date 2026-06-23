@@ -953,10 +953,12 @@ function renderStuck() {
   document.getElementById('stuck-list').innerHTML=stuck.map(t=>{
     const d=Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
     const cl=matchClient(t)
+    const stClass = t.status.toLowerCase().includes('waiting')?'#d97706':t.status.toLowerCase().includes('progress')?'#1a56db':'#8b909a'
     return `<div class="stuck-item">
       <a class="stuck-key" href="https://bitwave-dev.atlassian.net/browse/${t.key}" target="_blank">${t.key}</a>
       <span class="stuck-sum">${esc(t.summary)}</span>
       ${cl?`<span class="stuck-cl">${esc(cl.name)}</span>`:''}
+      <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;background:${stClass}18;color:${stClass};flex-shrink:0">${t.status}</span>
       <span class="stuck-age">${d}d</span>
     </div>`
   }).join('')
@@ -1473,7 +1475,7 @@ async function loadAll(){
       stuckNow.slice(0,5).forEach(t=>{
         const cl = matchClient(t)
         const days = Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)
-        notifySlack('stuck', { client:{ name:cl?.name||'Unknown', arr:cl?fARR(cl.arr):'—', ticketKey:t.key, summary:t.summary, days } })
+        notifySlack('stuck', { client:{ name:cl?.name||'Unknown', arr:cl?fARR(cl.arr):'—', ticketKey:t.key, summary:t.summary, days, status:t.status } })
       })
     }
   }
