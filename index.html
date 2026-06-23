@@ -388,6 +388,13 @@ tbody tr.dr:hover .acts{opacity:1}
     <button class="sb-item" onclick="setF('no_contact',this)"><div class="sb-item-left">📵 30d silent</div><span class="sb-count amber" id="sb-count-silent">—</span></button>
     <button class="sb-item" onclick="setF('churned',this)"><div class="sb-item-left">💀 Churned</div><span class="sb-count" id="sb-count-churned">—</span></button>
   </div>
+  <div style="height:1px;background:var(--border);margin:8px 12px"></div>
+  <div style="padding:0 12px">
+    <div class="sb-label">Strikes</div>
+    <button class="sb-item" onclick="setF('strikes1',this)"><div class="sb-item-left">⚡ 1+ strike</div><span class="sb-count amber" id="sb-count-s1">—</span></button>
+    <button class="sb-item" onclick="setF('strikes2',this)"><div class="sb-item-left">⚡⚡ 2+ strikes</div><span class="sb-count amber" id="sb-count-s2">—</span></button>
+    <button class="sb-item" onclick="setF('strikes3',this)"><div class="sb-item-left">⚡⚡⚡ 3 strikes</div><span class="sb-count red" id="sb-count-s3">—</span></button>
+  </div>
 </div>
 <!-- MAIN CONTENT -->
 <div style="flex:1;min-width:0;overflow-x:hidden">
@@ -906,9 +913,12 @@ function getList() {
   const labelF = document.getElementById('label-filter')?.value||''
   if(labelF) list=list.filter(c=>(c.labels||[]).includes(labelF))
   if(activeFilter==='active') list=list.filter(c=>!['completed'].includes(c.status))
-  else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red'].includes(c.status))
-  else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact)>=(Number(c.threshold)||14))
+  else if(activeFilter==='at_risk') list=list.filter(c=>['at_risk','blocked','Red','At Risk'].includes(c.status)||c.strikes>=3)
+  else if(activeFilter==='overdue') list=list.filter(c=>dSince(c.lastContact||c.last_contact)>=(Number(c.threshold)||14))
   else if(activeFilter==='tickets') list=list.filter(c=>cTickets(c).length>0)
+  else if(activeFilter==='strikes1') list=list.filter(c=>(c.strikes||0)>=1)
+  else if(activeFilter==='strikes2') list=list.filter(c=>(c.strikes||0)>=2)
+  else if(activeFilter==='strikes3') list=list.filter(c=>(c.strikes||0)>=3)
   else if(activeFilter==='support') list=list.filter(c=>c.inSupport==='yes')
   else if(activeFilter==='onboarding') list=list.filter(c=>c.lifecycle==='onboarding')
   else if(activeFilter==='canton') list=list.filter(c=>c.canton)
@@ -985,6 +995,24 @@ function renderHero() {
         <div class="split-sub">${fARR(inOnboard.reduce((s,c)=>s+Number(c.arr||0),0))}</div>
       </div>
     </div>`
+
+  // Update sidebar counts
+  const sC = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v }
+  const ac2 = clients.filter(c=>!c.churned)
+  sC('sb-count-all', ac2.length)
+  sC('sb-count-active', ac2.filter(c=>!['completed'].includes(c.status)).length)
+  sC('sb-count-risk', ac2.filter(c=>['at_risk','blocked','Red','At Risk'].includes(c.status)||c.strikes>=3).length)
+  sC('sb-count-overdue', ac2.filter(c=>dSince(c.lastContact||c.last_contact)>=(Number(c.threshold)||14)).length)
+  sC('sb-count-tickets', ac2.filter(c=>cTickets(c).length>0).length)
+  sC('sb-count-stuck', ac2.filter(c=>cTickets(c).some(t=>Math.floor((Date.now()-new Date(t.updated).getTime())/86400000)>=7)).length)
+  sC('sb-count-support', ac2.filter(c=>c.inSupport==='yes'||c.in_support).length)
+  sC('sb-count-onboard', ac2.filter(c=>c.lifecycle==='onboarding').length)
+  sC('sb-count-canton', ac2.filter(c=>c.canton).length)
+  sC('sb-count-silent', ac2.filter(c=>dSince(c.lastContact||c.last_contact)>=30).length)
+  sC('sb-count-churned', clients.filter(c=>c.churned).length)
+  sC('sb-count-s1', ac2.filter(c=>(c.strikes||0)>=1).length)
+  sC('sb-count-s2', ac2.filter(c=>(c.strikes||0)>=2).length)
+  sC('sb-count-s3', ac2.filter(c=>(c.strikes||0)>=3).length)
 }
 
 // ── OWNER STRIP ──
