@@ -380,6 +380,7 @@ tbody tr.dr:hover .acts{opacity:1}
   <div style="padding:0 8px 4px">
     <button class="sb-item active" onclick="setF('all',this)"><div class="sb-item-left">👥 All clients</div><span class="sb-count" id="sb-count-all">—</span></button>
     <button class="sb-item" onclick="setF('active',this)"><div class="sb-item-left">✓ Active</div><span class="sb-count" id="sb-count-active">—</span></button>
+    <button class="sb-item" onclick="setF('needs_attention',this)"><div class="sb-item-left">👋 Needs attention</div><span class="sb-count amber" id="sb-count-attention">—</span></button>
     <button class="sb-item" onclick="setF('recent_contact',this)"><div class="sb-item-left">🟢 Contacted recently</div><span class="sb-count" id="sb-count-recent">—</span></button>
     <button class="sb-item" onclick="setF('has_notes',this)"><div class="sb-item-left">💬 Has notes</div><span class="sb-count" id="sb-count-notes">—</span></button>
     <button class="sb-item" onclick="setF('tickets',this)"><div class="sb-item-left">🎫 Has tickets</div><span class="sb-count red" id="sb-count-tickets">—</span></button>
@@ -593,6 +594,13 @@ tbody tr.dr:hover .acts{opacity:1}
           <option value="not_started">⏳ Not Started</option>
         </select>
       </div>
+      <div class="fg" style="align-items:center;display:flex;gap:12px;padding-top:4px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500;color:var(--ink2);text-transform:none;letter-spacing:0;font-size:13px">
+          <input type="checkbox" id="f-attention" style="width:16px;height:16px;accent-color:var(--amber);cursor:pointer"/>
+          👋 Needs attention
+        </label>
+        <span style="font-size:11px;color:var(--ink3)">flags this client for follow-up regardless of status</span>
+      </div>
       <div class="fg"><label>Follow-up threshold</label>
         <select id="f-threshold"><option value="7">7 days</option><option value="14" selected>14 days</option><option value="30">30 days</option></select>
       </div>
@@ -734,6 +742,7 @@ async function sbUpsert(client) {
     accounting_partner: client.accountingPartner||null,
     quick_note: client.quickNote||null,
     slack_channel_id: client.slackChannelId||null,
+    needs_attention: !!client.needsAttention,
     strikes: client.strikes||0,
     strike_log: client.strikeLog||[],
     churn_date: client.churnDate||null,
@@ -791,6 +800,7 @@ function rowToClient(row) {
     accountingPartner: row.accounting_partner||'',
     quickNote: row.quick_note||'',
     slackChannelId: row.slack_channel_id||'',
+    needsAttention: !!row.needs_attention,
     strikes: row.strikes||0,
     strikeLog: Array.isArray(row.strike_log) ? row.strike_log : []
   }
@@ -988,6 +998,7 @@ function getList() {
   else if(activeFilter==='strikes3') list=list.filter(c=>(c.strikes||0)>=3)
   else if(activeFilter==='has_notes') list=list.filter(c=>c.quickNote&&c.quickNote.trim())
   else if(activeFilter==='recent_contact') list=list.filter(c=>dSince(c.lastContact||c.last_contact)<=7)
+  else if(activeFilter==='needs_attention') list=list.filter(c=>c.needsAttention)
   else if(activeFilter&&activeFilter.startsWith('partner:')) list=list.filter(c=>(c.accountingPartner||'')=== activeFilter.slice(8))
   else if(activeFilter&&activeFilter.startsWith('label:')) list=list.filter(c=>(c.labels||[]).includes(activeFilter.slice(6)))
   else if(activeFilter==='support') list=list.filter(c=>c.inSupport==='yes')
@@ -1073,6 +1084,7 @@ function renderHero() {
   sC('sb-count-all', ac2.length)
   sC('sb-count-active', ac2.filter(c=>!['completed'].includes(c.status)).length)
   sC('sb-count-recent', ac2.filter(c=>dSince(c.lastContact||c.last_contact)<=7).length)
+  sC('sb-count-attention', ac2.filter(c=>c.needsAttention).length)
   sC('sb-count-risk', ac2.filter(c=>['at_risk','blocked','Red','At Risk'].includes(c.status)||c.strikes>=3).length)
   sC('sb-count-overdue', ac2.filter(c=>dSince(c.lastContact||c.last_contact)>=(Number(c.threshold)||14)).length)
   sC('sb-count-tickets', ac2.filter(c=>cTickets(c).length>0).length)
@@ -1206,6 +1218,7 @@ function renderTable() {
         <div class="cc-name">${esc(c.name)}</div>
         <div class="cc-sub">${fARR(c.arr)}${c.accountingPartner?` · <span style="color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}</div>
         ${c.quickNote?`<div class="cc-note">💬 ${esc(c.quickNote)}</div>`:''}
+        ${c.needsAttention?`<div style="font-size:11px;font-weight:600;color:var(--amber);margin-top:3px">👋 Needs attention</div>`:''}
         <div class="cc-tags">
           ${isSupport?'<span class="tag tag-support">🎧 Support</span>':''}
           ${!isSupport&&c.lifecycle==='onboarding'?'<span class="tag tag-onboard">🚀 Onboarding</span>':''}
@@ -1425,6 +1438,7 @@ async function saveClient(){
     saEmail:saMember?.email||document.getElementById('f-email').value||'',
     accountingPartner:document.getElementById('f-accounting').value||'',
     quickNote:document.getElementById('f-quicknote').value||'',
+    needsAttention:document.getElementById('f-attention').checked,
     labels:clientLabels.map(l=>l.id),
     strikes: _editingStrikes||0,
     strikeLog: _editingStrikeLog||[],
