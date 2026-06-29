@@ -379,6 +379,7 @@ tbody tr.dr:hover .acts{opacity:1}
   <div style="padding:0 8px 4px">
     <button class="sb-item active" onclick="setF('all',this)"><div class="sb-item-left">👥 All clients</div><span class="sb-count" id="sb-count-all">—</span></button>
     <button class="sb-item" onclick="setF('active',this)"><div class="sb-item-left">✓ Active</div><span class="sb-count" id="sb-count-active">—</span></button>
+    <button class="sb-item" onclick="setF('recent_contact',this)"><div class="sb-item-left">🟢 Contacted recently</div><span class="sb-count" id="sb-count-recent">—</span></button>
     <button class="sb-item" onclick="setF('has_notes',this)"><div class="sb-item-left">💬 Has notes</div><span class="sb-count" id="sb-count-notes">—</span></button>
     <button class="sb-item" onclick="setF('tickets',this)"><div class="sb-item-left">🎫 Has tickets</div><span class="sb-count red" id="sb-count-tickets">—</span></button>
     <button class="sb-item" onclick="setF('overdue',this)"><div class="sb-item-left">🕐 Overdue</div><span class="sb-count amber" id="sb-count-overdue">—</span></button>
@@ -581,11 +582,11 @@ tbody tr.dr:hover .acts{opacity:1}
       <div class="fg"><label>SA email (for Jira matching)</label><input id="f-email" placeholder="c.kashif.amin@bitwave.io"/></div>
       <div class="fg"><label>Status</label>
         <select id="f-status">
-          <option value="in_progress">In Progress</option>
-          <option value="at_risk">At Risk</option>
-          <option value="blocked">Blocked</option>
-          <option value="completed">Completed</option>
-          <option value="not_started">Not Started</option>
+          <option value="in_progress">✅ In Progress</option>
+          <option value="completed">🎉 Completed</option>
+          <option value="not_started">⏳ Not Started</option>
+          <option value="blocked">🔴 Blocked</option>
+          <option value="at_risk">⚠ At Risk</option>
         </select>
       </div>
       <div class="fg"><label>Follow-up threshold</label>
@@ -982,6 +983,7 @@ function getList() {
   else if(activeFilter==='strikes2') list=list.filter(c=>(c.strikes||0)>=2)
   else if(activeFilter==='strikes3') list=list.filter(c=>(c.strikes||0)>=3)
   else if(activeFilter==='has_notes') list=list.filter(c=>c.quickNote&&c.quickNote.trim())
+  else if(activeFilter==='recent_contact') list=list.filter(c=>dSince(c.lastContact||c.last_contact)<=7)
   else if(activeFilter&&activeFilter.startsWith('partner:')) list=list.filter(c=>(c.accountingPartner||'')=== activeFilter.slice(8))
   else if(activeFilter&&activeFilter.startsWith('label:')) list=list.filter(c=>(c.labels||[]).includes(activeFilter.slice(6)))
   else if(activeFilter==='support') list=list.filter(c=>c.inSupport==='yes')
@@ -1066,6 +1068,7 @@ function renderHero() {
   const ac2 = clients.filter(c=>!c.churned)
   sC('sb-count-all', ac2.length)
   sC('sb-count-active', ac2.filter(c=>!['completed'].includes(c.status)).length)
+  sC('sb-count-recent', ac2.filter(c=>dSince(c.lastContact||c.last_contact)<=7).length)
   sC('sb-count-risk', ac2.filter(c=>['at_risk','blocked','Red','At Risk'].includes(c.status)||c.strikes>=3).length)
   sC('sb-count-overdue', ac2.filter(c=>dSince(c.lastContact||c.last_contact)>=(Number(c.threshold)||14)).length)
   sC('sb-count-tickets', ac2.filter(c=>cTickets(c).length>0).length)
