@@ -117,6 +117,23 @@ module.exports = async function handler(req, res) {
       )
     }
 
+    // ── NEEDS ATTENTION ──
+    else if(action === 'needs_attention') {
+      result = await postToSlack(
+        `👋 ${client.name} flagged as Needs Attention`,
+        [
+          {
+            type: 'section',
+            text: { type: 'mrkdwn', text: `*👋 Needs Attention — ${client.name}*\n${reason||'Flagged for follow-up'}` },
+            fields: [
+              { type: 'mrkdwn', text: `*ARR*\n${client.arr}` },
+              { type: 'mrkdwn', text: `*Owner*\n${client.cso||client.owner||'—'}` }
+            ]
+          }
+        ]
+      )
+    }
+
     // ── LOG CONTACT (from Slack message detection) ──
     else if(action === 'log_contact') {
       // Update last_contact in Supabase

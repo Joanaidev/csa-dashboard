@@ -381,6 +381,8 @@ tbody tr.dr:hover .acts{opacity:1}
     <button class="sb-item active" onclick="setF('all',this)"><div class="sb-item-left">👥 All clients</div><span class="sb-count" id="sb-count-all">—</span></button>
     <button class="sb-item" onclick="setF('active',this)"><div class="sb-item-left">✓ Active</div><span class="sb-count" id="sb-count-active">—</span></button>
     <button class="sb-item" onclick="setF('needs_attention',this)"><div class="sb-item-left">👋 Needs attention</div><span class="sb-count amber" id="sb-count-attention">—</span></button>
+    <button class="sb-item" onclick="setF('yellow_flag',this)"><div class="sb-item-left">🟡 Yellow flag</div><span class="sb-count amber" id="sb-count-yellow">—</span></button>
+    <button class="sb-item" onclick="setF('red_flag',this)"><div class="sb-item-left">🚩 Red flag</div><span class="sb-count red" id="sb-count-redflag">—</span></button>
     <button class="sb-item" onclick="setF('recent_contact',this)"><div class="sb-item-left">🟢 Contacted recently</div><span class="sb-count" id="sb-count-recent">—</span></button>
     <button class="sb-item" onclick="setF('has_notes',this)"><div class="sb-item-left">💬 Has notes</div><span class="sb-count" id="sb-count-notes">—</span></button>
     <button class="sb-item" onclick="setF('tickets',this)"><div class="sb-item-left">🎫 Has tickets</div><span class="sb-count red" id="sb-count-tickets">—</span></button>
@@ -585,7 +587,6 @@ tbody tr.dr:hover .acts{opacity:1}
       <div class="fg"><label>Status</label>
         <select id="f-status">
           <option value="in_progress">✅ In Progress</option>
-          <option value="needs_attention">👀 Needs Attention</option>
           <option value="yellow_flag">🟡 Yellow Flag</option>
           <option value="red_flag">🚩 Red Flag</option>
           <option value="at_risk">⚠ At Risk</option>
@@ -999,6 +1000,8 @@ function getList() {
   else if(activeFilter==='has_notes') list=list.filter(c=>c.quickNote&&c.quickNote.trim())
   else if(activeFilter==='recent_contact') list=list.filter(c=>dSince(c.lastContact||c.last_contact)<=7)
   else if(activeFilter==='needs_attention') list=list.filter(c=>c.needsAttention)
+  else if(activeFilter==='yellow_flag') list=list.filter(c=>c.status==='yellow_flag')
+  else if(activeFilter==='red_flag') list=list.filter(c=>c.status==='red_flag')
   else if(activeFilter&&activeFilter.startsWith('partner:')) list=list.filter(c=>(c.accountingPartner||'')=== activeFilter.slice(8))
   else if(activeFilter&&activeFilter.startsWith('label:')) list=list.filter(c=>(c.labels||[]).includes(activeFilter.slice(6)))
   else if(activeFilter==='support') list=list.filter(c=>c.inSupport==='yes')
@@ -1085,6 +1088,8 @@ function renderHero() {
   sC('sb-count-active', ac2.filter(c=>!['completed'].includes(c.status)).length)
   sC('sb-count-recent', ac2.filter(c=>dSince(c.lastContact||c.last_contact)<=7).length)
   sC('sb-count-attention', ac2.filter(c=>c.needsAttention).length)
+  sC('sb-count-yellow', ac2.filter(c=>c.status==='yellow_flag').length)
+  sC('sb-count-redflag', ac2.filter(c=>c.status==='red_flag').length)
   sC('sb-count-risk', ac2.filter(c=>['at_risk','blocked','Red','At Risk'].includes(c.status)||c.strikes>=3).length)
   sC('sb-count-overdue', ac2.filter(c=>dSince(c.lastContact||c.last_contact)>=(Number(c.threshold)||14)).length)
   sC('sb-count-tickets', ac2.filter(c=>cTickets(c).length>0).length)
@@ -1467,10 +1472,16 @@ async function saveClient(){
         client: { name:client.name, arr:fARR(client.arr), cso:client.cso||client.owner, owner:client.owner, strikes:client.strikes, lastContact:client.lastContact },
         reason: lastLog?.reason||'No reason given'
       })
-    } else if(['at_risk','blocked'].includes(client.status)) {
+    } else if(['at_risk','blocked','red_flag'].includes(client.status)) {
       notifySlack('at_risk', {
         client: { name:client.name, arr:fARR(client.arr), cso:client.cso||client.owner, owner:client.owner, lastContact:client.lastContact },
-        reason: `Status set to ${client.status}`
+        reason: `Status set to ${client.status.replace('_',' ')}`
+      })
+    }
+    if(client.needsAttention) {
+      notifySlack('needs_attention', {
+        client: { name:client.name, arr:fARR(client.arr), cso:client.cso||client.owner, owner:client.owner },
+        reason: `Flagged as needs attention`
       })
     }
   } catch(e) {
