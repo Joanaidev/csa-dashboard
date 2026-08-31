@@ -360,6 +360,7 @@ tbody tr.dr:hover .acts{opacity:1}
       <button class="view-tab active" onclick="switchView('clients',this)">Clients</button>
       <button class="view-tab" onclick="switchView('jira',this)">Jira Tickets</button>
       <button class="view-tab" onclick="switchView('team',this)">👥 Team</button>
+      <button class="view-tab" onclick="switchView('jiraboard',this)">📊 Jira Board</button>
     </div>
     <div class="live-badge"><span class="live-dot" id="live-dot"></span><span id="live-label">Loading</span></div>
     <a href="/overview" class="btn" style="text-decoration:none">📊 Overview</a>
@@ -560,6 +561,11 @@ tbody tr.dr:hover .acts{opacity:1}
       <button class="btn-save" onclick="saveMember()" id="tm-save">Add member</button>
     </div>
   </div>
+</div>
+
+<!-- JIRA BOARD VIEW -->
+<div class="jira-wrap" id="jiraboard-view" style="display:none;padding:0">
+  <iframe id="jira-board-frame" src="/jira-board.html" style="width:100%;height:calc(100vh - 58px);border:none"></iframe>
 </div>
 
 </div><!-- end main-content -->

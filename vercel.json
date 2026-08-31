@@ -1,7 +1,8 @@
 {
   "rewrites": [
     { "source": "/overview", "destination": "/overview.html" },
+    { "source": "/jira-board", "destination": "/jira-board.html" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/((?!api|overview).*)", "destination": "/index.html" }
+    { "source": "/((?!api|overview|jira-board).*)", "destination": "/index.html" }
   ]
 }

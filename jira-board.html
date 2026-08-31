@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solutions Jira Board</title>
+<style>
+:root{--brand:#0F1A2E;--brand2:#0A1322;--accent:#18BFA0;--accent-dk:#0C8B73;--accent-lt:#5FD9BE;--navy:var(--brand);--navy2:var(--brand2);--teal:var(--accent);--teal-dk:var(--accent-dk);--teal-lt:var(--accent-lt);--ink:#181b24;--mute:#71757f;--line:#e9ebf1;--bg:#f4f5f9;--card:#fff;--shadow:0 1px 2px rgba(20,24,48,.04),0 4px 16px rgba(20,24,48,.05);--shadow-sm:0 1px 2px rgba(20,24,48,.05);--crit:#c0392f;--crit-bg:#fdecec;--maj:#b07209;--maj-bg:#fbf0db;--min:#3f7314;--min-bg:#eef6e2;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+.wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+a{color:inherit}
+header.top{background:#E8F0F9;color:var(--navy);border-bottom:1px solid #d4e2f0}
+.ti{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;max-width:1140px;margin:0 auto;flex-wrap:wrap;gap:12px}
+.bd{display:flex;flex-direction:column}
+.bd .e{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-dk);font-weight:700}
+.bd h1{font-size:19px;font-weight:700;margin-top:2px;color:var(--navy)}
+.tabs{display:flex;gap:4px;background:#d5e3f1;padding:4px;border-radius:10px}
+.tabs button{border:0;background:transparent;color:#52617a;font-size:13px;font-weight:600;padding:8px 15px;border-radius:7px;cursor:pointer}
+.tabs button.active{background:var(--accent);color:#fff}
+.upd{font-size:11px;color:#5e6e82}
+main{padding:26px 0 60px}
+.view{display:none}.view.active{display:block;animation:f .25s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:13px;margin-bottom:24px}
+.tile{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 15px;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s}
+.tile:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.tile .n{font-size:25px;font-weight:700;color:var(--navy);letter-spacing:-.03em}
+.tile .l{font-size:11px;color:var(--mute);font-weight:600;margin-top:3px}
+.tile.alert .n{color:var(--crit)}
+.tile.accent{background:var(--navy);border-color:var(--navy)}.tile.accent .n{color:#fff}.tile.accent .l{color:var(--accent-lt)}
+.tile.clickable{cursor:pointer}
+.tile.clickable:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(24,191,160,.16)}
+.tilearrow{opacity:0;color:var(--accent-dk);font-weight:700;transition:opacity .12s}
+.tile.clickable:hover .tilearrow{opacity:1}
+.tile.accent .tilearrow{color:var(--accent-lt)}
+.row2{display:grid;grid-template-columns:1fr 1.5fr;gap:18px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)}
+.panel h3{font-size:13px;color:var(--navy);background:#EDF3F9;padding:13px 18px;font-weight:700;display:flex;justify-content:space-between;align-items:center;letter-spacing:.01em;border-bottom:1px solid #e0e8f1}
+.panel h3 small{font-weight:400;color:var(--accent-dk);font-size:11px}
+.pbody{padding:20px}
+.donutwrap{display:flex;align-items:center;gap:18px}
+.legend{display:flex;flex-direction:column;gap:9px}
+.lg{display:flex;align-items:center;gap:8px;font-size:13px}
+.sw{width:12px;height:12px;border-radius:3px}
+.lg b{font-weight:700}
+.lg span{color:var(--mute);font-size:12px}
+.bars{display:flex;align-items:flex-end;gap:5px;height:170px;padding-top:8px;overflow-x:auto}
+.bcol{flex:1;min-width:24px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px}
+.pair{display:flex;align-items:flex-end;gap:2px;height:140px;width:100%;justify-content:center}
+.bc,.bs{width:9px;border-radius:3px 3px 0 0}
+.bc{background:var(--navy)}.bs{background:var(--teal)}
+.bl{font-size:9px;color:var(--mute);white-space:nowrap}
+.chartkey{display:flex;gap:16px;margin-top:10px;font-size:12px;color:var(--mute)}
+.chartkey i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.seg{display:flex;background:#eceef4;border-radius:9px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--mute);font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:7px;cursor:pointer}
+.seg button.active{background:#fff;color:var(--navy);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+#insSeg{background:transparent;padding:0;gap:7px}
+#insSeg button{border:1.5px solid var(--accent);background:#fff;color:var(--accent-dk);font-size:13.5px;font-weight:700;padding:9px 22px;border-radius:9px;transition:background .12s}
+#insSeg button:hover{background:#e9faf5}
+#insSeg button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip{border:1px solid var(--line);background:#fff;color:var(--mute);font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;cursor:pointer}
+.chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.spacer{flex:1}
+.count{font-size:12.5px;color:var(--mute)}
+table.tk{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13px}
+table.tk th,table.tk td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line)}
+table.tk thead th{background:#fafbfd;color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+table.tk tbody tr{cursor:pointer}
+table.tk tbody tr:hover{background:#f3f8f6}
+table.tk tbody tr:last-child td{border-bottom:0}
+.kk{font-weight:700;color:var(--teal-dk);white-space:nowrap}
+.sev{display:inline-block;min-width:60px;text-align:center;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700}
+.s1{background:var(--crit-bg);color:var(--crit)}.s2{background:var(--maj-bg);color:var(--maj)}.s3{background:var(--min-bg);color:var(--min)}.s0{background:#eef0f4;color:#888}
+.sdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.d1{background:var(--crit)}.d2{background:var(--maj)}.d3{background:var(--min)}
+.age{font-weight:600}.age.hot{color:var(--crit)}
+.sm{color:var(--mute);font-size:12px}
+.badge{display:inline-block;padding:1px 7px;border-radius:20px;font-size:10.5px;font-weight:700}
+.b-open{background:#eef0f7;color:var(--navy)}.b-unt{background:var(--maj-bg);color:var(--maj)}.b-done{background:var(--min-bg);color:var(--min)}
+.metricpick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.metricpick button{border:1px solid var(--line);background:#fff;color:var(--mute);font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:20px;cursor:pointer}
+.metricpick button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.mbars{display:flex;align-items:flex-end;gap:18px;height:190px;padding-top:10px}
+.mcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:8px}
+.mv{font-size:13px;font-weight:700;color:var(--navy)}
+.mbar{width:100%;max-width:62px;background:var(--teal);border-radius:6px 6px 0 0;transition:height .4s}
+.ml{font-size:12px;color:var(--mute);font-weight:600}
+table.cmp{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13px;margin-top:18px}
+table.cmp th,table.cmp td{padding:10px 13px;text-align:center;border-bottom:1px solid var(--line)}
+table.cmp thead th{background:#EDF3F9;color:var(--navy);font-size:12px;border-bottom:1px solid #e0e8f1}
+table.cmp tbody th{text-align:left;background:#fafbfd;font-weight:600}
+table.cmp tbody tr:last-child td,table.cmp tbody tr:last-child th{border-bottom:0}
+.sec{font-size:15px;color:var(--navy);font-weight:600;margin:0 0 13px;display:flex;align-items:baseline;gap:10px}
+.sechint{font-size:12px;color:var(--mute);font-weight:400}
+.hero{background:var(--navy);border-radius:18px;padding:24px 26px 12px;margin-bottom:26px;box-shadow:var(--shadow);color:#fff}
+.hero-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:8px}
+.hero-title{font-size:18px;font-weight:700;letter-spacing:-.01em}
+.hero-sub{font-size:12.5px;color:#aab0cc;margin-top:2px}
+.hero .metricpick{margin:0}
+.hero .metricpick button{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:#c5c9da}
+.hero .metricpick button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.mcards{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+.mcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.mcard .mm{font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.mcard .big{font-size:26px;font-weight:700;color:var(--navy);letter-spacing:-.02em;line-height:1}
+.mcard .biglab{font-size:10.5px;color:var(--mute);font-weight:600;margin-bottom:9px}
+.mcard .mini{display:flex;justify-content:space-between;font-size:11px;color:var(--mute);padding:3px 0;border-top:1px solid var(--line)}
+.mcard .mini b{color:var(--ink);font-weight:700}
+.mcard.cur{border:2px solid var(--teal)}
+.mcard.sel{box-shadow:0 0 0 2px var(--navy);border-color:var(--navy)}
+.mcard{cursor:pointer;transition:transform .12s,box-shadow .12s}
+.mcard:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+footer{text-align:center;font-size:11px;color:var(--mute);padding:18px;border-top:1px solid var(--line)}
+.live{display:inline-flex;align-items:center;gap:6px}
+.flag{display:flex;align-items:center;gap:9px;background:#FCF3DF;border:1px solid #ECC97A;border-left:4px solid #C8821E;border-radius:8px;padding:8px 13px;margin-bottom:18px;cursor:pointer;font-size:12.5px}
+.flag:hover{background:#f9ecca}
+.flag-ico{width:16px;height:16px;flex:none}
+.flag-badge{background:#C8821E;color:#fff;font-weight:700;font-size:12px;padding:2px 8px;border-radius:6px}
+.flag-tx{flex:1;color:#875809}
+.flag-tx b{color:#875809;font-weight:700}
+.flag-tx .s{display:inline;color:#9a7320}
+.flag-go{font-size:12px;font-weight:700;color:#875809;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--teal-lt);display:inline-block}
+</style>
+</head>
+<body>
+<header class="top">
+<div class="ti">
+<div class="bd"><span class="e">Solutions Team</span><h1>Jira Board 2026</h1></div>
+<div class="tabs">
+<button id="t-months" class="active" onclick="tab('months')">2026 Overview</button>
+<button id="t-overview" onclick="tab('overview')">This month (August)</button>
+<button id="t-insights" onclick="tab('insights')">Insights</button>
+<button id="t-tickets" onclick="tab('tickets')">Ticket list</button>
+</div>
+<div class="upd"><span class="live"><span class="dot"></span>August 2026 snapshot</span></div>
+</div>
+</header>
+<main class="wrap">
+<section id="v-overview" class="view">
+<h2 class="sec">August 2026 <span class="sechint">executive snapshot</span></h2>
+<div id="stuckBanner1"></div>
+<div class="tiles" id="tiles"></div>
+<div class="row2">
+<div class="panel"><h3>Where tickets stand <small>August</small></h3><div class="pbody"><div class="donutwrap"><div id="donut"></div><div class="legend" id="donutLegend"></div></div></div></div>
+<div class="panel"><h3>Created vs solved <small>by day</small></h3><div class="pbody"><div class="bars" id="dailyBars"></div><div class="chartkey"><span><i style="background:#0F1A2E"></i>Created</span><span><i style="background:#18BFA0"></i>Solved</span></div></div></div>
+</div>
+</section>
+<section id="v-insights" class="view">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+<h2 class="sec" id="insTitle" style="margin:0">August 2026 insights</h2>
+<div style="display:flex;align-items:center;gap:10px">
+<div class="seg" id="insSeg">
+<button class="active" data-s="aug" onclick="setInsScope('aug')">August</button>
+<button data-s="half" onclick="setInsScope('half')">Year to date</button>
+</div>
+</div>
+</div>
+<div id="stuckBanner2"></div>
+<div class="row2">
+<div class="panel"><h3 id="clHead">Clients to watch</h3><div id="clientList"></div></div>
+<div class="panel"><h3 id="caHead">Problem areas</h3><div class="pbody"><div id="catBars"></div></div></div>
+</div>
+<div class="panel" style="margin-top:18px"><h3 id="atHead">Needs attention now</h3><div id="attention"></div></div>
+</section>
+<section id="v-tickets" class="view">
+<h2 class="sec">August 2026 tickets</h2>
+<div class="controls">
+<div class="seg" id="solveSeg">
+<button data-v="all" onclick="setSolve('all')">All</button>
+<button class="active" data-v="open" onclick="setSolve('open')">Unsolved</button>
+<button data-v="solved" onclick="setSolve('solved')">Solved</button>
+</div>
+<span class="chip" data-sev="all" onclick="setSev('all')">All severities</span>
+<span class="chip" data-sev="S1" onclick="setSev('S1')"><span class="sdot d1"></span>Critical</span>
+<span class="chip" data-sev="S2" onclick="setSev('S2')"><span class="sdot d2"></span>Major</span>
+<span class="chip" data-sev="S3" onclick="setSev('S3')"><span class="sdot d3"></span>Minor</span>
+<span class="chip" data-age="2w" onclick="setAge('2w')">Open > 2 weeks</span>
+<span class="spacer"></span>
+<span class="count" id="tkCount"></span>
+</div>
+<div id="tkTable"></div>
+</section>
+<section id="v-months" class="view active">
+<div class="hero">
+<div class="hero-head">
+<div><div class="hero-title">2026 ticket trend</div><div class="hero-sub" id="heroSub"></div></div>
+<div class="metricpick" id="mPick"></div>
+</div>
+<div id="trendChart"></div>
+</div>
+<h2 class="sec">Every month at a glance <span class="sechint">tap a month to open its breakdown</span></h2>
+<div class="mcards" id="mCards"></div>
+<div id="mDetail" style="margin-top:22px"></div>
+<h2 class="sec" style="margin-top:28px">Side by side</h2>
+<table class="cmp" id="cmpTable"></table>
+</section>
+</main>
+<footer>Live board · rows link to Jira · <span id="jiraNote"></span></footer>
+<script>
+const TICKETS = [{"key": "CIB-4154", "summary": "[ImmuneFi] Only 20-22 Transactions per QBO sync Attempt", "status": "To Triage", "solved": false, "untriaged": true, "sev": "S2", "cat": "Exchange Connection", "cust": "ImmuneFi", "age": 2, "ttr": null, "created": "Aug 28"}, {"key": "CIB-4153", "summary": "[Wayport Transfer MT] Trades are not syncing for Paxos", "status": "To Triage", "solved": false, "untriaged": true, "sev": "S2", "cat": "Exchange Connection", "cust": "Wayport Transfer MT", "age": 3, "ttr": null, "created": "Aug 27"}, {"key": "CIB-4152", "summary": "[VolumeFi Software, Inc.] Transactions are unable to categorize", "status": "To Triage", "solved": false, "untriaged": true, "sev": "S2", "cat": "Categorization", "cust": "VolumeFi Software, Inc.", "age": 3, "ttr": null, "created": "Aug 27"}, {"key": "CIB-4151", "summary": "Ripple - No way to create ignore rule for RLUSD when fee is XRP", "status": "To Triage", "solved": false, "untriaged": true, "sev": "S1", "cat": "Rules", "cust": "", "age": 3, "ttr": null, "created": "Aug 27"}, {"key": "CIB-4150", "summary": "[SEI Labs] SyncStart for Bitgo Connection", "status": "Waiting on Solutions", "solved": false, "untriaged": false, "sev": "S2", "cat": "Exchange Connection", "cust": "SEI Labs", "age": 5, "ttr": null, "created": "Aug 25"}, {"key": "CIB-4100", "summary": "[Dexalot] ARB wallet transactions not syncing", "status": "Done", "solved": true, "untriaged": false, "sev": "S2", "cat": "Blockchain Connection", "cust": "Dexalot", "age": 29, "ttr": 30, "created": "Aug 01"}];
+const OPS = {"composition": {"solved": 16, "open": 25, "untriaged": 13}, "daily": [{"d": "2026-08-01", "created": 1, "resolved": 0}, {"d": "2026-08-03", "created": 5, "resolved": 8}, {"d": "2026-08-05", "created": 7, "resolved": 0}, {"d": "2026-08-10", "created": 3, "resolved": 2}, {"d": "2026-08-13", "created": 4, "resolved": 0}, {"d": "2026-08-17", "created": 3, "resolved": 0}, {"d": "2026-08-20", "created": 4, "resolved": 2}, {"d": "2026-08-27", "created": 3, "resolved": 2}]};
+const MONTHS = [{"key": "jan", "label": "Jan", "total": 85, "resolved": 24, "resolutionRate": 28, "untriagedPct": 42, "criticalPct": 35, "dailyAvg": 4.2}, {"key": "feb", "label": "Feb", "total": 68, "resolved": 28, "resolutionRate": 41, "untriagedPct": 41, "criticalPct": 38, "dailyAvg": 2.4}, {"key": "mar", "label": "Mar", "total": 94, "resolved": 39, "resolutionRate": 41, "untriagedPct": 45, "criticalPct": 28, "dailyAvg": 3.0}, {"key": "apr", "label": "Apr", "total": 172, "resolved": 94, "resolutionRate": 55, "untriagedPct": 27, "criticalPct": 54, "dailyAvg": 5.7}, {"key": "may", "label": "May", "total": 52, "resolved": 24, "resolutionRate": 46, "untriagedPct": 31, "criticalPct": 58, "dailyAvg": 1.7}, {"key": "jun", "label": "Jun", "total": 76, "resolved": 31, "resolutionRate": 41, "untriagedPct": 21, "criticalPct": 70, "dailyAvg": 2.5}, {"key": "jul", "label": "Jul", "total": 69, "resolved": 29, "resolutionRate": 42, "untriagedPct": 25, "criticalPct": 65, "dailyAvg": 2.2}, {"key": "aug", "label": "Aug", "total": 54, "resolved": 16, "resolutionRate": 30, "untriagedPct": 24, "criticalPct": 56, "dailyAvg": 1.7}];
+const JIRA_BASE = "https://bitwave-dev.atlassian.net/browse/";
+const CLIENTS = [{"name": "SEI Labs", "total": 3, "open": 3, "closed": 0, "crit": 2}, {"name": "Sandbox Cayman Org", "total": 2, "open": 2, "closed": 0, "crit": 2}, {"name": "VolumeFi Software, Inc.", "total": 2, "open": 2, "closed": 0, "crit": 0}, {"name": "Greenlane Subsidiary Inc.", "total": 2, "open": 1, "closed": 1, "crit": 0}];
+const HY_CLIENTS = [{"name": "Epic", "total": 14, "open": 5, "closed": 9, "crit": 7}, {"name": "Ledger", "total": 9, "open": 3, "closed": 6, "crit": 8}, {"name": "Whitebit", "total": 9, "open": 3, "closed": 6, "crit": 7}, {"name": "SEI Labs", "total": 8, "open": 3, "closed": 5, "crit": 6}];
+const HY_ATTENTION = [{"key": "CIB-3615", "summary": "Token Pricing Issues - JUP and LYXE Showing Incorrect Prices", "cust": "", "age": 215}, {"key": "CIB-3671", "summary": "AI GEN: Token Pricing UI Status and FMV Display Not Updating", "cust": "Fractal", "age": 195}];
+const HY_TIMES = {"stuck": 180, "critstuck": 46, "oldest": 241, "totalopen": 196, "totalcrit": 52};
+const HY_CATS = [["UI", 91, 45, 46, 35], ["Blockchain Connection", 89, 44, 45, 42], ["Exchange Connection", 60, 34, 26, 15], ["Reporting", 57, 36, 21, 27], ["Transactions", 43, 23, 20, 29]];
+const TIMES = {"avg": 5.8, "median": 2, "oldest_open": 28, "stuck": 22};
+const MCATS = {aug:[["Exchange Connection",11,8,3,5],["Reporting: Other",9,5,4,7],["Transactions",7,3,4,5],["UI",5,4,1,4],["Blockchain Connection",4,2,2,1],["Categorization",3,2,1,2],["Rules",3,3,0,2]]};
+
+function tab(v){['overview','insights','tickets','months'].forEach(x=>{document.getElementById('v-'+x).classList.toggle('active',x===v);document.getElementById('t-'+x).classList.toggle('active',x===v);});}
+function buildTiles(){const solved=TICKETS.filter(t=>t.solved).length;const open=TICKETS.length-solved;const critOpen=TICKETS.filter(t=>!t.solved&&t.sev==='S1').length;const stuck=TICKETS.filter(t=>!t.solved&&t.age>14).length;const tiles=[{n:TICKETS.length,l:"Total tickets",cls:"accent",j:"all"},{n:solved,l:"Solved",j:"solved"},{n:open,l:"Open",j:"open"},{n:critOpen,l:"Critical open",cls:"alert",j:"crit"},{n:stuck,l:"Stuck > 2 wks",cls:"alert",j:"stuck"},{n:TIMES.avg+"d",l:"Avg to close"}];document.getElementById('tiles').innerHTML=tiles.map(t=>`<div class="tile ${t.cls||''} ${t.j?'clickable':''}" ${t.j?`onclick="tileJump('${t.j}')"`:''}><div class="n">${t.n}</div><div class="l">${t.l}${t.j?' <span class="tilearrow">→</span>':''}</div></div>`).join('');}
+function tileJump(kind){tab('tickets');if(kind==='all'){setSolve('all');setSev('all');}else if(kind==='solved'){setSolve('solved');setSev('all');}else if(kind==='open'){setSolve('open');setSev('all');}else if(kind==='crit'){setSolve('open');setSev('S1');}else if(kind==='stuck'){setSolve('open');setAge('2w');}}
+function donut(){const solved=TICKETS.filter(t=>t.solved).length;const unt=TICKETS.filter(t=>t.untriaged).length;const opent=TICKETS.length-solved-unt;const segs=[{label:"Solved",val:solved,color:"#18BFA0"},{label:"Open",val:opent,color:"#0F1A2E"},{label:"Untriaged",val:unt,color:"#EF9F27"}];const total=TICKETS.length,R=70,C=2*Math.PI*R;let off=0,circles='';segs.forEach(s=>{const frac=s.val/total,len=frac*C;circles+=`<circle r="${R}" cx="90" cy="90" fill="none" stroke="${s.color}" stroke-width="26" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 90 90)"></circle>`;off+=len;});document.getElementById('donut').innerHTML=`<svg width="180" height="180" viewBox="0 0 180 180">${circles}<text x="90" y="84" text-anchor="middle" font-size="30" font-weight="700" fill="#0F1A2E">${total}</text><text x="90" y="104" text-anchor="middle" font-size="12" fill="#6b6f7d">tickets</text></svg>`;document.getElementById('donutLegend').innerHTML=segs.map(s=>`<div class="lg"><span class="sw" style="background:${s.color}"></span><b>${s.val}</b>&nbsp;<span>${s.label} (${Math.round(s.val/total*100)}%)</span></div>`).join('');}
+function dailyBars(){const d=OPS.daily;const max=Math.max(...d.map(x=>Math.max(x.created,x.resolved)),1);document.getElementById('dailyBars').innerHTML=d.map(x=>{const ch=Math.max(2,x.created/max*130),sh=Math.max(2,x.resolved/max*130);const lab=x.d.slice(5).replace('-','/');return`<div class="bcol"><div class="pair"><div class="bc" style="height:${ch}px"></div><div class="bs" style="height:${sh}px"></div></div><div class="bl">${lab}</div></div>`;}).join('');}
+let fSolve='open',fSev='all',fAge=null;
+function setSolve(v){fSolve=v;fAge=null;document.querySelectorAll('#solveSeg button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));syncChips();renderTickets();}
+function setSev(s){fSev=s;syncChips();renderTickets();}
+function setAge(a){fAge=(fAge===a)?null:a;if(fAge){fSolve='open';document.querySelectorAll('#solveSeg button').forEach(b=>b.classList.toggle('active',b.dataset.v==='open'));}syncChips();renderTickets();}
+function syncChips(){document.querySelectorAll('.chip[data-sev]').forEach(c=>c.classList.toggle('active',c.dataset.sev===fSev));document.querySelectorAll('.chip[data-age]').forEach(c=>c.classList.toggle('active',c.dataset.age===fAge));}
+function renderTickets(){let rows=TICKETS.filter(t=>fSolve==='all'?true:(fSolve==='solved'?t.solved:!t.solved));if(fSev!=='all')rows=rows.filter(t=>t.sev===fSev);if(fAge==='2w')rows=rows.filter(t=>t.age>14);rows.sort((a,b)=>fSolve==='solved'?(a.ttr||0)-(b.ttr||0):b.age-a.age);document.getElementById('tkCount').textContent=rows.length+" tickets";const sevcls={S1:'s1',S2:'s2',S3:'s3','-':'s0'};const sevword={S1:'Critical',S2:'Major',S3:'Minor','-':'-'};let body=rows.map(t=>{const badge=t.solved?`<span class="badge b-done">${t.status}</span>`:(t.untriaged?`<span class="badge b-unt">Untriaged</span>`:`<span class="badge b-open">${t.status}</span>`);const right=t.solved?(t.ttr!=null?`${t.ttr}d to close`:'closed'):`<span class="age ${t.age>14?'hot':''}">${t.age}d open</span>`;return`<tr onclick="window.open('${JIRA_BASE}${t.key}','_blank')"><td><span class="kk">${t.key}</span></td><td class="sm">${t.created}</td><td><span class="sev ${sevcls[t.sev]||'s0'}">${sevword[t.sev]||'-'}</span></td><td>${t.summary}${t.cust?` <span class="sm">· ${t.cust}</span>`:''}</td><td>${badge}</td><td style="text-align:right">${right}</td></tr>`;}).join('');if(!rows.length)body=`<tr><td colspan="6" class="sm" style="text-align:center;padding:24px">No tickets match.</td></tr>`;document.getElementById('tkTable').innerHTML=`<table class="tk"><thead><tr><th>Key</th><th>Created</th><th>Sev</th><th>Summary</th><th>Status</th><th style="text-align:right">Age</th></tr></thead><tbody>${body}</tbody></table>`;}
+let insScope='aug';
+function renderFlag(elId,n,crit,oldest){const e=document.getElementById(elId);if(!e)return;if(!n){e.innerHTML='';return;}e.innerHTML=`<div class="flag" onclick="jumpStuck()"><span class="flag-badge">${n}</span><span class="flag-tx"><b>open more than 2 weeks</b> <span class="s">· ${crit} critical · oldest ${oldest} days</span></span><span class="flag-go">Review →</span></div>`;}
+function stuckBanner(){const s=TICKETS.filter(t=>!t.solved&&t.age>14);const crit=s.filter(t=>t.sev==='S1').length;const oldest=s.length?Math.max(...s.map(t=>t.age)):0;renderFlag('stuckBanner1',s.length,crit,oldest);}
+function jumpStuck(){tab('tickets');setAge('2w');}
+function renderClients(list){document.getElementById('clientList').innerHTML=`<table class="tk" style="border:0;border-radius:0"><thead><tr><th>Client</th><th>Total</th><th>Open</th><th>Critical</th></tr></thead><tbody>${list.map(c=>`<tr><td><b>${c.name}</b></td><td>${c.total}</td><td>${c.open}</td><td>${c.crit?`<span class="sev s1">${c.crit}</span>`:'<span class="sm">0</span>'}</td></tr>`).join('')}</tbody></table>`;}
+function renderCatBars(cats){const top=cats.slice(0,8);const max=Math.max(...top.map(c=>c[1]),1);document.getElementById('catBars').innerHTML=top.map(c=>{const w=Math.round(c[1]/max*100);return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px"><div style="width:160px;font-size:12.5px">${c[0]}</div><div style="flex:1;background:var(--line);border-radius:4px;height:18px"><div style="width:${w}%;background:var(--accent);height:18px;border-radius:4px"></div></div><div style="width:62px;font-size:12px;color:var(--mute);text-align:right">${c[1]} · <b style="color:var(--crit)">${c[4]??0}c</b></div></div>`;}).join('');}
+function renderAttention(items){let body=items.map(t=>`<tr onclick="window.open('${JIRA_BASE}${t.key}','_blank')"><td><span class="kk">${t.key}</span></td><td><span class="sev s1">Critical</span></td><td>${t.summary}</td><td style="text-align:right"><span class="age hot">${t.age}d</span></td></tr>`).join('');document.getElementById('attention').innerHTML=`<table class="tk" style="border:0;border-radius:0"><thead><tr><th>Key</th><th>Sev</th><th>Summary</th><th>Age</th></tr></thead><tbody>${body}</tbody></table>`;}
+function setInsScope(s){insScope=s;document.querySelectorAll('#insSeg button').forEach(b=>b.classList.toggle('active',b.dataset.s===s));renderInsights();}
+function renderInsights(){if(insScope==='aug'){renderClients(CLIENTS);renderCatBars(MCATS['aug']||[]);const attn=TICKETS.filter(t=>!t.solved&&t.sev==='S1').sort((a,b)=>b.age-a.age).slice(0,12).map(t=>({key:t.key,summary:t.summary,cust:t.cust,age:t.age}));renderAttention(attn);}else{renderClients(HY_CLIENTS);renderCatBars(HY_CATS);renderAttention(HY_ATTENTION);}}
+const METRICS=[{id:"total",label:"Total tickets",get:m=>m.total,unit:""},{id:"resolutionRate",label:"Resolution rate",get:m=>m.resolutionRate,unit:"%"},{id:"untriagedPct",label:"Untriaged",get:m=>m.untriagedPct,unit:"%"},{id:"criticalPct",label:"Critical share",get:m=>m.criticalPct,unit:"%"},{id:"dailyAvg",label:"Daily average",get:m=>m.dailyAvg,unit:"/day"}];
+let aMetric="total",selMonth="aug";
+const CUR="aug";
+function monthCards(){document.getElementById('mCards').innerHTML=MONTHS.map(m=>{const sel=m.key===selMonth?' sel':'';const cur=m.key===CUR?' cur':'';return`<div class="mcard${cur}${sel}" onclick="selMonth='${m.key}';monthCards();monthDetail();mBars()"><div class="mm">${m.label}</div><div class="big">${m.total}</div><div class="biglab">tickets</div><div class="mini"><span>Resolved</span><b>${m.resolutionRate}%</b></div><div class="mini"><span>Untriaged</span><b>${m.untriagedPct}%</b></div><div class="mini"><span>Critical</span><b>${m.criticalPct}%</b></div></div>`;}).join('');}
+function monthDetail(){const m=MONTHS.find(x=>x.key===selMonth);const cats=MCATS[selMonth]||[];if(!cats.length){document.getElementById('mDetail').innerHTML='';return;}const rows=cats.map(c=>`<tr><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td>${c[4]==null?'<span class="sm">n/a</span>':`<span class="sev s1">${c[4]}</span>`}</td></tr>`).join('');document.getElementById('mDetail').innerHTML=`<div class="panel"><h3>${m.label} - category breakdown</h3><table class="tk" style="border:0;border-radius:0"><thead><tr><th>Category</th><th>Total</th><th>Open</th><th>Closed</th><th>Critical</th></tr></thead><tbody>${rows}</tbody></table></div>`;}
+function mPick(){document.getElementById('mPick').innerHTML=METRICS.map(m=>`<button class="${m.id===aMetric?'active':''}" onclick="aMetric='${m.id}';mPick();mBars()">${m.label}</button>`).join('');}
+function mBars(){const mt=METRICS.find(m=>m.id===aMetric);const live=MONTHS.filter(m=>!m.pending);const vals=live.map(mt.get);const max=Math.max(...vals),min=Math.min(...vals);const W=920,H=240,padL=46,padR=24,padT=22,padB=40;const iw=W-padL-padR,ih=H-padT-padB;const n=MONTHS.length;const xs=i=>padL+(n<=1?0:i*(iw/(n-1)));const range=(max-min)||1;const ys=v=>padT+ih-((v-min)/range)*ih;let pts=[];MONTHS.forEach((m,i)=>{if(!m.pending)pts.push([xs(i),ys(mt.get(m)),mt.get(m),m.label,i]);});const line=pts.map((p,i)=>(i?'L':'M')+p[0]+' '+p[1]).join(' ');const area=line+` L ${pts[pts.length-1][0]} ${padT+ih} L ${pts[0][0]} ${padT+ih} Z`;let grid='';for(let g=0;g<=3;g++){const gy=padT+ih-(g/3)*ih;const gv=Math.round(min+(g/3)*range);grid+=`<line x1="${padL}" y1="${gy}" x2="${W-padR}" y2="${gy}" stroke="rgba(255,255,255,.08)"/><text x="${padL-10}" y="${gy+4}" fill="#8990b3" font-size="11" text-anchor="end">${gv}${mt.unit}</text>`;}let dots='',xlab='';MONTHS.forEach((m,i)=>{xlab+=`<text x="${xs(i)}" y="${H-14}" fill="#aab0cc" font-size="12" text-anchor="middle" font-weight="${m.key===selMonth?'700':'400'}">${m.label}</text>`;});pts.forEach(p=>{const onsel=MONTHS[p[4]].key===selMonth;dots+=`<circle cx="${p[0]}" cy="${p[1]}" r="${onsel?6:4.5}" fill="${onsel?'#fff':'#5FD9BE'}" stroke="#18BFA0" stroke-width="${onsel?3:0}"/>`;dots+=`<text x="${p[0]}" y="${p[1]-14}" fill="#fff" font-size="12" font-weight="700" text-anchor="middle">${p[2]}${mt.unit}</text>`;});document.getElementById('trendChart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block"><defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#18BFA0" stop-opacity="0.35"/><stop offset="100%" stop-color="#18BFA0" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#ag)"/><path d="${line}" fill="none" stroke="#5FD9BE" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>${dots}${xlab}</svg>`;document.getElementById('heroSub').textContent=`${mt.label} · January to August`;}
+function cmpTable(){let head='<thead><tr><th>Metric</th>'+MONTHS.map(m=>`<th>${m.label}</th>`).join('')+'</tr></thead>';let rows=METRICS.map(mt=>`<tr><th>${mt.label}</th>`+MONTHS.map(m=>`<td>${m.pending?'-':mt.get(m)+mt.unit}</td>`).join('')+'</tr>').join('');document.getElementById('cmpTable').innerHTML=head+'<tbody>'+rows+'</tbody>';}
+function init(){buildTiles();donut();dailyBars();stuckBanner();renderInsights();syncChips();renderTickets();monthCards();monthDetail();mPick();mBars();cmpTable();}
+init();
+</script>
+</body>
+</html>
