@@ -620,6 +620,13 @@ tbody tr.dr:hover .acts{opacity:1}
       <div class="fg full"><label>Quick note <span style="font-weight:400;color:var(--ink3);text-transform:none;letter-spacing:0">— shows on the client row</span></label>
         <input id="f-quicknote" placeholder="e.g. Closing 2024 books, waiting on EY sign-off..."/>
       </div>
+      <div class="fg"><label>Renewal date</label><input id="f-renewal" type="date"/></div>
+      <div class="fg" style="align-items:center;display:flex;gap:12px;padding-top:4px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500;color:var(--red);text-transform:none;letter-spacing:0;font-size:13px">
+          <input type="checkbox" id="f-payment-issue" style="width:16px;height:16px;accent-color:var(--red);cursor:pointer"/>
+          💳 Payment issue
+        </label>
+      </div>
       <div class="fg full"><label>Accounting partner</label>
         <input id="f-accounting" placeholder="e.g. Attivo, Propeller, Fuel3" list="partner-list" autocomplete="off"/>
         <datalist id="partner-list">
@@ -744,6 +751,8 @@ async function sbUpsert(client) {
     quick_note: client.quickNote||null,
     slack_channel_id: client.slackChannelId||null,
     needs_attention: !!client.needsAttention,
+    renewal_date: client.renewalDate||null,
+    payment_issue: !!client.paymentIssue,
     strikes: client.strikes||0,
     strike_log: client.strikeLog||[],
     churn_date: client.churnDate||null,
@@ -802,6 +811,8 @@ function rowToClient(row) {
     quickNote: row.quick_note||'',
     slackChannelId: row.slack_channel_id||'',
     needsAttention: !!row.needs_attention,
+    renewalDate: row.renewal_date||'',
+    paymentIssue: !!row.payment_issue,
     strikes: row.strikes||0,
     strikeLog: Array.isArray(row.strike_log) ? row.strike_log : []
   }
@@ -1002,6 +1013,12 @@ function getList() {
   else if(activeFilter==='needs_attention') list=list.filter(c=>c.needsAttention)
   else if(activeFilter==='yellow_flag') list=list.filter(c=>c.status==='yellow_flag')
   else if(activeFilter==='red_flag') list=list.filter(c=>c.status==='red_flag')
+  else if(activeFilter==='payment_issue') list=list.filter(c=>c.paymentIssue)
+  else if(activeFilter==='renewing_soon') list=list.filter(c=>{
+    if(!c.renewalDate) return false
+    const days=Math.round((new Date(c.renewalDate)-new Date())/86400000)
+    return days>=0&&days<=90
+  })
   else if(activeFilter&&activeFilter.startsWith('partner:')) list=list.filter(c=>(c.accountingPartner||'')=== activeFilter.slice(8))
   else if(activeFilter&&activeFilter.startsWith('label:')) list=list.filter(c=>(c.labels||[]).includes(activeFilter.slice(6)))
   else if(activeFilter==='support') list=list.filter(c=>c.inSupport==='yes')
@@ -1099,6 +1116,12 @@ function renderHero() {
   sC('sb-count-canton', ac2.filter(c=>c.canton).length)
   sC('sb-count-silent', ac2.filter(c=>dSince(c.lastContact||c.last_contact)>=30).length)
   sC('sb-count-churned', clients.filter(c=>c.churned).length)
+  sC('sb-count-payment', ac2.filter(c=>c.paymentIssue).length)
+  sC('sb-count-renewal', ac2.filter(c=>{
+    if(!c.renewalDate) return false
+    const days=Math.round((new Date(c.renewalDate)-new Date())/86400000)
+    return days>=0&&days<=90
+  }).length)
   sC('sb-count-s1', ac2.filter(c=>(c.strikes||0)>=1).length)
   sC('sb-count-s2', ac2.filter(c=>(c.strikes||0)>=2).length)
   sC('sb-count-s3', ac2.filter(c=>(c.strikes||0)>=3).length)
@@ -1224,6 +1247,8 @@ function renderTable() {
         <div class="cc-sub">${fARR(c.arr)}${c.accountingPartner?` · <span style="color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}</div>
         ${c.quickNote?`<div class="cc-note">💬 ${esc(c.quickNote)}</div>`:''}
         ${c.needsAttention?`<div style="font-size:11px;font-weight:600;color:var(--amber);margin-top:3px">👋 Needs attention</div>`:''}
+        ${c.paymentIssue?`<div style="font-size:11px;font-weight:600;color:var(--red);margin-top:3px">💳 Payment issue</div>`:''}
+        ${c.renewalDate?`<div style="font-size:11px;color:var(--ink3);margin-top:3px">🔄 Renews ${renewalLabel(c.renewalDate)}</div>`:''}
         <div class="cc-tags">
           ${isSupport?'<span class="tag tag-support">🎧 Support</span>':''}
           ${!isSupport&&c.lifecycle==='onboarding'?'<span class="tag tag-onboard">🚀 Onboarding</span>':''}
@@ -1444,6 +1469,8 @@ async function saveClient(){
     accountingPartner:document.getElementById('f-accounting').value||'',
     quickNote:document.getElementById('f-quicknote').value||'',
     needsAttention:document.getElementById('f-attention').checked,
+    renewalDate:document.getElementById('f-renewal').value||'',
+    paymentIssue:document.getElementById('f-payment-issue').checked,
     labels:clientLabels.map(l=>l.id),
     strikes: _editingStrikes||0,
     strikeLog: _editingStrikeLog||[],
@@ -1989,6 +2016,18 @@ function renderClientLabels(labelIds) {
     if(!l) return ''
     return `<span class="lbl" style="background:${l.color}18;color:${l.color}">${l.emoji} ${esc(l.name)}</span>`
   }).join('')
+}
+
+// ── RENEWAL HELPERS ──
+function renewalLabel(date) {
+  if(!date) return ''
+  const d = new Date(date)
+  const now = new Date()
+  const days = Math.round((d - now) / 86400000)
+  if(days < 0) return `expired`
+  if(days <= 30) return `in ${days}d ⚠`
+  if(days <= 90) return `in ${Math.round(days/30)}mo`
+  return d.toLocaleDateString('en-CA',{month:'short',year:'numeric'})
 }
 
 // ── STRIKES ──
