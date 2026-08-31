@@ -564,8 +564,15 @@ tbody tr.dr:hover .acts{opacity:1}
 </div>
 
 <!-- JIRA BOARD VIEW -->
-<div class="jira-wrap" id="jiraboard-view" style="display:none;padding:0">
-  <iframe id="jira-board-frame" src="/jira-board.html" style="width:100%;height:calc(100vh - 58px);border:none"></iframe>
+<div class="jira-wrap" id="jiraboard-view" style="display:none;padding:28px">
+  <div id="jira-board-content">
+    <div style="text-align:center;padding:60px;color:var(--ink3)">
+      <div style="font-size:32px;margin-bottom:12px">📊</div>
+      <div style="font-size:16px;font-weight:600;color:var(--ink2);margin-bottom:8px">Jira Board</div>
+      <div style="font-size:13px;margin-bottom:20px">Open the full board in a new tab</div>
+      <a href="/jira-board" target="_blank" style="background:var(--blue);color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Open Jira Board →</a>
+    </div>
+  </div>
 </div>
 
 </div><!-- end main-content -->
