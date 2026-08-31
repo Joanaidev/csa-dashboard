@@ -1244,11 +1244,10 @@ function renderTable() {
     return `<div class="client-card ${flagClass(c)}" onclick="openPanel('${c.id}')">
       <div>
         <div class="cc-name">${esc(c.name)}</div>
-        <div class="cc-sub">${fARR(c.arr)}${c.accountingPartner?` · <span style="color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}</div>
+        <div class="cc-sub">${fARR(c.arr)}${c.accountingPartner?` · <span style="color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}${c.renewalDate?` · <span style="color:${(() => { const d=new Date(c.renewalDate+'T00:00:00'); const days=Math.round((d-new Date())/86400000); return days<=90?'var(--amber)':'var(--ink3)' })()}">🔄 ${renewalLabel(c.renewalDate)}</span>`:''}</div>
         ${c.quickNote?`<div class="cc-note">💬 ${esc(c.quickNote)}</div>`:''}
         ${c.needsAttention?`<div style="font-size:11px;font-weight:600;color:var(--amber);margin-top:3px">👋 Needs attention</div>`:''}
         ${c.paymentIssue?`<div style="font-size:11px;font-weight:600;color:var(--red);margin-top:3px">💳 Payment issue</div>`:''}
-        ${c.renewalDate?`<div style="font-size:11px;color:var(--ink3);margin-top:3px">🔄 Renews ${renewalLabel(c.renewalDate)}</div>`:''}
         <div class="cc-tags">
           ${isSupport?'<span class="tag tag-support">🎧 Support</span>':''}
           ${!isSupport&&c.lifecycle==='onboarding'?'<span class="tag tag-onboard">🚀 Onboarding</span>':''}
@@ -2021,12 +2020,12 @@ function renderClientLabels(labelIds) {
 // ── RENEWAL HELPERS ──
 function renewalLabel(date) {
   if(!date) return ''
-  const d = new Date(date)
+  const d = new Date(date + 'T00:00:00')
   const now = new Date()
   const days = Math.round((d - now) / 86400000)
-  if(days < 0) return `expired`
+  if(days < 0) return 'expired'
   if(days <= 30) return `in ${days}d ⚠`
-  if(days <= 90) return `in ${Math.round(days/30)}mo`
+  if(days <= 90) return `in ${Math.round(days/30)}mo ⚠`
   return d.toLocaleDateString('en-CA',{month:'short',year:'numeric'})
 }
 
