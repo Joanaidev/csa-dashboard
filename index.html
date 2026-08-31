@@ -1897,16 +1897,14 @@ function switchView(v, btn) {
   activeView = v
   document.querySelectorAll('.view-tab').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
-  document.getElementById('clients-view').style.display = v==='clients'?'':'none'
-  document.getElementById('jira-view').style.display = v==='jira'?'':'none'
-  document.getElementById('team-view').style.display = v==='team'?'':'none'
+  document.getElementById('clients-view').style.display = v==='clients'?'block':'none'
+  document.getElementById('jira-view').style.display = v==='jira'?'block':'none'
+  document.getElementById('team-view').style.display = v==='team'?'block':'none'
   document.getElementById('jiraboard-view').style.display = v==='jiraboard'?'block':'none'
-  // Hide the whole app-body when showing jiraboard
-  document.querySelector('.app-body') && (document.querySelector('[style*="display:flex;min-height"]')||document.getElementById('sidebar')?.parentElement);
-  document.querySelector('.hero').style.display = v==='clients'?'':'none'
-  document.getElementById('owner-strip').style.display = v==='clients'?'':'none'
-  document.querySelector('.filter-bar').style.display = v==='clients'?'':'none'
-  document.getElementById('sidebar').style.display = v==='clients'?'':'none'
+  document.querySelector('.hero').style.display = v==='clients'?'block':'none'
+  document.getElementById('owner-strip').style.display = v==='clients'?'flex':'none'
+  document.querySelector('.filter-bar').style.display = v==='clients'?'block':'none'
+  document.getElementById('sidebar').style.display = v==='clients'?'flex':'none'
   const sb = document.getElementById('stuck-bar')
   sb.style.display = v==='clients'&&sb.classList.contains('show')?'flex':'none'
   if(v==='jira') renderJira()
