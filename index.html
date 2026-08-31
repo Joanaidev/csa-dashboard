@@ -1902,9 +1902,11 @@ function switchView(v, btn) {
   document.getElementById('clients-view').style.display = v==='clients'?'':'none'
   document.getElementById('jira-view').style.display = v==='jira'?'':'none'
   document.getElementById('team-view').style.display = v==='team'?'':'none'
+  document.getElementById('jiraboard-view').style.display = v==='jiraboard'?'':'none'
   document.querySelector('.hero').style.display = v==='clients'?'':'none'
   document.getElementById('owner-strip').style.display = v==='clients'?'':'none'
   document.querySelector('.filter-bar').style.display = v==='clients'?'':'none'
+  document.getElementById('sidebar').style.display = v==='clients'?'':'none'
   const sb = document.getElementById('stuck-bar')
   sb.style.display = v==='clients'&&sb.classList.contains('show')?'flex':'none'
   if(v==='jira') renderJira()
