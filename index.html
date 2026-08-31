@@ -1244,7 +1244,7 @@ function renderTable() {
     return `<div class="client-card ${flagClass(c)}" onclick="openPanel('${c.id}')">
       <div>
         <div class="cc-name">${esc(c.name)}</div>
-        <div class="cc-sub">${fARR(c.arr)}${c.accountingPartner?` · <span style="color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}${c.renewalDate?` · <span style="color:${(() => { const d=new Date(c.renewalDate+'T00:00:00'); const days=Math.round((d-new Date())/86400000); return days<=90?'var(--amber)':'var(--ink3)' })()}">🔄 ${renewalLabel(c.renewalDate)}</span>`:''}</div>
+        <div class="cc-sub">${fARR(c.arr)}${c.accountingPartner?` · <span style="color:var(--amber)">${esc(c.accountingPartner)}</span>`:''}${c.renewalDate?` · <span style="color:${(() => { const d=new Date(c.renewalDate+'T00:00:00'); const days=Math.round((d-new Date())/86400000); return days<=90?'var(--amber)':'var(--ink3)' })()}">🔄 Renewal: ${renewalLabel(c.renewalDate)}</span>`:` · <span style="color:var(--ink4);font-size:10px">No billing info</span>`}</div>
         ${c.quickNote?`<div class="cc-note">💬 ${esc(c.quickNote)}</div>`:''}
         ${c.needsAttention?`<div style="font-size:11px;font-weight:600;color:var(--amber);margin-top:3px">👋 Needs attention</div>`:''}
         ${c.paymentIssue?`<div style="font-size:11px;font-weight:600;color:var(--red);margin-top:3px">💳 Payment issue</div>`:''}
